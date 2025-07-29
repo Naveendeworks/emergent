@@ -23,6 +23,7 @@ const ReportsPage = () => {
 
   useEffect(() => {
     loadReports();
+    loadPriceAnalysis();
   }, []);
 
   const loadReports = async () => {
@@ -42,6 +43,19 @@ const ReportsPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPriceAnalysis = async () => {
+    try {
+      const priceData = await ordersAPI.getPriceAnalysis();
+      setPriceAnalysis(priceData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load price analysis",
+        variant: "destructive",
+      });
     }
   };
 
