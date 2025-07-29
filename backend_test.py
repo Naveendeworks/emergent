@@ -141,7 +141,7 @@ def test_create_order_complete_schema():
             order = response.json()
             
             # Verify complete schema
-            required_fields = ["id", "customerName", "phoneNumber", "items", "totalAmount", "status", "createdAt"]
+            required_fields = ["id", "customerName", "phoneNumber", "items", "totalAmount", "status", "orderTime"]
             missing_fields = []
             
             for field in required_fields:
