@@ -98,16 +98,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       return;
     }
 
-    // Phone number is optional, but if provided, validate it
-    if (phoneNumber.trim() && phoneNumber.trim().length < 10) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid phone number (at least 10 digits)",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (orderItems.length === 0) {
       toast({
         title: "Error",
@@ -127,11 +117,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
           quantity: item.quantity
         }))
       };
-
-      // Only include phone number if provided
-      if (phoneNumber.trim()) {
-        orderData.phoneNumber = phoneNumber.trim();
-      }
 
       const updatedOrder = await ordersAPI.updateOrder(order.id, orderData);
       
