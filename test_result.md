@@ -198,15 +198,18 @@ frontend:
 
   - task: "Edit Order with Phone Number Field"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/EditOrderModal.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Added phone number field to EditOrderModal with validation. Updated form to handle phone number updates and validation."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Phone number field is visible in EditOrderModal. Successfully displays existing phone numbers (e.g., 123456789012345). Phone number can be updated in edit form. Edit functionality working correctly."
 
   - task: "MyOrder Customer Self-Service Page"
     implemented: true
