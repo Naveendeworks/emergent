@@ -106,3 +106,28 @@ async def export_item_reports(
     except Exception as e:
         logger.error(f"Error in export_item_reports endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to export item reports")
+
+@router.get("/price-analysis/export")
+async def export_price_analysis(
+    order_service: OrderService = Depends(get_order_service),
+    excel_service: ExcelService = Depends(get_excel_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Export price analysis as Excel file (requires authentication)"""
+    try:
+        # Get price analysis data
+        price_analysis = await order_service.get_price_analysis()
+        
+        # Generate Excel file
+        excel_file = excel_service.create_price_analysis_excel(price_analysis)
+        filename = excel_service.get_filename("price_analysis")
+        
+        # Return as streaming response
+        return StreamingResponse(
+            excel_file,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        logger.error(f"Error in export_price_analysis endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to export price analysis")
