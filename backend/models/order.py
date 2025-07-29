@@ -11,7 +11,7 @@ class OrderItem(BaseModel):
 class OrderCreate(BaseModel):
     customerName: str = Field(..., min_length=1, max_length=100)
     items: List[OrderItem] = Field(..., min_items=1)
-    paymentMethod: str = Field(..., regex='^(zelle|cashapp|cash)$')
+    paymentMethod: str = Field(..., pattern='^(zelle|cashapp|cash)$')
     
     @validator('items')
     def validate_items(cls, v):
