@@ -166,7 +166,10 @@ const ReportsPage = () => {
           <p className="text-gray-600">Comprehensive analysis of orders and performance</p>
         </div>
         <Button 
-          onClick={loadReports}
+          onClick={() => {
+            loadReports();
+            loadPriceAnalysis();
+          }}
           disabled={loading}
           variant="outline"
         >
