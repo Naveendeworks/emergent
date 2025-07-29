@@ -221,13 +221,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Authentication System"
-    - "Order Creation with Payment Methods"
-    - "Order Management Operations"
-    - "Payment Method Display and Badges"
-    - "Menu Integration and Categories"
+    - "Order Creation with Phone Number Validation"
+    - "Customer Self-Service Endpoint"
+    - "Order Update with Phone Number"
+    - "Phone Number Model Validation"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
