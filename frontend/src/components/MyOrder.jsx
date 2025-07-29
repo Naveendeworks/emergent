@@ -16,19 +16,19 @@ const MyOrder = ({ onBack }) => {
   const { toast } = useToast();
 
   const handleSearch = async () => {
-    if (!phoneNumber.trim()) {
+    if (!orderNumber.trim()) {
       toast({
         title: "Error",
-        description: "Please enter your phone number",
+        description: "Please enter your order number",
         variant: "destructive",
       });
       return;
     }
 
-    if (phoneNumber.trim().length < 10) {
+    if (!orderNumber.trim().match(/^ORD-[A-Z]{3}[0-9]{3}$/)) {
       toast({
         title: "Error",
-        description: "Please enter a valid phone number (at least 10 digits)",
+        description: "Please enter a valid order number (format: ORD-ABC123)",
         variant: "destructive",
       });
       return;
@@ -36,23 +36,33 @@ const MyOrder = ({ onBack }) => {
 
     try {
       setLoading(true);
-      const customerOrders = await ordersAPI.getOrdersByPhone(phoneNumber.trim());
-      setOrders(customerOrders);
+      const customerOrder = await ordersAPI.getOrderByNumber(orderNumber.trim());
+      setOrder(customerOrder);
       setSearched(true);
       
-      if (customerOrders.length === 0) {
+      if (!customerOrder) {
         toast({
-          title: "No Orders Found",
-          description: "No orders found for this phone number",
+          title: "No Order Found",
+          description: "No order found with this order number",
           variant: "default",
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch orders. Please try again.",
-        variant: "destructive",
-      });
+      if (error.response?.status === 404) {
+        toast({
+          title: "Order Not Found",
+          description: "No order found with this order number",
+          variant: "destructive",
+        });
+        setOrder(null);
+        setSearched(true);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch order. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
