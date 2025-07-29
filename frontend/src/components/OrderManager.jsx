@@ -237,6 +237,12 @@ const OrderManager = () => {
             )}
           </TabsContent>
         </Tabs>
+
+        <CreateOrderModal 
+          open={createModalOpen}
+          onOpenChange={setCreateModalOpen}
+          onOrderCreated={handleOrderCreated}
+        />
       </div>
     </div>
   );
