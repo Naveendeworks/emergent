@@ -288,6 +288,13 @@ const OrderManager = () => {
           onOpenChange={setCreateModalOpen}
           onOrderCreated={handleOrderCreated}
         />
+
+        <EditOrderModal 
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          order={selectedOrder}
+          onOrderUpdated={handleOrderUpdated}
+        />
       </div>
     </div>
   );
