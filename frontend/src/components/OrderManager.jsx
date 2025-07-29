@@ -10,34 +10,92 @@ import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const OrderManager = () => {
-  const [orders, setOrders] = useState(mockOrders);
+  const [orders, setOrders] = useState([]);
   const [activeTab, setActiveTab] = useState('pending');
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ pending: 0, completed: 0, total: 0 });
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    loadOrders();
+    loadStats();
+  }, []);
+
+  const loadOrders = async () => {
+    try {
+      setLoading(true);
+      const ordersData = await ordersAPI.getOrders();
+      setOrders(ordersData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load orders",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const statsData = await ordersAPI.getOrderStats();
+      setStats(statsData);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  };
+
+  const handleCompleteOrder = async (orderId) => {
+    try {
+      const updatedOrder = await ordersAPI.completeOrder(orderId);
+      
+      // Update orders list
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === orderId 
+            ? { ...order, status: 'completed' }
+            : order
+        )
+      );
+
+      // Update stats
+      await loadStats();
+
+      const completedOrder = orders.find(order => order.id === orderId);
+      toast({
+        title: "Order Completed",
+        description: `Order for ${completedOrder?.customerName} has been marked as complete.`,
+        duration: 3000,
+      });
+
+      // Auto-switch to pending tab if no more pending orders
+      const remainingPending = orders.filter(order => order.status === 'pending' && order.id !== orderId);
+      if (remainingPending.length === 0) {
+        setTimeout(() => setActiveTab('completed'), 1500);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to complete order",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleOrderCreated = (newOrder) => {
+    setOrders(prevOrders => [newOrder, ...prevOrders]);
+    loadStats();
+  };
+
+  const handleRefresh = () => {
+    loadOrders();
+    loadStats();
+  };
 
   const pendingOrders = orders.filter(order => order.status === 'pending');
   const completedOrders = orders.filter(order => order.status === 'completed');
-
-  const handleCompleteOrder = (orderId) => {
-    setOrders(prevOrders => 
-      prevOrders.map(order => 
-        order.id === orderId 
-          ? { ...order, status: 'completed' }
-          : order
-      )
-    );
-
-    const completedOrder = orders.find(order => order.id === orderId);
-    toast({
-      title: "Order Completed",
-      description: `Order for ${completedOrder?.customerName} has been marked as complete.`,
-      duration: 3000,
-    });
-
-    // Auto-switch to pending tab if no more pending orders
-    if (pendingOrders.length === 1) {
-      setTimeout(() => setActiveTab('completed'), 1500);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
