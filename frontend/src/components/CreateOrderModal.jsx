@@ -355,6 +355,36 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             </div>
           )}
 
+          {/* Checkout Summary */}
+          {orderItems.length > 0 && (
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h3 className="font-semibold text-blue-900 mb-3">Order Summary</h3>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal ({totalItems} items):</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Tax (8%):</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="border-t border-blue-300 pt-2">
+                  <div className="flex justify-between font-bold text-blue-900">
+                    <span>Total:</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-sm text-blue-700">Payment Method:</span>
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    {getPaymentMethodIcon(paymentMethod)}
+                    {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons */}
           <div className="flex gap-3">
             <Button
@@ -369,7 +399,7 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
               disabled={creating || !customerName.trim() || orderItems.length === 0}
               className="flex-1"
             >
-              {creating ? 'Creating...' : `Create Order (${totalItems} items)`}
+              {creating ? 'Creating...' : `Create Order - $${total.toFixed(2)}`}
             </Button>
           </div>
         </div>
