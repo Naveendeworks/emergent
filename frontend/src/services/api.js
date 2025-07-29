@@ -106,6 +106,17 @@ export const ordersAPI = {
       console.error('Error updating cooking status:', error);
       throw error;
     }
+  },
+
+  // Get price analysis for all items (requires authentication)
+  getPriceAnalysis: async () => {
+    try {
+      const response = await axios.get(`${API}/orders/price-analysis`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching price analysis:', error);
+      throw error;
+    }
   }
 };
 
