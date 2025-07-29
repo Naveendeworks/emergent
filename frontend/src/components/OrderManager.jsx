@@ -25,7 +25,10 @@ const OrderManager = ({ onLogout }) => {
   useEffect(() => {
     loadOrders();
     loadStats();
-  }, []);
+    if (activeTab === 'view-orders') {
+      loadViewOrdersData();
+    }
+  }, [activeTab]);
 
   const loadOrders = async () => {
     try {
