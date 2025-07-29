@@ -213,15 +213,18 @@ frontend:
 
   - task: "MyOrder Customer Self-Service Page"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/MyOrder.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Created new MyOrder component for customer self-service. Includes phone number input, order search, and order display with status badges and item details."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - MyOrder page is accessible without authentication at /myorder route. Phone number input field is visible. Successfully searches for orders by phone number. Displays orders correctly for existing phone numbers (123456789012345, 12345678901). Shows 'No Orders Found' message appropriately. Back to Dashboard navigation working. Fixed ArrowBack icon import issue during testing."
 
   - task: "MyOrder Route Implementation"
     implemented: true
