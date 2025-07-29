@@ -11,6 +11,8 @@ EASTERN_TZ = pytz.timezone('US/Eastern')
 class OrderItem(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     quantity: int = Field(..., ge=1, le=100)
+    price: float = Field(..., gt=0, description="Price per item in USD")
+    subtotal: float = Field(..., gt=0, description="Total for this item (price * quantity)")
 
 class OrderCreate(BaseModel):
     customerName: str = Field(..., min_length=1, max_length=100)
