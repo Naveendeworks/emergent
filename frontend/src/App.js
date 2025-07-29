@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OrderManager from "./components/OrderManager";
+import ReportsPage from "./components/ReportsPage";
 import LoginForm from "./components/LoginForm";
+import Header from "./components/Header";
 import { authService } from "./services/auth";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState('orders');
 
   useEffect(() => {
     checkAuthStatus();
@@ -36,6 +39,11 @@ function App() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setCurrentPage('orders');
+  };
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -49,19 +57,31 @@ function App() {
     );
   }
 
+  if (!isAuthenticated) {
+    return (
+      <div className="App">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LoginForm onLogin={handleLogin} />} />
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+      </div>
+    );
+  }
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={
-            isAuthenticated ? (
-              <OrderManager onLogout={handleLogout} />
-            ) : (
-              <LoginForm onLogin={handleLogin} />
-            )
-          } />
-        </Routes>
-      </BrowserRouter>
+      <div className="min-h-screen bg-gray-100">
+        <Header 
+          onLogout={handleLogout} 
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+        />
+        
+        {currentPage === 'orders' && <OrderManager onLogout={handleLogout} />}
+        {currentPage === 'reports' && <ReportsPage />}
+      </div>
       <Toaster />
     </div>
   );
