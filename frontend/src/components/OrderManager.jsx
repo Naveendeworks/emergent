@@ -346,6 +346,7 @@ const OrderManager = ({ onLogout }) => {
                     onComplete={handleCompleteOrder}
                     onEdit={handleEditOrder}
                     onCancel={handleCancelOrder}
+                    onOrderUpdated={handleOrderUpdated}
                   />
                 ))}
               </div>
