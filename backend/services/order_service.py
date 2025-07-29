@@ -58,7 +58,6 @@ class OrderService:
             
             order = Order(
                 customerName=order_data.customerName,
-                phoneNumber=order_data.phoneNumber,
                 items=order_items_with_prices,
                 paymentMethod=order_data.paymentMethod,
                 orderTime=current_time,
