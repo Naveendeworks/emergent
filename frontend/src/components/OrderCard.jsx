@@ -180,13 +180,61 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated }) => {
       </CardHeader>
       
       <CardContent>
-        <div className="space-y-2 mb-4">
+        {/* Order Items with Cooking Status */}
+        <div className="space-y-3 mb-4">
+          <h4 className="font-medium flex items-center gap-2 text-gray-700">
+            <ChefHat className="h-4 w-4" />
+            Order Items & Cooking Status
+          </h4>
           {order.items.map((item, index) => (
-            <div key={index} className="flex justify-between items-center py-1 px-2 rounded bg-gray-50">
-              <span className="text-gray-800 font-medium">{item.name}</span>
-              <Badge variant="outline" className="bg-white">
-                x{item.quantity}
-              </Badge>
+            <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-gray-500" />
+                  <span className="font-medium text-gray-800">{item.name}</span>
+                  <Badge variant="outline" className="bg-white">
+                    x{item.quantity}
+                  </Badge>
+                </div>
+                {item.subtotal && (
+                  <span className="text-sm font-medium text-green-600">
+                    ${item.subtotal.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              
+              {/* Cooking Status Controls */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600">Status:</span>
+                  <Badge 
+                    className={`text-xs ${
+                      item.cooking_status === 'finished' ? 'bg-green-100 text-green-800 border-green-200' :
+                      item.cooking_status === 'cooking' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                      'bg-gray-100 text-gray-800 border-gray-200'
+                    }`}
+                  >
+                    {item.cooking_status || 'not started'}
+                  </Badge>
+                </div>
+                
+                {order.status === 'pending' && (
+                  <Select 
+                    value={item.cooking_status || 'not started'} 
+                    onValueChange={(value) => handleCookingStatusUpdate(item.name, value)}
+                    disabled={updatingStatus}
+                  >
+                    <SelectTrigger className="w-32 h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="not started">Not Started</SelectItem>
+                      <SelectItem value="cooking">Cooking</SelectItem>
+                      <SelectItem value="finished">Finished</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
             </div>
           ))}
         </div>
