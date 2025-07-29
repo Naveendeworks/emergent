@@ -141,6 +141,84 @@ export const reportsAPI = {
       console.error('Error fetching item reports:', error);
       throw error;
     }
+  },
+
+  // Download payment reports as Excel
+  downloadPaymentReports: async () => {
+    try {
+      const response = await axios.get(`${API}/reports/payment/export`, {
+        responseType: 'blob',
+      });
+      
+      // Create blob and download
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      
+      // Get filename from response headers
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'payment_reports.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]*)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true, filename };
+    } catch (error) {
+      console.error('Error downloading payment reports:', error);
+      throw error;
+    }
+  },
+
+  // Download item reports as Excel
+  downloadItemReports: async () => {
+    try {
+      const response = await axios.get(`${API}/reports/items/export`, {
+        responseType: 'blob',
+      });
+      
+      // Create blob and download
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      
+      // Get filename from response headers
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'menu_items_reports.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]*)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true, filename };
+    } catch (error) {
+      console.error('Error downloading item reports:', error);
+      throw error;
+    }
   }
 };
 
