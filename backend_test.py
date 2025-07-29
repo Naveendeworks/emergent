@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Phone Number Functionality
-Tests the new phone number features in the order management system
+Backend API Testing for Pricing Functionality
+Tests the new pricing features in the order management system
 """
 
 import requests
