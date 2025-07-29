@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw } from 'lucide-react';
 import OrderCard from './OrderCard';
 import CreateOrderModal from './CreateOrderModal';
+import EditOrderModal from './EditOrderModal';
 import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
