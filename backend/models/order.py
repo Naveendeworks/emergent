@@ -40,8 +40,23 @@ class OrderCreate(BaseModel):
             raise ValueError('Order must have at least one item')
         return v
 
-class OrderUpdate(BaseModel):
-    status: Optional[str] = Field(None, pattern='^(pending|completed)$')
+class OrderItemCookingUpdate(BaseModel):
+    """Model for updating cooking status of an order item"""
+    order_id: str = Field(..., min_length=1)
+    item_name: str = Field(..., min_length=1, max_length=100)
+    cooking_status: str = Field(..., pattern='^(not started|cooking|finished)$')
+
+class ItemOrderSummary(BaseModel):
+    """Summary of orders for a specific menu item"""
+    item_name: str
+    total_quantity: int
+    orders: List[dict]  # List of orders containing this item
+
+class CookingStatusSummary(BaseModel):
+    """Summary of cooking status across all orders"""
+    not_started: int = 0
+    cooking: int = 0
+    finished: int = 0
 
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
