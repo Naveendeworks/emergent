@@ -55,6 +55,40 @@ const OrderManager = ({ onLogout }) => {
     }
   };
 
+  const loadViewOrdersData = async () => {
+    try {
+      setLoading(true);
+      const data = await ordersAPI.getOrdersByItem();
+      setViewOrdersData(data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load view orders data",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCookingStatusUpdate = async (orderId, itemName, newStatus) => {
+    try {
+      await ordersAPI.updateCookingStatus(orderId, itemName, newStatus);
+      // Reload view orders data to reflect changes
+      loadViewOrdersData();
+      toast({
+        title: "Success",
+        description: `${itemName} status updated to ${newStatus}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update cooking status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleCompleteOrder = async (orderId) => {
     try {
       const updatedOrder = await ordersAPI.completeOrder(orderId);
