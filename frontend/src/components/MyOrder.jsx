@@ -208,84 +208,83 @@ const MyOrder = ({ onBack }) => {
                     </div>
                   </div>
 
-                    {/* Order Items */}
-                    <div className="space-y-2">
-                      <h4 className="font-medium flex items-center gap-2">
-                        <Package className="h-4 w-4" />
-                        Items ({order.totalItems} total)
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <div>
-                              <span className="font-medium">{item.name}</span>
-                              {item.price && (
-                                <p className="text-xs text-green-600">
-                                  ${item.price.toFixed(2)} each
-                                </p>
-                              )}
-                            </div>
-                            <div className="text-right">
-                              <Badge variant="outline" className="text-xs">
-                                Qty: {item.quantity}
-                              </Badge>
-                              {item.subtotal && (
-                                <p className="text-xs font-medium text-green-600">
-                                  ${item.subtotal.toFixed(2)}
-                                </p>
-                              )}
-                            </div>
+                  {/* Order Items */}
+                  <div className="space-y-2">
+                    <h4 className="font-medium flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      Items ({order.totalItems} total)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {order.items.map((item, index) => (
+                        <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                          <div>
+                            <span className="font-medium">{item.name}</span>
+                            {item.price && (
+                              <p className="text-xs text-green-600">
+                                ${item.price.toFixed(2)} each
+                              </p>
+                            )}
                           </div>
-                        ))}
+                          <div className="text-right">
+                            <Badge variant="outline" className="text-xs">
+                              Qty: {item.quantity}
+                            </Badge>
+                            {item.subtotal && (
+                              <p className="text-xs font-medium text-green-600">
+                                ${item.subtotal.toFixed(2)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Order Total */}
+                  {order.totalAmount && (
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-green-800">Order Total:</span>
+                        <span className="text-lg font-bold text-green-800">
+                          ${order.totalAmount.toFixed(2)}
+                        </span>
                       </div>
                     </div>
+                  )}
 
-                    {/* Order Total */}
-                    {order.totalAmount && (
-                      <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold text-green-800">Order Total:</span>
-                          <span className="text-lg font-bold text-green-800">
-                            ${order.totalAmount.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Delivery Info */}
-                    {order.estimatedDeliveryTime && (
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <p className="text-sm text-blue-800">
-                          <Clock className="h-4 w-4 inline mr-1" />
-                          Estimated delivery: {formatOrderTime(order.estimatedDeliveryTime)}
+                  {/* Delivery Info */}
+                  {order.estimatedDeliveryTime && (
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm text-blue-800">
+                        <Clock className="h-4 w-4 inline mr-1" />
+                        Estimated delivery: {formatOrderTime(order.estimatedDeliveryTime)}
+                      </p>
+                      {order.status === 'completed' && order.completedTime && (
+                        <p className="text-sm text-green-800 mt-1">
+                          <CheckCircle className="h-4 w-4 inline mr-1" />
+                          Completed: {formatOrderTime(order.completedTime)}
                         </p>
-                        {order.status === 'completed' && order.completedTime && (
-                          <p className="text-sm text-green-800 mt-1">
-                            <CheckCircle className="h-4 w-4 inline mr-1" />
-                            Completed: {formatOrderTime(order.completedTime)}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 
       {/* No Results State */}
-      {searched && orders.length === 0 && (
+      {searched && !order && (
         <Card>
           <CardContent className="p-12 text-center">
             <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Order Found</h3>
             <p className="text-gray-600 mb-4">
-              We couldn't find any orders associated with this phone number.
+              We couldn't find an order with this order number.
             </p>
             <p className="text-sm text-gray-500">
-              Make sure you entered the same phone number used when placing the order.
+              Please check your order number and try again.
             </p>
           </CardContent>
         </Card>
