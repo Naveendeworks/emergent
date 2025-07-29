@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { BarChart3, TrendingUp, DollarSign, Clock, Users, RefreshCw } from 'lucide-react';
+import { BarChart3, TrendingUp, DollarSign, Clock, Users, RefreshCw, Download } from 'lucide-react';
 import { reportsAPI, formatDeliveryTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
@@ -13,6 +13,8 @@ const ReportsPage = () => {
   const [paymentReports, setPaymentReports] = useState([]);
   const [itemReports, setItemReports] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [downloadingPayment, setDownloadingPayment] = useState(false);
+  const [downloadingItems, setDownloadingItems] = useState(false);
   const [selectedPaymentFilter, setSelectedPaymentFilter] = useState('all');
   const [selectedItemFilter, setSelectedItemFilter] = useState('all');
   const { toast } = useToast();
@@ -38,6 +40,46 @@ const ReportsPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadPaymentReports = async () => {
+    try {
+      setDownloadingPayment(true);
+      const result = await reportsAPI.downloadPaymentReports();
+      toast({
+        title: "Download Successful",
+        description: `Payment reports exported as ${result.filename}`,
+        duration: 4000,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Failed to export payment reports",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingPayment(false);
+    }
+  };
+
+  const handleDownloadItemReports = async () => {
+    try {
+      setDownloadingItems(true);
+      const result = await reportsAPI.downloadItemReports();
+      toast({
+        title: "Download Successful",
+        description: `Item reports exported as ${result.filename}`,
+        duration: 4000,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Failed to export item reports",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingItems(false);
     }
   };
 
@@ -153,19 +195,29 @@ const ReportsPage = () => {
         </TabsList>
 
         <TabsContent value="payment" className="space-y-4">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-semibold">Payment Method Analysis</h2>
-            <Select value={selectedPaymentFilter} onValueChange={setSelectedPaymentFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Payment Methods</SelectItem>
-                <SelectItem value="cash">Cash Only</SelectItem>
-                <SelectItem value="zelle">Zelle Only</SelectItem>
-                <SelectItem value="cashapp">Cash App Only</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-semibold">Payment Method Analysis</h2>
+              <Select value={selectedPaymentFilter} onValueChange={setSelectedPaymentFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Payment Methods</SelectItem>
+                  <SelectItem value="cash">Cash Only</SelectItem>
+                  <SelectItem value="zelle">Zelle Only</SelectItem>
+                  <SelectItem value="cashapp">Cash App Only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={handleDownloadPaymentReports}
+              disabled={downloadingPayment || loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Download className={`h-4 w-4 mr-2 ${downloadingPayment ? 'animate-spin' : ''}`} />
+              {downloadingPayment ? 'Exporting...' : 'Export Excel'}
+            </Button>
           </div>
 
           <div className="grid gap-4">
@@ -219,19 +271,29 @@ const ReportsPage = () => {
         </TabsContent>
 
         <TabsContent value="items" className="space-y-4">
-          <div className="flex items-center gap-4">
-            <h2 className="text-xl font-semibold">Menu Item Performance</h2>
-            <Select value={selectedItemFilter} onValueChange={setSelectedItemFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter by payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Items</SelectItem>
-                <SelectItem value="cash">Cash Orders</SelectItem>
-                <SelectItem value="zelle">Zelle Orders</SelectItem>
-                <SelectItem value="cashapp">Cash App Orders</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-semibold">Menu Item Performance</h2>
+              <Select value={selectedItemFilter} onValueChange={setSelectedItemFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Items</SelectItem>
+                  <SelectItem value="cash">Cash Orders</SelectItem>
+                  <SelectItem value="zelle">Zelle Orders</SelectItem>
+                  <SelectItem value="cashapp">Cash App Orders</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={handleDownloadItemReports}
+              disabled={downloadingItems || loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Download className={`h-4 w-4 mr-2 ${downloadingItems ? 'animate-spin' : ''}`} />
+              {downloadingItems ? 'Exporting...' : 'Export Excel'}
+            </Button>
           </div>
 
           <div className="grid gap-4">
