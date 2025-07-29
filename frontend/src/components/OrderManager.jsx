@@ -101,8 +101,29 @@ const OrderManager = () => {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Management</h1>
-          <p className="text-gray-600">Track and manage customer orders efficiently</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Management</h1>
+              <p className="text-gray-600">Track and manage customer orders efficiently</p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={handleRefresh}
+                disabled={loading}
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button 
+                onClick={() => setCreateModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Order
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -113,7 +134,7 @@ const OrderManager = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">
-                {pendingOrders.length}
+                {stats.pending}
               </div>
               <p className="text-xs text-gray-600">Orders awaiting completion</p>
             </CardContent>
@@ -126,7 +147,7 @@ const OrderManager = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {completedOrders.length}
+                {stats.completed}
               </div>
               <p className="text-xs text-gray-600">Orders completed today</p>
             </CardContent>
@@ -139,7 +160,7 @@ const OrderManager = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {orders.length}
+                {stats.total}
               </div>
               <p className="text-xs text-gray-600">All orders today</p>
             </CardContent>
