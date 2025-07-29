@@ -22,16 +22,47 @@ class OrderService:
         return datetime.now(EASTERN_TZ)
     
     async def create_order(self, order_data: OrderCreate) -> Order:
-        """Create a new order with Eastern time"""
+        """Create a new order with Eastern time and calculated prices"""
         try:
             current_time = self.get_eastern_time()
+            
+            # Calculate prices for each item
+            order_items_with_prices = []
+            total_amount = 0.0
+            
+            for item_create in order_data.items:
+                # Find menu item to get price
+                menu_item = await self.menu_service.get_menu_item(item_create.name.lower().replace(' ', '_'))
+                if not menu_item:
+                    # Try to find by name match
+                    menu_items = await self.menu_service.get_menu()
+                    menu_item = None
+                    for mi in menu_items.items:
+                        if mi.name.lower() == item_create.name.lower():
+                            menu_item = mi
+                            break
+                
+                if not menu_item:
+                    raise ValueError(f"Menu item '{item_create.name}' not found")
+                
+                subtotal = menu_item.price * item_create.quantity
+                order_item = OrderItem(
+                    name=item_create.name,
+                    quantity=item_create.quantity,
+                    price=menu_item.price,
+                    subtotal=subtotal
+                )
+                order_items_with_prices.append(order_item)
+                total_amount += subtotal
+            
             order = Order(
                 customerName=order_data.customerName,
                 phoneNumber=order_data.phoneNumber,
-                items=order_data.items,
+                items=order_items_with_prices,
                 paymentMethod=order_data.paymentMethod,
                 orderTime=current_time,
-                totalItems=sum(item.quantity for item in order_data.items)
+                totalItems=sum(item.quantity for item in order_items_with_prices),
+                totalAmount=round(total_amount, 2)
             )
             
             order_dict = order.dict()
