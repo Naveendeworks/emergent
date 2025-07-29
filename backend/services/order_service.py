@@ -44,6 +44,9 @@ class OrderService:
         try:
             current_time = self.get_eastern_time()
             
+            # Get next sequential order number
+            order_number = await self.get_next_order_number()
+            
             # Calculate prices for each item
             order_items_with_prices = []
             total_amount = 0.0
