@@ -405,18 +405,46 @@ def test_myorder_endpoint_returns_pricing():
     """MEDIUM PRIORITY: Test MyOrder endpoint returns orders with pricing information"""
     print_test_header("MyOrder Endpoint Returns Orders with Pricing Information")
     
-    # Use phone number from the biryani order we created
-    test_phone = "5555555555"
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    # Use a unique phone number for this test
+    test_phone = "9999999999"
     
     try:
+        # First create a fresh order with this phone number
+        test_order = {
+            "customerName": "MyOrder Test Customer",
+            "phoneNumber": test_phone,
+            "items": [
+                {"name": "Tea", "quantity": 1},      # $2.00
+                {"name": "Coffee", "quantity": 2}    # $3.00 * 2 = $6.00
+                # Total expected: $8.00
+            ],
+            "paymentMethod": "cash"
+        }
+        
+        create_response = requests.post(f"{API_URL}/orders/", json=test_order, headers=headers)
+        
+        if create_response.status_code != 201:
+            print_result(False, f"Failed to create test order: {create_response.status_code}")
+            return False
+        
+        created_order = create_response.json()
+        print_result(True, f"Created test order with phone {test_phone}")
+        
+        # Now test the MyOrder endpoint
         response = requests.get(f"{API_URL}/orders/myorder/{test_phone}")
         
         if response.status_code == 200:
             orders = response.json()
             
             if not orders:
-                print_result(True, "No orders found for test phone number (expected if previous test failed)")
-                return True
+                print_result(False, "No orders found for test phone number")
+                return False
             
             print_result(True, f"Retrieved {len(orders)} orders for phone {test_phone}")
             
@@ -434,7 +462,8 @@ def test_myorder_endpoint_returns_pricing():
                 
                 if has_total_amount and items_have_pricing:
                     orders_with_pricing += 1
-                    print_result(True, f"Order {order.get('id', 'Unknown')}: Has complete pricing information ✓")
+                    total_amount = order.get("totalAmount")
+                    print_result(True, f"Order {order.get('id', 'Unknown')}: Has complete pricing information (${total_amount:.2f}) ✓")
                 else:
                     print_result(False, f"Order {order.get('id', 'Unknown')}: Missing pricing information")
             
