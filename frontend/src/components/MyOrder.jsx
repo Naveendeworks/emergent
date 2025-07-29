@@ -185,12 +185,12 @@ const MyOrder = ({ onBack }) => {
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg flex items-center gap-2">
-                        <Hash className="h-4 w-4" />
-                        {order.orderNumber}
+                      <h3 className="font-semibold text-2xl flex items-center gap-2 text-blue-600">
+                        <Hash className="h-6 w-6" />
+                        Order #{order.orderNumber || order.id.slice(-6)}
                       </h3>
-                      <p className="text-gray-700">Customer: {order.customerName}</p>
-                      <p className="text-sm text-gray-600 flex items-center gap-1">
+                      <p className="text-gray-700 mt-1">Customer: {order.customerName}</p>
+                      <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
                         <Clock className="h-3 w-3" />
                         Ordered: {formatOrderTime(order.orderTime)}
                       </p>
