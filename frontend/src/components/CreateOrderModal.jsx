@@ -156,6 +156,9 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
     : menu.items;
 
   const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.08; // 8% tax
+  const total = subtotal + tax;
 
   const getPaymentMethodIcon = (method) => {
     switch (method) {
