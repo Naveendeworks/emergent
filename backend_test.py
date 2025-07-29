@@ -867,7 +867,7 @@ def run_enhanced_mem_famous_tests():
     """Run all enhanced Mem Famous Stall 2025 tests"""
     print(f"🚀 Starting Enhanced Mem Famous Stall 2025 System Tests")
     print(f"📅 Test run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"🏪 Testing enhanced system with category-based view orders, price analysis, and notification system")
+    print(f"🏪 Testing enhanced system with category-based view orders, price analysis, and Excel export functionality")
     
     # Get authentication token first
     if not get_auth_token():
@@ -887,6 +887,12 @@ def run_enhanced_mem_famous_tests():
         ("Price Analysis Data Structure", test_price_analysis_data_structure, "HIGH"),
         ("Revenue Calculation and Sorting", test_revenue_calculation_sorting, "HIGH"),
         ("Completed Orders Only Analysis", test_completed_orders_analysis, "HIGH"),
+        
+        # HIGH PRIORITY - Price Analysis Excel Export
+        ("Price Analysis Excel Export Authentication", test_price_analysis_excel_authentication, "HIGH"),
+        ("Price Analysis Excel Export File Generation", test_price_analysis_excel_file_generation, "HIGH"),
+        ("Price Analysis Excel Export Headers and Content", test_price_analysis_excel_headers, "HIGH"),
+        ("Price Analysis Excel Export Edge Cases", test_price_analysis_excel_edge_cases, "HIGH"),
         
         # HIGH PRIORITY - Enhanced Data Structure
         ("Orders Include Category Information", test_orders_category_information, "HIGH"),
