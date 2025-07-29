@@ -23,7 +23,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   useEffect(() => {
     if (open && order) {
       setCustomerName(order.customerName);
-      setPhoneNumber(order.phoneNumber || '');
       setPaymentMethod(order.paymentMethod || 'cash');
       setOrderItems(order.items.map(item => ({
         id: item.name.toLowerCase().replace(/\s+/g, '_'),
