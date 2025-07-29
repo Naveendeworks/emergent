@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Check, Clock, User, Edit, Trash2, Timer } from 'lucide-react';
+import { Check, Clock, User, Edit, Trash2, Timer, Hash } from 'lucide-react';
 import { formatOrderTime, formatDeliveryTime } from '../services/api';
 
 const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
