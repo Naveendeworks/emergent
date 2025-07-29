@@ -17,6 +17,7 @@ class OrderService:
             order = Order(
                 customerName=order_data.customerName,
                 items=order_data.items,
+                paymentMethod=order_data.paymentMethod,
                 totalItems=sum(item.quantity for item in order_data.items)
             )
             
