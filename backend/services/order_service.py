@@ -158,19 +158,49 @@ class OrderService:
             raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
-        """Update order with new items, customer name, phone number, and payment method"""
+        """Update order with new items, customer name, phone number, payment method, and recalculated prices"""
         try:
-            # Calculate new total items and estimated delivery time
-            total_items = sum(item.quantity for item in order_data.items)
+            # Calculate prices for each item
+            order_items_with_prices = []
+            total_amount = 0.0
+            
+            for item_create in order_data.items:
+                # Find menu item to get price
+                menu_item = await self.menu_service.get_menu_item(item_create.name.lower().replace(' ', '_'))
+                if not menu_item:
+                    # Try to find by name match
+                    menu_items = await self.menu_service.get_menu()
+                    menu_item = None
+                    for mi in menu_items.items:
+                        if mi.name.lower() == item_create.name.lower():
+                            menu_item = mi
+                            break
+                
+                if not menu_item:
+                    raise ValueError(f"Menu item '{item_create.name}' not found")
+                
+                subtotal = menu_item.price * item_create.quantity
+                order_item = OrderItem(
+                    name=item_create.name,
+                    quantity=item_create.quantity,
+                    price=menu_item.price,
+                    subtotal=subtotal
+                )
+                order_items_with_prices.append(order_item)
+                total_amount += subtotal
+            
+            # Calculate new totals and estimated delivery time
+            total_items = sum(item.quantity for item in order_items_with_prices)
             current_time = self.get_eastern_time()
             estimated_delivery = current_time + timedelta(minutes=30)
             
             update_data = {
                 "customerName": order_data.customerName,
                 "phoneNumber": order_data.phoneNumber,
-                "items": [item.dict() for item in order_data.items],
+                "items": [item.dict() for item in order_items_with_prices],
                 "paymentMethod": order_data.paymentMethod,
                 "totalItems": total_items,
+                "totalAmount": round(total_amount, 2),
                 "estimatedDeliveryTime": estimated_delivery.isoformat()
             }
             
