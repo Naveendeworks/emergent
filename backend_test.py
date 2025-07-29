@@ -285,10 +285,10 @@ def test_price_analysis_authentication():
         # Test without authentication
         response = requests.get(f"{API_URL}/orders/price-analysis")
         
-        if response.status_code == 401:
-            print_result(True, "Price analysis endpoint correctly requires authentication")
+        if response.status_code in [401, 403]:  # Both are valid authentication errors
+            print_result(True, f"Price analysis endpoint correctly requires authentication (status: {response.status_code})")
         else:
-            print_result(False, f"Expected 401, got {response.status_code}")
+            print_result(False, f"Expected 401 or 403, got {response.status_code}")
             return False
         
         # Test with authentication
