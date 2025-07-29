@@ -249,15 +249,15 @@ class OrderService:
             return {"success": False, "message": "Internal server error"}
 
     async def get_orders_by_item(self) -> List[dict]:
-        """Get orders grouped by menu item for view orders functionality"""
+        """Get orders grouped by food category for view orders functionality"""
         try:
-            # Get all pending orders with numeric orderNumber field (skip legacy orders with ORD-ABC123 format)
+            # Get all pending orders with numeric orderNumber field (skip legacy orders)
             cursor = self.collection.find({"status": "pending", "orderNumber": {"$exists": True}}).sort("orderTime", -1)
             orders = []
             async for order_doc in cursor:
                 order_doc['_id'] = str(order_doc['_id'])
                 
-                # Skip orders with non-numeric order numbers (legacy ORD-ABC123 format)
+                # Skip orders with non-numeric order numbers (legacy format)
                 order_number = order_doc.get('orderNumber', '')
                 if not str(order_number).isdigit():
                     logger.info(f"Skipping legacy order with non-numeric order number: {order_number}")
@@ -267,34 +267,59 @@ class OrderService:
                     order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
                 orders.append(order_doc)
             
-            # Group orders by items
-            item_groups = {}
+            # Get menu items to determine categories
+            menu_items = await self.menu_service.get_menu()
+            item_category_map = {item.name: item.category for item in menu_items.items}
+            
+            # Group orders by food category
+            category_groups = {}
             for order in orders:
                 for item in order.get('items', []):
                     item_name = item.get('name')
-                    if item_name not in item_groups:
-                        item_groups[item_name] = {
+                    # Get category from menu service, default to 'Other' if not found
+                    category = item_category_map.get(item_name, 'Other')
+                    
+                    if category not in category_groups:
+                        category_groups[category] = {
+                            'category_name': category,
+                            'items': {}
+                        }
+                    
+                    if item_name not in category_groups[category]['items']:
+                        category_groups[category]['items'][item_name] = {
                             'item_name': item_name,
                             'total_quantity': 0,
                             'orders': []
                         }
                     
-                    item_groups[item_name]['total_quantity'] += item.get('quantity', 0)
+                    category_groups[category]['items'][item_name]['total_quantity'] += item.get('quantity', 0)
                     
-                    # Add order info if not already present
+                    # Add order info for this item
                     order_info = {
                         'order_id': order.get('id'),
                         'orderNumber': order.get('orderNumber'),
                         'customerName': order.get('customerName'),
                         'quantity': item.get('quantity'),
                         'cooking_status': item.get('cooking_status', 'not started'),
-                        'orderTime': order.get('orderTime').isoformat() if order.get('orderTime') else None
+                        'orderTime': order.get('orderTime').isoformat() if order.get('orderTime') else None,
+                        'price': item.get('price', 0),
+                        'subtotal': item.get('subtotal', 0)
                     }
-                    item_groups[item_name]['orders'].append(order_info)
+                    category_groups[category]['items'][item_name]['orders'].append(order_info)
             
-            return list(item_groups.values())
+            # Convert to list format for frontend
+            result = []
+            for category_name, category_data in category_groups.items():
+                items_list = list(category_data['items'].values())
+                result.append({
+                    'category_name': category_name,
+                    'items': items_list,
+                    'total_items': len(items_list)
+                })
+            
+            return result
         except Exception as e:
-            logger.error(f"Error getting orders by item: {str(e)}")
+            logger.error(f"Error getting orders by category: {str(e)}")
             raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
