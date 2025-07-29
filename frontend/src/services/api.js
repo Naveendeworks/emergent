@@ -69,6 +69,17 @@ export const ordersAPI = {
       console.error('Error fetching order stats:', error);
       throw error;
     }
+  },
+
+  // Get orders by phone number (no authentication required)
+  getOrdersByPhone: async (phoneNumber) => {
+    try {
+      const response = await axios.get(`${API}/orders/myorder/${phoneNumber}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orders by phone:', error);
+      throw error;
+    }
   }
 };
 
