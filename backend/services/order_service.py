@@ -191,13 +191,13 @@ class OrderService:
             logger.error(f"Error fetching order by number {order_number}: {str(e)}")
             raise e
 
-    async def update_item_cooking_status(self, order_id: str, item_name: str, cooking_status: str) -> bool:
-        """Update cooking status of a specific item in an order"""
+    async def update_item_cooking_status(self, order_id: str, item_name: str, cooking_status: str) -> dict:
+        """Update cooking status of a specific item in an order and auto-complete if all items are finished"""
         try:
             # Find the order first
             order_doc = await self.collection.find_one({"id": order_id})
             if not order_doc:
-                return False
+                return {"success": False, "message": "Order not found"}
             
             # Update the specific item's cooking status
             updated = False
@@ -207,18 +207,46 @@ class OrderService:
                     updated = True
                     break
             
-            if updated:
-                # Update the order in database
-                result = await self.collection.update_one(
-                    {"id": order_id},
-                    {"$set": {"items": order_doc['items']}}
-                )
-                return result.modified_count > 0
+            if not updated:
+                return {"success": False, "message": "Item not found in order"}
             
-            return False
+            # Check if all items are finished
+            all_items_finished = True
+            for item in order_doc.get('items', []):
+                if item.get('cooking_status', 'not started') != 'finished':
+                    all_items_finished = False
+                    break
+            
+            # Prepare update data
+            update_data = {"items": order_doc['items']}
+            
+            # If all items are finished, automatically complete the order
+            if all_items_finished and order_doc.get('status') == 'pending':
+                current_time = self.get_eastern_time()
+                update_data.update({
+                    "status": "completed",
+                    "completedTime": current_time.isoformat(),
+                    "actualDeliveryTime": current_time.isoformat()
+                })
+            
+            # Update the order in database
+            result = await self.collection.update_one(
+                {"id": order_id},
+                {"$set": update_data}
+            )
+            
+            if result.modified_count > 0:
+                return {
+                    "success": True,
+                    "message": f"Item '{item_name}' status updated to '{cooking_status}'",
+                    "order_auto_completed": all_items_finished and order_doc.get('status') == 'pending'
+                }
+            
+            return {"success": False, "message": "Failed to update item status"}
+            
         except Exception as e:
             logger.error(f"Error updating cooking status for item {item_name} in order {order_id}: {str(e)}")
-            raise e
+            return {"success": False, "message": "Internal server error"}
 
     async def get_orders_by_item(self) -> List[dict]:
         """Get orders grouped by menu item for view orders functionality"""
