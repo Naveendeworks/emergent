@@ -53,6 +53,78 @@ async def get_orders(
         logger.error(f"Error in get_orders endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch orders")
 
+@router.get("/stats/summary", response_model=OrderStats)
+async def get_order_stats(
+    order_service: OrderService = Depends(get_order_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Get order statistics (requires authentication)"""
+    try:
+        stats = await order_service.get_order_stats()
+        return stats
+    except Exception as e:
+        logger.error(f"Error in get_order_stats endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch order statistics")
+
+@router.get("/view-orders", response_model=List[dict])
+async def get_orders_by_item(
+    order_service: OrderService = Depends(get_order_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Get orders grouped by menu item (requires authentication)"""
+    try:
+        item_orders = await order_service.get_orders_by_item()
+        return item_orders
+    except Exception as e:
+        logger.error(f"Error in get_orders_by_item endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch orders by item")
+
+@router.get("/myorder/{order_number}", response_model=Order)
+async def get_order_by_number(
+    order_number: str,
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Get order by order number (no authentication required - customer self-service)"""
+    try:
+        # Validate order number format (should be like ORD-ABC123)
+        if not order_number.startswith('ORD-') or len(order_number) != 10:
+            raise HTTPException(status_code=400, detail="Invalid order number format")
+        
+        order = await order_service.get_order_by_number(order_number)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return order
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_order_by_number endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch order")
+
+@router.patch("/cooking-status")
+async def update_cooking_status(
+    update_data: OrderItemCookingUpdate,
+    order_service: OrderService = Depends(get_order_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Update cooking status of an item in an order (requires authentication)"""
+    try:
+        updated = await order_service.update_item_cooking_status(
+            update_data.order_id, 
+            update_data.item_name, 
+            update_data.cooking_status
+        )
+        
+        if not updated:
+            raise HTTPException(status_code=404, detail="Order or item not found")
+        
+        return {"message": "Cooking status updated successfully", "status": update_data.cooking_status}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in update_cooking_status endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update cooking status")
+
 @router.put("/{order_id}/complete", response_model=Order)
 async def complete_order(
     order_id: str,
@@ -108,19 +180,6 @@ async def get_order(
         logger.error(f"Error in get_order endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch order")
 
-@router.get("/stats/summary", response_model=OrderStats)
-async def get_order_stats(
-    order_service: OrderService = Depends(get_order_service),
-    current_user: str = Depends(get_current_user)
-):
-    """Get order statistics (requires authentication)"""
-    try:
-        stats = await order_service.get_order_stats()
-        return stats
-    except Exception as e:
-        logger.error(f"Error in get_order_stats endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch order statistics")
-
 @router.delete("/{order_id}")
 async def cancel_order(
     order_id: str,
@@ -138,62 +197,3 @@ async def cancel_order(
     except Exception as e:
         logger.error(f"Error in cancel_order endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to cancel order")
-
-@router.get("/myorder/{order_number}", response_model=Order)
-async def get_order_by_number(
-    order_number: str,
-    order_service: OrderService = Depends(get_order_service)
-):
-    """Get order by order number (no authentication required - customer self-service)"""
-    try:
-        # Validate order number format (should be like ORD-ABC123)
-        if not order_number.startswith('ORD-') or len(order_number) != 10:
-            raise HTTPException(status_code=400, detail="Invalid order number format")
-        
-        order = await order_service.get_order_by_number(order_number)
-        if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
-        
-        return order
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error in get_order_by_number endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch order")
-
-@router.get("/view-orders", response_model=List[dict])
-async def get_orders_by_item(
-    order_service: OrderService = Depends(get_order_service),
-    current_user: str = Depends(get_current_user)
-):
-    """Get orders grouped by menu item (requires authentication)"""
-    try:
-        item_orders = await order_service.get_orders_by_item()
-        return item_orders
-    except Exception as e:
-        logger.error(f"Error in get_orders_by_item endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to fetch orders by item")
-
-@router.patch("/cooking-status")
-async def update_cooking_status(
-    update_data: OrderItemCookingUpdate,
-    order_service: OrderService = Depends(get_order_service),
-    current_user: str = Depends(get_current_user)
-):
-    """Update cooking status of an item in an order (requires authentication)"""
-    try:
-        updated = await order_service.update_item_cooking_status(
-            update_data.order_id, 
-            update_data.item_name, 
-            update_data.cooking_status
-        )
-        
-        if not updated:
-            raise HTTPException(status_code=404, detail="Order or item not found")
-        
-        return {"message": "Cooking status updated successfully", "status": update_data.cooking_status}
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error in update_cooking_status endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to update cooking status")
