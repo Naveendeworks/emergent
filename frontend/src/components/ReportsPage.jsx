@@ -225,9 +225,10 @@ const ReportsPage = () => {
       </div>
 
       <Tabs defaultValue="payment" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="payment">Payment Reports</TabsTrigger>
           <TabsTrigger value="items">Item Reports</TabsTrigger>
+          <TabsTrigger value="price-analysis">Price Analysis</TabsTrigger>
         </TabsList>
 
         <TabsContent value="payment" className="space-y-4">
