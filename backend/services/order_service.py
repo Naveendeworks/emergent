@@ -118,6 +118,13 @@ class OrderService:
             orders = []
             async for order_doc in cursor:
                 order_doc['_id'] = str(order_doc['_id'])
+                
+                # Handle legacy orders without orderNumber field
+                if 'orderNumber' not in order_doc:
+                    # Skip legacy orders that don't have sequential order numbers
+                    logger.warning(f"Skipping legacy order {order_doc.get('id', 'unknown')} without orderNumber")
+                    continue
+                
                 # Convert ISO string back to datetime if needed
                 if isinstance(order_doc.get('orderTime'), str):
                     order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
