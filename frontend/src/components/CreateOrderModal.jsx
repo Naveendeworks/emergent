@@ -12,6 +12,7 @@ import { useToast } from '../hooks/use-toast';
 
 const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
   const [customerName, setCustomerName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [menu, setMenu] = useState({ items: [], categories: [] });
   const [selectedCategory, setSelectedCategory] = useState('');
