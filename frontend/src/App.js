@@ -47,6 +47,10 @@ function App() {
     setCurrentPage(page);
   };
 
+  const handleBackToDashboard = () => {
+    window.location.href = '/';
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -58,31 +62,32 @@ function App() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LoginForm onLogin={handleLogin} />} />
-          </Routes>
-        </BrowserRouter>
-        <Toaster />
-      </div>
-    );
-  }
-
   return (
     <div className="App">
-      <div className="min-h-screen bg-gray-100">
-        <Header 
-          onLogout={handleLogout} 
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-        />
-        
-        {currentPage === 'orders' && <OrderManager onLogout={handleLogout} />}
-        {currentPage === 'reports' && <ReportsPage />}
-      </div>
+      <BrowserRouter>
+        <Routes>
+          {/* Public route - accessible without authentication */}
+          <Route path="/myorder" element={<MyOrder onBack={handleBackToDashboard} />} />
+          
+          {/* Protected routes - require authentication */}
+          <Route path="/" element={
+            !isAuthenticated ? (
+              <LoginForm onLogin={handleLogin} />
+            ) : (
+              <div className="min-h-screen bg-gray-100">
+                <Header 
+                  onLogout={handleLogout} 
+                  currentPage={currentPage}
+                  onNavigate={handleNavigate}
+                />
+                
+                {currentPage === 'orders' && <OrderManager onLogout={handleLogout} />}
+                {currentPage === 'reports' && <ReportsPage />}
+              </div>
+            )
+          } />
+        </Routes>
+      </BrowserRouter>
       <Toaster />
     </div>
   );
