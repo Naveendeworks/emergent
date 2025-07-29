@@ -109,16 +109,28 @@ async def update_cooking_status(
 ):
     """Update cooking status of an item in an order (requires authentication)"""
     try:
-        updated = await order_service.update_item_cooking_status(
+        result = await order_service.update_item_cooking_status(
             update_data.order_id, 
             update_data.item_name, 
             update_data.cooking_status
         )
         
-        if not updated:
-            raise HTTPException(status_code=404, detail="Order or item not found")
+        if not result["success"]:
+            if "not found" in result["message"]:
+                raise HTTPException(status_code=404, detail=result["message"])
+            else:
+                raise HTTPException(status_code=400, detail=result["message"])
         
-        return {"message": "Cooking status updated successfully", "status": update_data.cooking_status}
+        response = {
+            "message": result["message"],
+            "status": update_data.cooking_status
+        }
+        
+        if result.get("order_auto_completed"):
+            response["order_auto_completed"] = True
+            response["message"] += " - Order automatically completed!"
+        
+        return response
     except HTTPException:
         raise
     except Exception as e:
