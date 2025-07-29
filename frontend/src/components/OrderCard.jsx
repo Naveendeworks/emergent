@@ -2,8 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Check, Clock, User, Edit, Trash2, CreditCard } from 'lucide-react';
-import { formatOrderTime } from '../services/api';
+import { Check, Clock, User, Edit, Trash2, Timer } from 'lucide-react';
+import { formatOrderTime, formatDeliveryTime } from '../services/api';
 
 const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
   const handleComplete = () => {
@@ -46,6 +46,40 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
     }
   };
 
+  const getDeliveryInfo = () => {
+    if (order.status === 'completed' && order.orderTime && order.completedTime) {
+      const orderTime = new Date(order.orderTime);
+      const completedTime = new Date(order.completedTime);
+      const deliveryMinutes = (completedTime - orderTime) / (1000 * 60);
+      return {
+        type: 'delivered',
+        time: formatDeliveryTime(deliveryMinutes),
+        color: 'text-green-600'
+      };
+    } else if (order.status === 'pending' && order.estimatedDeliveryTime) {
+      const now = new Date();
+      const estimated = new Date(order.estimatedDeliveryTime);
+      const remainingMinutes = (estimated - now) / (1000 * 60);
+      
+      if (remainingMinutes > 0) {
+        return {
+          type: 'estimated',
+          time: formatDeliveryTime(remainingMinutes),
+          color: 'text-orange-600'
+        };
+      } else {
+        return {
+          type: 'overdue',
+          time: formatDeliveryTime(Math.abs(remainingMinutes)),
+          color: 'text-red-600'
+        };
+      }
+    }
+    return null;
+  };
+
+  const deliveryInfo = getDeliveryInfo();
+
   return (
     <Card className={`transition-all duration-200 hover:shadow-lg ${
       order.status === 'completed' ? 'opacity-60 bg-gray-50' : 'bg-white'
@@ -65,6 +99,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
             </span>
           </div>
         </div>
+        
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-2">
             <Badge variant={order.status === 'completed' ? 'secondary' : 'default'}>
@@ -79,6 +114,18 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
             {order.totalItems} items total
           </span>
         </div>
+
+        {/* Delivery Time Info */}
+        {deliveryInfo && (
+          <div className="flex items-center gap-2 mt-2">
+            <Timer className="h-4 w-4 text-gray-500" />
+            <span className={`text-sm font-medium ${deliveryInfo.color}`}>
+              {deliveryInfo.type === 'delivered' && `Delivered in ${deliveryInfo.time}`}
+              {deliveryInfo.type === 'estimated' && `Est. ${deliveryInfo.time} remaining`}
+              {deliveryInfo.type === 'overdue' && `Overdue by ${deliveryInfo.time}`}
+            </span>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent>

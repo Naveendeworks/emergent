@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button } from './ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, BarChart3, ClipboardList } from 'lucide-react';
 import { authService } from '../services/auth';
 
-const Header = ({ onLogout }) => {
+const Header = ({ onLogout, currentPage, onNavigate }) => {
   const username = authService.getUsername();
 
   const handleLogout = () => {
@@ -21,6 +21,26 @@ const Header = ({ onLogout }) => {
           </div>
           
           <div className="flex items-center gap-4">
+            {/* Navigation Buttons */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant={currentPage === 'orders' ? 'default' : 'outline'}
+                onClick={() => onNavigate('orders')}
+                className="flex items-center gap-2"
+              >
+                <ClipboardList className="h-4 w-4" />
+                Orders
+              </Button>
+              <Button
+                variant={currentPage === 'reports' ? 'default' : 'outline'}
+                onClick={() => onNavigate('reports')}
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Reports
+              </Button>
+            </div>
+            
             <div className="flex items-center gap-2 text-gray-600">
               <User className="h-4 w-4" />
               <span className="font-medium">{username}</span>
