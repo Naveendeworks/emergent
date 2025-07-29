@@ -14,6 +14,7 @@ class OrderItem(BaseModel):
 
 class OrderCreate(BaseModel):
     customerName: str = Field(..., min_length=1, max_length=100)
+    phoneNumber: str = Field(..., min_length=10, max_length=15)
     items: List[OrderItem] = Field(..., min_items=1)
     paymentMethod: str = Field(..., pattern='^(zelle|cashapp|cash)$')
     
