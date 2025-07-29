@@ -22,7 +22,7 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     customerName: str = Field(..., min_length=1, max_length=100)
     phoneNumber: Optional[str] = Field(None, min_length=10, max_length=15)
-    items: List[OrderItem] = Field(..., min_items=1)
+    items: List[OrderItemCreate] = Field(..., min_items=1)
     paymentMethod: str = Field(..., pattern='^(zelle|cashapp|cash)$')
     
     @validator('items')
