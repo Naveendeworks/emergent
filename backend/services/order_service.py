@@ -119,10 +119,16 @@ class OrderService:
             async for order_doc in cursor:
                 order_doc['_id'] = str(order_doc['_id'])
                 
-                # Handle legacy orders without orderNumber field
+                # Handle legacy orders without orderNumber field or with non-numeric orderNumber
                 if 'orderNumber' not in order_doc:
-                    # Skip legacy orders that don't have sequential order numbers
-                    logger.warning(f"Skipping legacy order {order_doc.get('id', 'unknown')} without orderNumber")
+                    # Skip legacy orders that don't have orderNumber field at all
+                    logger.warning(f"Skipping legacy order {order_doc.get('id', 'unknown')} without orderNumber field")
+                    continue
+                
+                order_number = order_doc.get('orderNumber', '')
+                if not str(order_number).isdigit():
+                    # Skip legacy orders with ORD-ABC123 format
+                    logger.warning(f"Skipping legacy order {order_doc.get('id', 'unknown')} with non-numeric orderNumber: {order_number}")
                     continue
                 
                 # Convert ISO string back to datetime if needed
