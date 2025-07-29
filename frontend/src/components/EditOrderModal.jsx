@@ -6,12 +6,13 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent } from './ui/card';
-import { Plus, Minus, Edit, X } from 'lucide-react';
+import { Plus, Minus, Edit, X, CreditCard } from 'lucide-react';
 import { menuAPI, ordersAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   const [customerName, setCustomerName] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [menu, setMenu] = useState({ items: [], categories: [] });
   const [selectedCategory, setSelectedCategory] = useState('');
   const [orderItems, setOrderItems] = useState([]);
@@ -22,6 +23,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   useEffect(() => {
     if (open && order) {
       setCustomerName(order.customerName);
+      setPaymentMethod(order.paymentMethod || 'cash');
       setOrderItems(order.items.map(item => ({
         id: item.name.toLowerCase().replace(/\s+/g, '_'),
         name: item.name,
@@ -107,6 +109,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       setUpdating(true);
       const orderData = {
         customerName: customerName.trim(),
+        paymentMethod: paymentMethod,
         items: orderItems.map(item => ({
           name: item.name,
           quantity: item.quantity
@@ -144,6 +147,19 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
 
   const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const getPaymentMethodIcon = (method) => {
+    switch (method) {
+      case 'zelle':
+        return '💳';
+      case 'cashapp':
+        return '💰';
+      case 'cash':
+        return '💵';
+      default:
+        return '💳';
+    }
+  };
+
   if (!order) return null;
 
   return (
@@ -169,9 +185,45 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
             />
           </div>
 
+          {/* Payment Method */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Payment Method
+            </Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cash">
+                  <span className="flex items-center gap-2">
+                    💵 Cash
+                  </span>
+                </SelectItem>
+                <SelectItem value="zelle">
+                  <span className="flex items-center gap-2">
+                    💳 Zelle
+                  </span>
+                </SelectItem>
+                <SelectItem value="cashapp">
+                  <span className="flex items-center gap-2">
+                    💰 Cash App
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Current Order Items */}
           <div className="space-y-3">
-            <Label>Current Order Items ({totalItems} items)</Label>
+            <div className="flex items-center justify-between">
+              <Label>Current Order Items ({totalItems} items)</Label>
+              <Badge variant="outline" className="flex items-center gap-1">
+                {getPaymentMethodIcon(paymentMethod)}
+                {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+              </Badge>
+            </div>
             {orderItems.length === 0 ? (
               <div className="text-center py-4 text-gray-500">
                 No items in order
