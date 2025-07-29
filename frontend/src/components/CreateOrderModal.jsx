@@ -263,11 +263,14 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
                   <Card key={item.id} className="cursor-pointer hover:shadow-md transition-shadow">
                     <CardContent className="p-3">
                       <div className="flex justify-between items-start mb-2">
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-medium text-sm">{item.name}</h4>
                           <p className="text-xs text-gray-600">
                             Chef: {item.chef}
                             {item.sousChef && ` • Sous: ${item.sousChef}`}
+                          </p>
+                          <p className="text-sm font-semibold text-green-600 mt-1">
+                            ${item.price?.toFixed(2) || '0.00'}
                           </p>
                         </div>
                         <Badge variant="outline" className="text-xs">
