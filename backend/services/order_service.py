@@ -1,6 +1,6 @@
 from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from models.order import Order, OrderCreate, OrderItem, OrderUpdate, OrderStats, PaymentReport, ItemReport, EASTERN_TZ
+from models.order import Order, OrderCreate, OrderItem, OrderStats, PaymentReport, ItemReport, EASTERN_TZ
 from services.notification_service import NotificationService
 from services.menu_service import MenuService
 from datetime import datetime, timedelta
