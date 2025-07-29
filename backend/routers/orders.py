@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from models.order import Order, OrderCreate, OrderStats, OrderUpdate
+from models.order import Order, OrderCreate, OrderStats, OrderItemCookingUpdate
 from services.order_service import OrderService
 from routers.auth import get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
