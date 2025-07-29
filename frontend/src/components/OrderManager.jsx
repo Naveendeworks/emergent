@@ -501,6 +501,12 @@ const OrderManager = ({ onLogout }) => {
           order={selectedOrder}
           onOrderUpdated={handleOrderUpdated}
         />
+        
+        {/* Notification System */}
+        <NotificationSystem 
+          notifications={notifications}
+          onDismiss={dismissNotification}
+        />
       </div>
     </div>
   );
