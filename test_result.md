@@ -105,6 +105,21 @@
 user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component. UPDATED: Phone numbers are now OPTIONAL instead of required in the order management system. NEW PRICING FUNCTIONALITY: Updated MenuItem model to include price field, updated MenuService with prices for all items, updated OrderItem model to include price and subtotal fields, updated Order model to include totalAmount field, modified order creation and update processes to automatically calculate prices, subtotals, and totals."
 
 backend:
+  - task: "Fresh Database Testing with Complete Schema"
+    implemented: true
+    working: true
+    file: "/app/backend_test.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test creating new orders with complete schema after database cleanup to verify system works with fresh data. Test requirements: 1) Create order with complete schema (customerName, phoneNumber, items with prices, totalAmount) 2) Verify order has all pricing fields 3) Test myorder endpoint works with new order 4) Create order without phone number 5) Verify menu items return prices correctly"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - All fresh database tests passed (5/5). HIGH PRIORITY: Successfully created order with complete schema including all required fields (id, customerName, phoneNumber, items, totalAmount, status, orderTime). Order pricing calculations work correctly (Tea $2.00 x 2 + Coffee $3.00 x 1 = $7.00). MyOrder endpoint successfully retrieves new orders with complete pricing information. MEDIUM PRIORITY: Menu items return correct prices (17 items with accurate pricing). Order creation without phone number works correctly. System fully functional with clean database and maintains complete schema integrity."
+
   - task: "Menu Items Include Prices"
     implemented: true
     working: true
