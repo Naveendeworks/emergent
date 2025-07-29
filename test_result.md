@@ -165,6 +165,96 @@ backend:
         - agent: "testing"
         - comment: "✅ PASSED - Phone number model validation correctly enforces 10-15 character limit. OrderCreate model properly validates phone number field with min_length=10 and max_length=15. Validation works correctly in both create and update operations"
 
+  - task: "Optional Phone Number - Order Creation WITHOUT Phone"
+    implemented: true
+    working: true
+    file: "/app/backend/models/order.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test order creation WITHOUT phone number (should succeed) - phone numbers are now optional"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order creation works correctly WITHOUT phone number. OrderCreate model has phoneNumber: Optional[str] = Field(None) and Order model has phoneNumber: Optional[str] = None. Successfully created order without phone number, phoneNumber field is None as expected."
+
+  - task: "Optional Phone Number - Order Creation WITH Valid Phone"
+    implemented: true
+    working: true
+    file: "/app/backend/models/order.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test order creation WITH valid phone number (should succeed) - validation still applies when phone provided"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order creation works correctly WITH valid phone numbers (10-15 digits). Tested with phones: 1234567890, 12345678901, 123456789012345. All created successfully with correct phone numbers stored."
+
+  - task: "Optional Phone Number - Order Creation WITH Invalid Phone"
+    implemented: true
+    working: true
+    file: "/app/backend/models/order.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test order creation WITH invalid phone number (should fail validation) - validation still enforced when phone provided"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order creation correctly rejects invalid phone numbers. Tested with phones: 123456789 (too short), 1234567890123456 (too long). Both correctly rejected with 422 validation error."
+
+  - task: "Optional Phone Number - Order Update WITHOUT Phone"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test order update without phone number (should work) - orders can be updated without phone numbers"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order update works correctly without phone number. Successfully updated order created without phone, phoneNumber remains None as expected."
+
+  - task: "Optional Phone Number - Order Update WITH Phone"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test order update with phone number (should work) - phone numbers can be added/updated"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order update works correctly with phone number. Successfully updated order with new phone number 9876543210, phone number updated correctly."
+
+  - task: "Optional Phone Number - MyOrder Endpoint Compatibility"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/orders.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test myorder endpoint still works for orders with phone numbers - existing functionality preserved"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - MyOrder endpoint works correctly with phone numbers. Successfully retrieves orders by phone number, validates phone format, rejects invalid phones with 400 status. Created test order with phone 5555555555 and successfully retrieved it via /api/orders/myorder/5555555555 endpoint."
+
 frontend:
   - task: "Authentication System"
     implemented: true
