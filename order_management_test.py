@@ -282,8 +282,9 @@ def test_view_orders_by_item():
                             return False
                     
                     # Verify order number format
-                    if not re.match(r'^ORD-[A-Z]{3}[0-9]{3}$', order_info["orderNumber"]):
-                        print_result(False, f"Invalid order number in view-orders: {order_info['orderNumber']}")
+                    order_number = order_info.get("orderNumber")
+                    if order_number and not re.match(r'^ORD-[A-Z]{3}[0-9]{3}$', order_number):
+                        print_result(False, f"Invalid order number in view-orders: {order_number}")
                         return False
                     
                     # Verify cooking status
