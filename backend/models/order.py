@@ -4,9 +4,18 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 import uuid
 import pytz
+import random
+import string
 
 # Eastern Time timezone
 EASTERN_TZ = pytz.timezone('US/Eastern')
+
+def generate_order_number() -> str:
+    """Generate a unique order number like ORD-ABC123"""
+    # Generate 3 random uppercase letters + 3 random numbers
+    letters = ''.join(random.choices(string.ascii_uppercase, k=3))
+    numbers = ''.join(random.choices(string.digits, k=3))
+    return f"ORD-{letters}{numbers}"
 
 class OrderItem(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
