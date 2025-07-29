@@ -265,11 +265,23 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {orderItems.map(item => (
                   <div key={item.name} className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
-                    <div>
-                      <span className="font-medium">{item.name}</span>
-                      {item.chef && <p className="text-xs text-gray-600">Chef: {item.chef}</p>}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="font-medium">{item.name}</span>
+                          {item.chef && <p className="text-xs text-gray-600">Chef: {item.chef}</p>}
+                          <p className="text-xs text-green-600 font-medium">
+                            ${(item.price || 0).toFixed(2)} each
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-green-600">
+                            ${((item.price || 0) * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 ml-3">
                       <Button
                         size="sm"
                         variant="outline"
