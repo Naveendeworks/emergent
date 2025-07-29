@@ -358,19 +358,9 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
               <h3 className="font-semibold text-blue-900 mb-3">Order Summary</h3>
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal ({totalItems} items):</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Tax (8%):</span>
-                  <span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="border-t border-blue-300 pt-2">
-                  <div className="flex justify-between font-bold text-blue-900">
-                    <span>Total:</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
+                <div className="flex justify-between font-bold text-blue-900">
+                  <span>Total ({totalItems} items):</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-sm text-blue-700">Payment Method:</span>
