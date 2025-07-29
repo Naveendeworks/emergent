@@ -274,6 +274,8 @@ const OrderManager = () => {
                     key={order.id} 
                     order={order} 
                     onComplete={handleCompleteOrder}
+                    onEdit={handleEditOrder}
+                    onCancel={handleCancelOrder}
                   />
                 ))}
               </div>
