@@ -185,7 +185,8 @@ class OrderService:
                     name=item_create.name,
                     quantity=item_create.quantity,
                     price=menu_item.price,
-                    subtotal=subtotal
+                    subtotal=subtotal,
+                    cooking_status="not started"
                 )
                 order_items_with_prices.append(order_item)
                 total_amount += subtotal
