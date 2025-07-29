@@ -138,3 +138,22 @@ async def cancel_order(
     except Exception as e:
         logger.error(f"Error in cancel_order endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to cancel order")
+
+@router.get("/myorder/{phone_number}", response_model=List[Order])
+async def get_orders_by_phone(
+    phone_number: str,
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Get orders by phone number (no authentication required - customer self-service)"""
+    try:
+        # Validate phone number format (basic validation)
+        if len(phone_number) < 10 or len(phone_number) > 15:
+            raise HTTPException(status_code=400, detail="Invalid phone number format")
+        
+        orders = await order_service.get_orders_by_phone(phone_number)
+        return orders
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_orders_by_phone endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch orders")
