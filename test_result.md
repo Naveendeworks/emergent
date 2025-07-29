@@ -246,6 +246,43 @@ backend:
         - agent: "testing"
         - comment: "✅ PASSED - Complete end-to-end integration test PASSED! Step 1: Created integration test order #33. Step 2: Order found in view orders with correct cooking status. Step 3: Updated cooking status to 'cooking'. Step 4: Customer successfully looked up order by simple number. Step 5: All pricing functionality preserved ($3.00 for Coffee). Complete flow from order creation to customer lookup working seamlessly with sequential numbering system."
 
+frontend:
+  - task: "Order Card Cooking Status Controls"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderCard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Added cooking status controls directly to OrderCard component. Each order item shows current status and dropdown to update status (not started/cooking/finished) with real-time updates."
+
+  - task: "Automatic Order Completion UI Feedback"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderCard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "UI provides feedback when orders are automatically completed. Toast notifications show when all items are finished and order auto-completes. Orders refresh automatically to show completed status."
+
+  - task: "Enhanced Order Item Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderCard.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Order cards now show detailed item information including cooking status badges, quantity, and individual pricing. Status is color-coded (green=finished, yellow=cooking, gray=not started)."
+
   - task: "Legacy Order Handling"
     implemented: true
     working: true
