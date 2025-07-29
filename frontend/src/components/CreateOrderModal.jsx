@@ -293,6 +293,38 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             </div>
           )}
 
+          {/* Payment Method Selection - moved to end before checkout */}
+          {orderItems.length > 0 && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Payment Method
+              </Label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">
+                    <span className="flex items-center gap-2">
+                      💵 Cash
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="zelle">
+                    <span className="flex items-center gap-2">
+                      💳 Zelle
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="cashapp">
+                    <span className="flex items-center gap-2">
+                      💰 Cash App
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Checkout Summary */}
           {orderItems.length > 0 && (
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
