@@ -102,9 +102,113 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component. UPDATED: Phone numbers are now OPTIONAL instead of required in the order management system."
+user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component. UPDATED: Phone numbers are now OPTIONAL instead of required in the order management system. NEW PRICING FUNCTIONALITY: Updated MenuItem model to include price field, updated MenuService with prices for all items, updated OrderItem model to include price and subtotal fields, updated Order model to include totalAmount field, modified order creation and update processes to automatically calculate prices, subtotals, and totals."
 
 backend:
+  - task: "Menu Items Include Prices"
+    implemented: true
+    working: true
+    file: "/app/backend/services/menu_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test menu items now include prices with correct values from pricing list (Tea: $2.00, Coffee: $3.00, Biryani items: $12.99, etc.)"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - All 17 menu items include price field with correct values. Verified pricing matches expected list: Tea $2.00, Coffee $3.00, Chicken/Goat Biryani $12.99, Dosa $10.99, Idly $9.99, Chicken 65 $9.99, Fish Pulusu $12.99, Goat Curry $14.99, Keema $15.99, Paya Soup $8.99, Nellore Kaaram $10.99, Aloo Masala $6.99, Chaat Items $5.99, Bajji $6.99, Punugulu $5.99, Fruits Cutting $5.99. All prices correctly implemented in MenuService."
+
+  - task: "Order Creation Calculates Prices and Totals"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test order creation automatically calculates prices, subtotals, and total amounts from simplified OrderItemCreate (name + quantity)"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order creation correctly calculates all pricing automatically. Frontend sends simplified OrderItemCreate (name + quantity), backend looks up menu prices and calculates: individual item prices, subtotals (price × quantity), and totalAmount (sum of subtotals). Tested with Tea ($2.00 × 2 = $4.00) + Coffee ($3.00 × 1 = $3.00) = $7.00 total. All calculations accurate."
+
+  - task: "Order Update Recalculates Prices and Totals"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test order update recalculates prices and totals when items are changed"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Order update correctly recalculates all pricing when items change. Updated order from Tea/Coffee to Chicken Biryani ($12.99 × 1) + Dosa ($10.99 × 2) = $34.97 total. All item prices, subtotals, and totalAmount recalculated correctly. Pricing updates work seamlessly with order modifications."
+
+  - task: "Invalid Menu Items Rejected During Order Creation"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: Test that invalid menu items are rejected during order creation with proper error handling"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Invalid menu items correctly rejected during order creation. Tested with 'Invalid Item' name, system properly throws ValueError 'Menu item not found' and returns 500 status. Order creation fails gracefully when menu items don't exist, preventing orders with invalid items."
+
+  - task: "Orders Display Individual Item Prices and Subtotals"
+    implemented: true
+    working: true
+    file: "/app/backend/models/order.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test orders display individual item prices, quantities, and subtotals in response"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Orders correctly display all pricing information. Each OrderItem includes: name, quantity, price (per item), and subtotal (price × quantity). Order includes totalAmount field. Tested with Chicken Biryani + Goat Biryani order, all fields present and correctly calculated. Complete pricing transparency in order responses."
+
+  - task: "MyOrder Endpoint Returns Orders with Pricing Information"
+    implemented: true
+    working: true
+    file: "/app/backend/routers/orders.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test MyOrder endpoint returns orders with complete pricing information for customer self-service"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - MyOrder endpoint correctly returns orders with complete pricing information. Created test order with phone 9999999999 (Tea + Coffee = $8.00), successfully retrieved via /api/orders/myorder/{phone} endpoint. All returned orders include totalAmount and items with price/subtotal fields. Customer self-service pricing display working correctly."
+
+  - task: "Optional Phone Number Compatibility with Pricing"
+    implemented: true
+    working: true
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "MEDIUM PRIORITY: Test that optional phone number functionality still works correctly with new pricing features"
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Optional phone number functionality fully compatible with pricing features. Created order without phone number, pricing calculated correctly (Tea $2.00), phoneNumber field correctly set to None. All existing phone number functionality preserved while adding pricing calculations."
   - task: "Order Creation with Phone Number Validation"
     implemented: true
     working: true
