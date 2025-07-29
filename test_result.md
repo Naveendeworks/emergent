@@ -837,14 +837,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Cooking Status Updates"
-    - "Automatic Order Completion" 
-    - "Enhanced API Response for Status Updates"
     - "Order Card Cooking Status Controls"
     - "Automatic Order Completion UI Feedback"
     - "Enhanced Order Item Display"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
