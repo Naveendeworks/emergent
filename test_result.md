@@ -562,14 +562,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend Menu Item Pricing Display"
-    - "Frontend Order Creation Pricing Calculations"
-    - "Frontend Order Editing Pricing Updates"
-    - "Frontend Customer MyOrder Page Pricing"
-    - "Frontend UI/UX Pricing Features"
-    - "Frontend Integration Testing End-to-End"
+    - "Fresh Database Testing with Complete Schema"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
