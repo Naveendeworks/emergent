@@ -391,6 +391,147 @@ const ReportsPage = () => {
             )}
           </div>
         </TabsContent>
+
+        <TabsContent value="price-analysis" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-semibold">Price Analysis & Revenue</h2>
+            </div>
+            <Button
+              onClick={handleDownloadPriceAnalysis}
+              disabled={downloadingPriceAnalysis || loading}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Download className={`h-4 w-4 mr-2 ${downloadingPriceAnalysis ? 'animate-spin' : ''}`} />
+              {downloadingPriceAnalysis ? 'Exporting...' : 'Export Excel'}
+            </Button>
+          </div>
+
+          {/* Price Analysis Summary Cards */}
+          {priceAnalysis && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  <DollarSign className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">
+                    ${priceAnalysis.total_revenue?.toFixed(2) || '0.00'}
+                  </div>
+                  <p className="text-xs text-gray-600">All completed orders</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Items Sold</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {priceAnalysis.total_items_sold || 0}
+                  </div>
+                  <p className="text-xs text-gray-600">Total quantity</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-purple-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-purple-600">
+                    ${priceAnalysis.average_order_value?.toFixed(2) || '0.00'}
+                  </div>
+                  <p className="text-xs text-gray-600">Per order</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Menu Items</CardTitle>
+                  <FileSpreadsheet className="h-4 w-4 text-orange-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {priceAnalysis.items?.length || 0}
+                  </div>
+                  <p className="text-xs text-gray-600">With sales</p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          <div className="grid gap-4">
+            {loading ? (
+              <Card>
+                <CardContent className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <span className="ml-2">Loading price analysis...</span>
+                </CardContent>
+              </Card>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Item Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Unit Price</TableHead>
+                    <TableHead>Quantity Sold</TableHead>
+                    <TableHead>Total Revenue</TableHead>
+                    <TableHead>Orders</TableHead>
+                    <TableHead>Avg per Order</TableHead>
+                    <TableHead>Revenue %</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {priceAnalysis?.items?.map((item, index) => (
+                    <TableRow key={item.item_name}>
+                      <TableCell className="font-medium">{item.item_name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {item.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-green-600 font-medium">
+                        ${item.unit_price?.toFixed(2) || '0.00'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-blue-600">
+                          {item.total_quantity || 0}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-green-600 font-bold">
+                        ${item.total_revenue?.toFixed(2) || '0.00'}
+                      </TableCell>
+                      <TableCell>{item.order_count || 0}</TableCell>
+                      <TableCell>
+                        {item.order_count > 0 ? (item.total_quantity / item.order_count).toFixed(1) : '0.0'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs ${
+                            index < 3 ? 'text-green-600 bg-green-50' : 
+                            index < 6 ? 'text-blue-600 bg-blue-50' : 
+                            'text-gray-600 bg-gray-50'
+                          }`}
+                        >
+                          {priceAnalysis.total_revenue > 0 
+                            ? ((item.total_revenue / priceAnalysis.total_revenue) * 100).toFixed(1)
+                            : '0.0'
+                          }%
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  )) || []}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
