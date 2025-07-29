@@ -3,25 +3,25 @@ from models.menu import MenuItem, MenuResponse
 
 class MenuService:
     def __init__(self):
-        # Static menu items based on the provided menu table (excluding removed items)
+        # Static menu items with prices based on the provided pricing list
         self.menu_items = [
-            MenuItem(id="dosa", name="Dosa", chef="Sunoj", sousChef="Rakesh", category="South Indian"),
-            MenuItem(id="chicken_biryani", name="Chicken Biryani", chef="Nachu", sousChef="Sreedhar", category="Biryani"),
-            MenuItem(id="goat_biryani", name="Goat Biryani", chef="Mario", sousChef="Rakesh", category="Biryani"),
-            MenuItem(id="goat_curry", name="Goat Curry", chef="Mario", category="Curry"),
-            MenuItem(id="fish_pulusu", name="Fish Pulusu", chef="Sunoj", category="Fish"),
-            MenuItem(id="chicken_65", name="Chicken 65", chef="Sunoj", sousChef="Jnet", category="Starters"),
-            MenuItem(id="idly", name="Idly", chef="Jose", sousChef="Ranjitha Mom", category="South Indian"),
-            MenuItem(id="coffee", name="Coffee", chef="Ravi Mom", category="Beverages"),
-            MenuItem(id="chaat_items", name="Chaat Items", chef="Bhavana", sousChef="Abhiram", category="Chaat"),
-            MenuItem(id="bajji", name="Bajji", chef="Gupta", sousChef="Akula", category="Snacks"),
-            MenuItem(id="punugulu", name="Punugulu", chef="Akula", sousChef="Bhavana(Batter)", category="Snacks"),
-            MenuItem(id="nellore_kaaram", name="Nellore Kaaram", chef="Mridula", sousChef="Sravani", category="Spicy"),
-            MenuItem(id="paya_soup", name="Paya Soup", chef="Sreedhar", sousChef="Jnet", category="Soup"),
-            MenuItem(id="keema", name="Keema", chef="Sreedhar", sousChef="Jnet", category="Meat"),
-            MenuItem(id="tea", name="Tea", chef="Dera", category="Beverages"),
-            MenuItem(id="aloo_masala", name="Aloo Masala", chef="Anusha Allu", category="Vegetarian"),
-            MenuItem(id="fruits_cutting", name="Fruits Cutting", chef="Kitchen Staff", category="Dessert")
+            MenuItem(id="dosa", name="Dosa", chef="Sunoj", sousChef="Rakesh", category="South Indian", price=10.99),
+            MenuItem(id="chicken_biryani", name="Chicken Biryani", chef="Nachu", sousChef="Sreedhar", category="Biryani", price=12.99),
+            MenuItem(id="goat_biryani", name="Goat Biryani", chef="Mario", sousChef="Rakesh", category="Biryani", price=12.99),
+            MenuItem(id="goat_curry", name="Goat Curry", chef="Mario", category="Curry", price=14.99),
+            MenuItem(id="fish_pulusu", name="Fish Pulusu", chef="Sunoj", category="Fish", price=12.99),
+            MenuItem(id="chicken_65", name="Chicken 65", chef="Sunoj", sousChef="Jnet", category="Starters", price=9.99),
+            MenuItem(id="idly", name="Idly", chef="Jose", sousChef="Ranjitha Mom", category="South Indian", price=9.99),
+            MenuItem(id="coffee", name="Coffee", chef="Ravi Mom", category="Beverages", price=3.00),
+            MenuItem(id="chaat_items", name="Chaat Items", chef="Bhavana", sousChef="Abhiram", category="Chaat", price=5.99),
+            MenuItem(id="bajji", name="Bajji", chef="Gupta", sousChef="Akula", category="Snacks", price=6.99),
+            MenuItem(id="punugulu", name="Punugulu", chef="Akula", sousChef="Bhavana(Batter)", category="Snacks", price=5.99),
+            MenuItem(id="nellore_kaaram", name="Nellore Kaaram", chef="Mridula", sousChef="Sravani", category="Spicy", price=10.99),
+            MenuItem(id="paya_soup", name="Paya Soup", chef="Sreedhar", sousChef="Jnet", category="Soup", price=8.99),
+            MenuItem(id="keema", name="Keema", chef="Sreedhar", sousChef="Jnet", category="Meat", price=15.99),
+            MenuItem(id="tea", name="Tea", chef="Dera", category="Beverages", price=2.00),
+            MenuItem(id="aloo_masala", name="Aloo Masala", chef="Anusha Allu", category="Vegetarian", price=6.99),
+            MenuItem(id="fruits_cutting", name="Fruits Cutting", chef="Kitchen Staff", category="Dessert", price=5.99)
         ]
     
     async def get_menu(self) -> MenuResponse:
