@@ -347,7 +347,7 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             </Button>
             <Button
               onClick={handleCreateOrder}
-              disabled={creating || !customerName.trim() || !phoneNumber.trim() || orderItems.length === 0}
+              disabled={creating || !customerName.trim() || orderItems.length === 0}
               className="flex-1"
             >
               {creating ? 'Creating...' : `Create Order (${totalItems} items)`}
