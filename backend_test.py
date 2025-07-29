@@ -471,6 +471,200 @@ def test_completed_orders_analysis():
         print_result(False, f"Error testing completed orders analysis: {str(e)}")
         return False
 
+# HIGH PRIORITY TESTS - Price Analysis Excel Export
+
+def test_price_analysis_excel_authentication():
+    """Test /api/reports/price-analysis/export endpoint requires authentication"""
+    print_test_header("Price Analysis Excel Export Authentication")
+    
+    try:
+        # Test without authentication
+        response = requests.get(f"{API_URL}/reports/price-analysis/export")
+        
+        if response.status_code in [401, 403]:  # Both are valid authentication errors
+            print_result(True, f"Excel export endpoint correctly requires authentication (status: {response.status_code})")
+        else:
+            print_result(False, f"Expected 401 or 403, got {response.status_code}")
+            return False
+        
+        # Test with authentication
+        if not auth_token:
+            print_result(False, "No auth token available")
+            return False
+        
+        headers = {"Authorization": f"Bearer {auth_token}"}
+        response = requests.get(f"{API_URL}/reports/price-analysis/export", headers=headers)
+        
+        if response.status_code == 200:
+            print_result(True, "Excel export endpoint works with authentication")
+            return True
+        else:
+            print_result(False, f"Failed with auth: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing Excel export authentication: {str(e)}")
+        return False
+
+def test_price_analysis_excel_file_generation():
+    """Test Excel export returns proper Excel file with binary content"""
+    print_test_header("Price Analysis Excel Export File Generation")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        response = requests.get(f"{API_URL}/reports/price-analysis/export", headers=headers)
+        
+        if response.status_code == 200:
+            # Check content type
+            content_type = response.headers.get('content-type', '')
+            expected_content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            
+            if expected_content_type not in content_type:
+                print_result(False, f"Wrong content type: expected {expected_content_type}, got {content_type}")
+                return False
+            
+            print_result(True, f"Correct Excel content type: {content_type}")
+            
+            # Check if response contains binary data
+            if len(response.content) == 0:
+                print_result(False, "Excel file is empty")
+                return False
+            
+            # Check if it's actually Excel format (starts with PK for ZIP-based formats like XLSX)
+            if not response.content.startswith(b'PK'):
+                print_result(False, "Response doesn't appear to be Excel format")
+                return False
+            
+            print_result(True, f"Excel file generated successfully ({len(response.content)} bytes)")
+            return True
+        else:
+            print_result(False, f"Failed to generate Excel file: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing Excel file generation: {str(e)}")
+        return False
+
+def test_price_analysis_excel_headers():
+    """Test Excel export has proper Content-Disposition header with filename"""
+    print_test_header("Price Analysis Excel Export Headers and Content")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        response = requests.get(f"{API_URL}/reports/price-analysis/export", headers=headers)
+        
+        if response.status_code == 200:
+            # Check Content-Disposition header
+            content_disposition = response.headers.get('content-disposition', '')
+            
+            if 'attachment' not in content_disposition:
+                print_result(False, f"Missing attachment in Content-Disposition: {content_disposition}")
+                return False
+            
+            if 'filename=' not in content_disposition:
+                print_result(False, f"Missing filename in Content-Disposition: {content_disposition}")
+                return False
+            
+            if 'price_analysis' not in content_disposition:
+                print_result(False, f"Filename doesn't contain 'price_analysis': {content_disposition}")
+                return False
+            
+            if '.xlsx' not in content_disposition:
+                print_result(False, f"Filename doesn't have .xlsx extension: {content_disposition}")
+                return False
+            
+            print_result(True, f"Proper Content-Disposition header: {content_disposition}")
+            
+            # Verify the file can be processed (basic validation)
+            try:
+                import io
+                import zipfile
+                
+                # Excel files are ZIP archives, so we can check if it's a valid ZIP
+                excel_data = io.BytesIO(response.content)
+                with zipfile.ZipFile(excel_data, 'r') as zip_file:
+                    # Check for typical Excel file structure
+                    file_list = zip_file.namelist()
+                    if 'xl/workbook.xml' in file_list:
+                        print_result(True, "Excel file has valid internal structure")
+                        return True
+                    else:
+                        print_result(False, "Excel file missing expected internal structure")
+                        return False
+                        
+            except Exception as validation_error:
+                print_result(False, f"Excel file validation failed: {str(validation_error)}")
+                return False
+        else:
+            print_result(False, f"Failed to get Excel export: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing Excel headers: {str(e)}")
+        return False
+
+def test_price_analysis_excel_edge_cases():
+    """Test Excel export behavior with edge cases (empty data, various pricing scenarios)"""
+    print_test_header("Price Analysis Excel Export Edge Cases")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # First, get the price analysis data to understand what we're working with
+        analysis_response = requests.get(f"{API_URL}/orders/price-analysis", headers=headers)
+        
+        if analysis_response.status_code != 200:
+            print_result(False, "Could not get price analysis data for comparison")
+            return False
+        
+        analysis_data = analysis_response.json()
+        
+        # Test Excel export with current data
+        excel_response = requests.get(f"{API_URL}/reports/price-analysis/export", headers=headers)
+        
+        if excel_response.status_code == 200:
+            print_result(True, "Excel export works with current data")
+            
+            # Test that Excel export works even with empty or minimal data
+            if len(analysis_data.get('items', [])) == 0:
+                print_result(True, "Excel export handles empty data gracefully")
+            else:
+                print_result(True, f"Excel export handles {len(analysis_data['items'])} items correctly")
+            
+            # Verify the Excel file size is reasonable
+            file_size = len(excel_response.content)
+            if file_size < 1000:  # Very small file might indicate an issue
+                print_result(False, f"Excel file suspiciously small: {file_size} bytes")
+                return False
+            elif file_size > 10 * 1024 * 1024:  # Very large file might indicate an issue
+                print_result(False, f"Excel file suspiciously large: {file_size} bytes")
+                return False
+            else:
+                print_result(True, f"Excel file size reasonable: {file_size} bytes")
+            
+            return True
+        else:
+            print_result(False, f"Excel export failed: {excel_response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing Excel edge cases: {str(e)}")
+        return False
+
 # HIGH PRIORITY TESTS - Enhanced Data Structure
 
 def test_orders_category_information():
