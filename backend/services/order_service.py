@@ -1,6 +1,7 @@
 from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from models.order import Order, OrderCreate, OrderUpdate, OrderStats, PaymentReport, ItemReport, EASTERN_TZ
+from services.notification_service import NotificationService
 from datetime import datetime, timedelta
 import logging
 import pytz
@@ -12,6 +13,7 @@ class OrderService:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         self.collection = db.orders
+        self.notification_service = NotificationService(db)
     
     def get_eastern_time(self):
         """Get current Eastern time"""
@@ -127,10 +129,16 @@ class OrderService:
             raise e
     
     async def complete_order(self, order_id: str) -> Optional[Order]:
-        """Mark order as completed with completion time"""
+        """Mark order as completed with completion time and create notification"""
         try:
             completion_time = self.get_eastern_time()
             
+            # Get the order first to create notification
+            order = await self.get_order_by_id(order_id)
+            if not order:
+                return None
+            
+            # Update order status in database
             result = await self.collection.update_one(
                 {"id": order_id},
                 {"$set": {
@@ -141,6 +149,14 @@ class OrderService:
             )
             
             if result.modified_count > 0:
+                # Create notification for customer
+                try:
+                    notification = await self.notification_service.create_order_ready_notification(order)
+                    logger.info(f"Created notification for order {order_id}: {notification.id}")
+                except Exception as notification_error:
+                    logger.error(f"Failed to create notification for order {order_id}: {str(notification_error)}")
+                    # Don't fail the order completion if notification fails
+                
                 return await self.get_order_by_id(order_id)
             return None
         except Exception as e:
