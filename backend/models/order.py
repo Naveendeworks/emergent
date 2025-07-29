@@ -25,7 +25,7 @@ class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     customerName: str
     items: List[OrderItem]
-    status: str = Field(default='pending', regex='^(pending|completed)$')
+    status: str = Field(default='pending', pattern='^(pending|completed)$')
     orderTime: datetime = Field(default_factory=datetime.utcnow)
     totalItems: int = Field(default=0)
     
