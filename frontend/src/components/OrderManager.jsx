@@ -89,6 +89,15 @@ const OrderManager = ({ onLogout }) => {
     }
   };
 
+  const handleOrderUpdated = () => {
+    // Reload all data when an order is updated
+    loadOrders();
+    loadStats();
+    if (activeTab === 'view-orders') {
+      loadViewOrdersData();
+    }
+  };
+
   const handleCompleteOrder = async (orderId) => {
     try {
       const updatedOrder = await ordersAPI.completeOrder(orderId);
