@@ -164,6 +164,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   );
 
   const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
+  const total = orderItems.reduce((sum, item) => sum + ((item.price || 0) * item.quantity), 0);
 
   const getPaymentMethodIcon = (method) => {
     switch (method) {
