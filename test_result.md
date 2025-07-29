@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the new phone number functionality in the order management system. I've added phone number support to orders: Updated order model to include phoneNumber field (required, 10-15 characters), Modified create and update order endpoints to accept phoneNumber, Added new endpoint `/api/orders/myorder/{phone_number}` for customer self-service (no authentication required)"
+user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component."
 
 backend:
   - task: "Order Creation with Phone Number Validation"
