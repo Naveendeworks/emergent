@@ -145,13 +145,25 @@ const OrderManager = ({ onLogout }) => {
     setEditModalOpen(true);
   };
 
-  const handleOrderUpdated = (updatedOrder) => {
-    setOrders(prevOrders => 
-      prevOrders.map(order => 
-        order.id === updatedOrder.id ? updatedOrder : order
-      )
-    );
+  const handleOrderUpdated = (updatedOrder = null) => {
+    if (updatedOrder) {
+      // Update specific order if provided
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.id === updatedOrder.id ? updatedOrder : order
+        )
+      );
+    } else {
+      // Reload all orders if no specific order provided
+      loadOrders();
+    }
+    
     loadStats();
+    
+    // Reload view orders data if on that tab
+    if (activeTab === 'view-orders') {
+      loadViewOrdersData();
+    }
   };
 
   const handleCancelOrder = async (orderId) => {
