@@ -369,7 +369,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
             </Button>
             <Button
               onClick={handleUpdateOrder}
-              disabled={updating || !customerName.trim() || !phoneNumber.trim() || orderItems.length === 0}
+              disabled={updating || !customerName.trim() || orderItems.length === 0}
               className="flex-1"
             >
               {updating ? 'Updating...' : `Update Order (${totalItems} items)`}
