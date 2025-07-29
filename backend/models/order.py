@@ -60,7 +60,7 @@ class CookingStatusSummary(BaseModel):
 
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    orderNumber: str = Field(default_factory=generate_order_number)
+    orderNumber: str
     customerName: str
     items: List[OrderItem]
     paymentMethod: str = Field(default='cash', pattern='^(zelle|cashapp|cash)$')
