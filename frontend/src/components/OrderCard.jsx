@@ -25,6 +25,34 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated }) => {
     }
   };
 
+  const handleCookingStatusUpdate = async (itemName, newStatus) => {
+    if (updatingStatus) return;
+    
+    try {
+      setUpdatingStatus(true);
+      const result = await ordersAPI.updateCookingStatus(order.id, itemName, newStatus);
+      
+      toast({
+        title: "Success",
+        description: result.message,
+        variant: result.order_auto_completed ? "default" : "default",
+      });
+
+      // Notify parent component to reload orders
+      if (onOrderUpdated) {
+        onOrderUpdated();
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update cooking status",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const getPaymentMethodIcon = (method) => {
     switch (method) {
       case 'zelle':
