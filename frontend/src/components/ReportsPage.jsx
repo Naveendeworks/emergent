@@ -5,16 +5,18 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { BarChart3, TrendingUp, DollarSign, Clock, Users, RefreshCw, Download } from 'lucide-react';
-import { reportsAPI, formatDeliveryTime } from '../services/api';
+import { BarChart3, TrendingUp, DollarSign, Clock, Users, RefreshCw, Download, FileSpreadsheet } from 'lucide-react';
+import { reportsAPI, ordersAPI, formatDeliveryTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const ReportsPage = () => {
   const [paymentReports, setPaymentReports] = useState([]);
   const [itemReports, setItemReports] = useState([]);
+  const [priceAnalysis, setPriceAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [downloadingPayment, setDownloadingPayment] = useState(false);
   const [downloadingItems, setDownloadingItems] = useState(false);
+  const [downloadingPriceAnalysis, setDownloadingPriceAnalysis] = useState(false);
   const [selectedPaymentFilter, setSelectedPaymentFilter] = useState('all');
   const [selectedItemFilter, setSelectedItemFilter] = useState('all');
   const { toast } = useToast();
