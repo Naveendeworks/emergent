@@ -457,12 +457,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Optional Phone Number - Order Creation WITHOUT Phone"
-    - "Optional Phone Number - Order Creation WITH Valid Phone"
-    - "Optional Phone Number - Order Creation WITH Invalid Phone"
-    - "Optional Phone Number - Order Update WITHOUT Phone"
-    - "Optional Phone Number - Order Update WITH Phone"
-    - "Optional Phone Number - MyOrder Endpoint Compatibility"
+    - "Menu Items Include Prices"
+    - "Order Creation Calculates Prices and Totals"
+    - "Order Update Recalculates Prices and Totals"
+    - "Invalid Menu Items Rejected During Order Creation"
+    - "Orders Display Individual Item Prices and Subtotals"
+    - "MyOrder Endpoint Returns Orders with Pricing Information"
+    - "Optional Phone Number Compatibility with Pricing"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
