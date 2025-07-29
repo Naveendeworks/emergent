@@ -138,6 +138,23 @@ const OrderManager = ({ onLogout }) => {
     setEditModalOpen(true);
   };
 
+  const addNotification = (orderNumber, customerName, itemName, quantity) => {
+    const newNotification = {
+      id: Date.now() + Math.random(),
+      orderNumber,
+      customerName,
+      itemName,
+      quantity,
+      timestamp: new Date().toISOString()
+    };
+    
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
+  const dismissNotification = (notificationId) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+  };
+
   const handleOrderUpdated = (updatedOrder = null) => {
     if (updatedOrder) {
       // Update specific order if provided
@@ -146,6 +163,28 @@ const OrderManager = ({ onLogout }) => {
           order.id === updatedOrder.id ? updatedOrder : order
         )
       );
+      
+      // Check if this is an update (not creation) and add notifications for new items
+      const existingOrder = orders.find(o => o.id === updatedOrder.id);
+      if (existingOrder) {
+        // Compare items to find new additions
+        const existingItems = existingOrder.items || [];
+        const newItems = updatedOrder.items || [];
+        
+        newItems.forEach(newItem => {
+          const existingItem = existingItems.find(item => item.name === newItem.name);
+          if (!existingItem || existingItem.quantity < newItem.quantity) {
+            const addedQuantity = existingItem ? 
+              newItem.quantity - existingItem.quantity : newItem.quantity;
+            addNotification(
+              updatedOrder.orderNumber,
+              updatedOrder.customerName,
+              newItem.name,
+              addedQuantity
+            );
+          }
+        });
+      }
     } else {
       // Reload all orders if no specific order provided
       loadOrders();
