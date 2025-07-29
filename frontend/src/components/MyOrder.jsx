@@ -4,7 +4,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Phone, Clock, Package, CreditCard, Search, ArrowBack, CheckCircle } from 'lucide-react';
+import { Phone, Clock, Package, CreditCard, Search, ArrowLeft, CheckCircle } from 'lucide-react';
 import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
