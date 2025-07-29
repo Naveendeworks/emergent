@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the complete order management system with authentication and payment methods including login/logout, order creation with different payment methods (Cash, Zelle, Cash App), order management (edit, complete, cancel), payment method display with badges, and menu integration with 17 items."
+user_problem_statement: "Test the new phone number functionality in the order management system. I've added phone number support to orders: Updated order model to include phoneNumber field (required, 10-15 characters), Modified create and update order endpoints to accept phoneNumber, Added new endpoint `/api/orders/myorder/{phone_number}` for customer self-service (no authentication required)"
 
 frontend:
   - task: "Authentication System"
