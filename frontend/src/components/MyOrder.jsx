@@ -4,13 +4,13 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Phone, Clock, Package, CreditCard, Search, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Hash, Clock, Package, CreditCard, Search, ArrowLeft, CheckCircle } from 'lucide-react';
 import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const MyOrder = ({ onBack }) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [orders, setOrders] = useState([]);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const { toast } = useToast();
