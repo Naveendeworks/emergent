@@ -92,6 +92,44 @@ const OrderManager = () => {
     loadStats();
   };
 
+  const handleEditOrder = (order) => {
+    setSelectedOrder(order);
+    setEditModalOpen(true);
+  };
+
+  const handleOrderUpdated = (updatedOrder) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === updatedOrder.id ? updatedOrder : order
+      )
+    );
+    loadStats();
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    try {
+      await ordersAPI.cancelOrder(orderId);
+      
+      // Remove order from list
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      
+      // Update stats
+      await loadStats();
+
+      toast({
+        title: "Order Cancelled",
+        description: "Order has been successfully cancelled.",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel order",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleRefresh = () => {
     loadOrders();
     loadStats();
