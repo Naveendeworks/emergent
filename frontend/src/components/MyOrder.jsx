@@ -227,6 +227,18 @@ const MyOrder = ({ onBack }) => {
                       </div>
                     </div>
 
+                    {/* Order Total */}
+                    {order.totalAmount && (
+                      <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-green-800">Order Total:</span>
+                          <span className="text-lg font-bold text-green-800">
+                            ${order.totalAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Delivery Info */}
                     {order.estimatedDeliveryTime && (
                       <div className="bg-blue-50 p-3 rounded-lg">
