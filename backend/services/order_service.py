@@ -134,14 +134,13 @@ class OrderService:
             logger.error(f"Error fetching order {order_id}: {str(e)}")
             raise e
 
-    async def get_orders_by_phone(self, phone_number: str) -> List[Order]:
-        """Get orders by phone number (for customer self-service)"""
+    async def get_order_by_number(self, order_number: str) -> Optional[Order]:
+        """Get order by order number for customer self-service"""
         try:
-            cursor = self.collection.find({"phoneNumber": phone_number}).sort("orderTime", -1)
-            orders = []
-            async for order_doc in cursor:
+            order_doc = await self.collection.find_one({"orderNumber": order_number})
+            if order_doc:
                 order_doc['_id'] = str(order_doc['_id'])
-                # Convert ISO string back to datetime if needed
+                # Convert ISO strings back to datetime if needed
                 if isinstance(order_doc.get('orderTime'), str):
                     order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
                 if isinstance(order_doc.get('completedTime'), str):
@@ -151,10 +150,81 @@ class OrderService:
                 if isinstance(order_doc.get('actualDeliveryTime'), str):
                     order_doc['actualDeliveryTime'] = datetime.fromisoformat(order_doc['actualDeliveryTime'])
                 
-                orders.append(Order(**order_doc))
-            return orders
+                return Order(**order_doc)
+            return None
         except Exception as e:
-            logger.error(f"Error fetching orders by phone {phone_number}: {str(e)}")
+            logger.error(f"Error fetching order by number {order_number}: {str(e)}")
+            raise e
+
+    async def update_item_cooking_status(self, order_id: str, item_name: str, cooking_status: str) -> bool:
+        """Update cooking status of a specific item in an order"""
+        try:
+            # Find the order first
+            order_doc = await self.collection.find_one({"id": order_id})
+            if not order_doc:
+                return False
+            
+            # Update the specific item's cooking status
+            updated = False
+            for item in order_doc.get('items', []):
+                if item.get('name') == item_name:
+                    item['cooking_status'] = cooking_status
+                    updated = True
+                    break
+            
+            if updated:
+                # Update the order in database
+                result = await self.collection.update_one(
+                    {"id": order_id},
+                    {"$set": {"items": order_doc['items']}}
+                )
+                return result.modified_count > 0
+            
+            return False
+        except Exception as e:
+            logger.error(f"Error updating cooking status for item {item_name} in order {order_id}: {str(e)}")
+            raise e
+
+    async def get_orders_by_item(self) -> List[dict]:
+        """Get orders grouped by menu item for view orders functionality"""
+        try:
+            # Get all pending orders
+            cursor = self.collection.find({"status": "pending"}).sort("orderTime", -1)
+            orders = []
+            async for order_doc in cursor:
+                order_doc['_id'] = str(order_doc['_id'])
+                if isinstance(order_doc.get('orderTime'), str):
+                    order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
+                orders.append(order_doc)
+            
+            # Group orders by items
+            item_groups = {}
+            for order in orders:
+                for item in order.get('items', []):
+                    item_name = item.get('name')
+                    if item_name not in item_groups:
+                        item_groups[item_name] = {
+                            'item_name': item_name,
+                            'total_quantity': 0,
+                            'orders': []
+                        }
+                    
+                    item_groups[item_name]['total_quantity'] += item.get('quantity', 0)
+                    
+                    # Add order info if not already present
+                    order_info = {
+                        'order_id': order.get('id'),
+                        'orderNumber': order.get('orderNumber'),
+                        'customerName': order.get('customerName'),
+                        'quantity': item.get('quantity'),
+                        'cooking_status': item.get('cooking_status', 'not started'),
+                        'orderTime': order.get('orderTime').isoformat() if order.get('orderTime') else None
+                    }
+                    item_groups[item_name]['orders'].append(order_info)
+            
+            return list(item_groups.values())
+        except Exception as e:
+            logger.error(f"Error getting orders by item: {str(e)}")
             raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
