@@ -13,8 +13,6 @@ fastapi==0.110.1
     pytz>=2023.3
     openpyxl>=3.1.2
     xlsxwriter>=3.1.9
-    twilio>=8.10.0
-    phonenumbers>=8.13.0
     tzdata>=2024.2
     motor==3.3.1
     pytest>=8.0.0
