@@ -217,8 +217,8 @@ class OrderService:
     async def get_orders_by_item(self) -> List[dict]:
         """Get orders grouped by menu item for view orders functionality"""
         try:
-            # Get all pending orders
-            cursor = self.collection.find({"status": "pending"}).sort("orderTime", -1)
+            # Get all pending orders with orderNumber field (skip legacy orders)
+            cursor = self.collection.find({"status": "pending", "orderNumber": {"$exists": True}}).sort("orderTime", -1)
             orders = []
             async for order_doc in cursor:
                 order_doc['_id'] = str(order_doc['_id'])
