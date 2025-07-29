@@ -183,15 +183,18 @@ frontend:
 
   - task: "Order Creation with Phone Number Field"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/CreateOrderModal.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "Added phone number field to CreateOrderModal with validation (10+ digits required). Updated form validation and order creation API call to include phoneNumber field."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ PASSED - Phone number field is visible in CreateOrderModal. Order creation works with valid phone numbers. Successfully created test order with phone number 1234567890. Minor: Frontend validation could be improved but core functionality works."
 
   - task: "Edit Order with Phone Number Field"
     implemented: true
