@@ -217,11 +217,18 @@ class OrderService:
     async def get_orders_by_item(self) -> List[dict]:
         """Get orders grouped by menu item for view orders functionality"""
         try:
-            # Get all pending orders with orderNumber field (skip legacy orders)
+            # Get all pending orders with numeric orderNumber field (skip legacy orders with ORD-ABC123 format)
             cursor = self.collection.find({"status": "pending", "orderNumber": {"$exists": True}}).sort("orderTime", -1)
             orders = []
             async for order_doc in cursor:
                 order_doc['_id'] = str(order_doc['_id'])
+                
+                # Skip orders with non-numeric order numbers (legacy ORD-ABC123 format)
+                order_number = order_doc.get('orderNumber', '')
+                if not str(order_number).isdigit():
+                    logger.info(f"Skipping legacy order with non-numeric order number: {order_number}")
+                    continue
+                
                 if isinstance(order_doc.get('orderTime'), str):
                     order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
                 orders.append(order_doc)
