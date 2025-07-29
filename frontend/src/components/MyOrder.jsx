@@ -69,8 +69,8 @@ const MyOrder = ({ onBack }) => {
   };
 
   const handleNewSearch = () => {
-    setPhoneNumber('');
-    setOrders([]);
+    setOrderNumber('');
+    setOrder(null);
     setSearched(false);
   };
 
