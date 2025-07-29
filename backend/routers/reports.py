@@ -74,7 +74,7 @@ async def export_payment_reports(
         
         # Return as streaming response
         return StreamingResponse(
-            io=excel_file,
+            excel_file,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f"attachment; filename={filename}"}
         )
