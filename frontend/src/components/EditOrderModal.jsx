@@ -98,6 +98,24 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       return;
     }
 
+    if (!phoneNumber.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter phone number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (phoneNumber.trim().length < 10) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid phone number (at least 10 digits)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (orderItems.length === 0) {
       toast({
         title: "Error",
@@ -111,6 +129,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       setUpdating(true);
       const orderData = {
         customerName: customerName.trim(),
+        phoneNumber: phoneNumber.trim(),
         paymentMethod: paymentMethod,
         items: orderItems.map(item => ({
           name: item.name,
