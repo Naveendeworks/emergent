@@ -14,12 +14,30 @@ class OrderService:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         self.collection = db.orders
+        self.counters_collection = db.counters  # For sequential order numbers
         self.notification_service = NotificationService(db)
         self.menu_service = MenuService()
     
     def get_eastern_time(self):
         """Get current Eastern time"""
         return datetime.now(EASTERN_TZ)
+    
+    async def get_next_order_number(self) -> str:
+        """Get the next sequential order number"""
+        try:
+            # Use findOneAndUpdate to atomically increment the counter
+            result = await self.counters_collection.find_one_and_update(
+                {"_id": "order_number"},
+                {"$inc": {"sequence_value": 1}},
+                upsert=True,
+                return_document=True
+            )
+            return str(result["sequence_value"])
+        except Exception as e:
+            logger.error(f"Error getting next order number: {str(e)}")
+            # Fallback to counting existing orders + 1
+            count = await self.collection.count_documents({})
+            return str(count + 1)
     
     async def create_order(self, order_data: OrderCreate) -> Order:
         """Create a new order with Eastern time and calculated prices"""
