@@ -204,10 +204,24 @@ const MyOrder = ({ onBack }) => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {order.items.map((item, index) => (
                           <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
-                            <span className="font-medium">{item.name}</span>
-                            <Badge variant="outline" className="text-xs">
-                              Qty: {item.quantity}
-                            </Badge>
+                            <div>
+                              <span className="font-medium">{item.name}</span>
+                              {item.price && (
+                                <p className="text-xs text-green-600">
+                                  ${item.price.toFixed(2)} each
+                                </p>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <Badge variant="outline" className="text-xs">
+                                Qty: {item.quantity}
+                              </Badge>
+                              {item.subtotal && (
+                                <p className="text-xs font-medium text-green-600">
+                                  ${item.subtotal.toFixed(2)}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
