@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 import uuid
 import pytz
+import phonenumbers
+from phonenumbers import NumberParseException
 
 # Eastern Time timezone
 EASTERN_TZ = pytz.timezone('US/Eastern')
@@ -14,6 +16,7 @@ class OrderItem(BaseModel):
 
 class OrderCreate(BaseModel):
     customerName: str = Field(..., min_length=1, max_length=100)
+    phoneNumber: str = Field(..., min_length=10, max_length=15)
     items: List[OrderItem] = Field(..., min_items=1)
     paymentMethod: str = Field(..., pattern='^(zelle|cashapp|cash)$')
     
@@ -22,6 +25,22 @@ class OrderCreate(BaseModel):
         if not v:
             raise ValueError('Order must have at least one item')
         return v
+    
+    @validator('phoneNumber')
+    def validate_phone_number(cls, v):
+        try:
+            # Parse the phone number
+            parsed = phonenumbers.parse(v, 'US')
+            
+            # Check if it's a valid number
+            if not phonenumbers.is_valid_number(parsed):
+                raise ValueError('Invalid phone number')
+            
+            # Format to E.164 format (+1XXXXXXXXXX)
+            formatted = phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+            return formatted
+        except NumberParseException:
+            raise ValueError('Invalid phone number format. Please use format: +1XXXXXXXXXX or (XXX) XXX-XXXX')
 
 class OrderUpdate(BaseModel):
     status: Optional[str] = Field(None, pattern='^(pending|completed)$')
@@ -29,6 +48,7 @@ class OrderUpdate(BaseModel):
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     customerName: str
+    phoneNumber: str
     items: List[OrderItem]
     paymentMethod: str = Field(default='cash', pattern='^(zelle|cashapp|cash)$')
     status: str = Field(default='pending', pattern='^(pending|completed)$')
@@ -38,6 +58,7 @@ class Order(BaseModel):
     actualDeliveryTime: Optional[datetime] = None
     deliveryMinutes: Optional[int] = Field(default=30)  # Default 30 min delivery
     totalItems: int = Field(default=0)
+    smsNotificationSent: bool = Field(default=False)
     
     class Config:
         allow_population_by_field_name = True

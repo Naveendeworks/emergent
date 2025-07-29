@@ -1,6 +1,7 @@
 from typing import List, Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from models.order import Order, OrderCreate, OrderUpdate, OrderStats, PaymentReport, ItemReport, EASTERN_TZ
+from services.sms_service import SMSService
 from datetime import datetime, timedelta
 import logging
 import pytz
@@ -12,17 +13,19 @@ class OrderService:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.db = db
         self.collection = db.orders
+        self.sms_service = SMSService()
     
     def get_eastern_time(self):
         """Get current Eastern time"""
         return datetime.now(EASTERN_TZ)
     
     async def create_order(self, order_data: OrderCreate) -> Order:
-        """Create a new order with Eastern time"""
+        """Create a new order with Eastern time and phone number"""
         try:
             current_time = self.get_eastern_time()
             order = Order(
                 customerName=order_data.customerName,
+                phoneNumber=order_data.phoneNumber,
                 items=order_data.items,
                 paymentMethod=order_data.paymentMethod,
                 orderTime=current_time,
@@ -99,7 +102,7 @@ class OrderService:
             raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
-        """Update order with new items, customer name, and payment method"""
+        """Update order with new items, customer name, phone number, and payment method"""
         try:
             # Calculate new total items and estimated delivery time
             total_items = sum(item.quantity for item in order_data.items)
@@ -108,6 +111,7 @@ class OrderService:
             
             update_data = {
                 "customerName": order_data.customerName,
+                "phoneNumber": order_data.phoneNumber,
                 "items": [item.dict() for item in order_data.items],
                 "paymentMethod": order_data.paymentMethod,
                 "totalItems": total_items,
@@ -127,10 +131,16 @@ class OrderService:
             raise e
     
     async def complete_order(self, order_id: str) -> Optional[Order]:
-        """Mark order as completed with completion time"""
+        """Mark order as completed with completion time and send SMS notification"""
         try:
             completion_time = self.get_eastern_time()
             
+            # Get the order first to send SMS
+            order = await self.get_order_by_id(order_id)
+            if not order:
+                return None
+            
+            # Update order status in database
             result = await self.collection.update_one(
                 {"id": order_id},
                 {"$set": {
@@ -141,6 +151,29 @@ class OrderService:
             )
             
             if result.modified_count > 0:
+                # Send SMS notification
+                try:
+                    sms_sent = self.sms_service.send_order_ready_notification(
+                        customer_name=order.customerName,
+                        phone_number=order.phoneNumber,
+                        items=order.items
+                    )
+                    
+                    # Update SMS notification status
+                    await self.collection.update_one(
+                        {"id": order_id},
+                        {"$set": {"smsNotificationSent": sms_sent}}
+                    )
+                    
+                    if sms_sent:
+                        logger.info(f"SMS notification sent successfully for order {order_id} to {order.phoneNumber}")
+                    else:
+                        logger.warning(f"Failed to send SMS notification for order {order_id} to {order.phoneNumber}")
+                        
+                except Exception as sms_error:
+                    logger.error(f"SMS notification error for order {order_id}: {str(sms_error)}")
+                    # Don't fail the order completion if SMS fails
+                
                 return await self.get_order_by_id(order_id)
             return None
         except Exception as e:
