@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from models.order import Order, OrderCreate, OrderStats
+from models.order import Order, OrderCreate, OrderStats, OrderUpdate
 from services.order_service import OrderService
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import os
@@ -67,6 +67,24 @@ async def complete_order(
         logger.error(f"Error in complete_order endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to complete order")
 
+@router.put("/{order_id}", response_model=Order)
+async def update_order(
+    order_id: str,
+    order_data: OrderCreate,
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Update order items and customer name"""
+    try:
+        order = await order_service.update_order(order_id, order_data)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        return order
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in update_order endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update order")
+
 @router.get("/{order_id}", response_model=Order)
 async def get_order(
     order_id: str,
@@ -97,18 +115,18 @@ async def get_order_stats(
         raise HTTPException(status_code=500, detail="Failed to fetch order statistics")
 
 @router.delete("/{order_id}")
-async def delete_order(
+async def cancel_order(
     order_id: str,
     order_service: OrderService = Depends(get_order_service)
 ):
-    """Delete an order (for testing purposes)"""
+    """Cancel/delete an order"""
     try:
         deleted = await order_service.delete_order(order_id)
         if not deleted:
             raise HTTPException(status_code=404, detail="Order not found")
-        return {"message": "Order deleted successfully"}
+        return {"message": "Order cancelled successfully", "order_id": order_id}
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error in delete_order endpoint: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to delete order")
+        logger.error(f"Error in cancel_order endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to cancel order")

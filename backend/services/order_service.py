@@ -58,6 +58,30 @@ class OrderService:
             logger.error(f"Error fetching order {order_id}: {str(e)}")
             raise e
     
+    async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
+        """Update order with new items and customer name"""
+        try:
+            # Calculate new total items
+            total_items = sum(item.quantity for item in order_data.items)
+            
+            update_data = {
+                "customerName": order_data.customerName,
+                "items": [item.dict() for item in order_data.items],
+                "totalItems": total_items
+            }
+            
+            result = await self.collection.update_one(
+                {"id": order_id},
+                {"$set": update_data}
+            )
+            
+            if result.modified_count > 0:
+                return await self.get_order_by_id(order_id)
+            return None
+        except Exception as e:
+            logger.error(f"Error updating order {order_id}: {str(e)}")
+            raise e
+    
     async def complete_order(self, order_id: str) -> Optional[Order]:
         """Mark order as completed"""
         try:
@@ -103,7 +127,7 @@ class OrderService:
             raise e
     
     async def delete_order(self, order_id: str) -> bool:
-        """Delete an order (for testing purposes)"""
+        """Delete/cancel an order"""
         try:
             result = await self.collection.delete_one({"id": order_id})
             return result.deleted_count > 0

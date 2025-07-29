@@ -27,6 +27,17 @@ export const ordersAPI = {
     }
   },
 
+  // Update existing order
+  updateOrder: async (orderId, orderData) => {
+    try {
+      const response = await axios.put(`${API}/orders/${orderId}`, orderData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating order:', error);
+      throw error;
+    }
+  },
+
   // Mark order as complete
   completeOrder: async (orderId) => {
     try {
@@ -34,6 +45,17 @@ export const ordersAPI = {
       return response.data;
     } catch (error) {
       console.error('Error completing order:', error);
+      throw error;
+    }
+  },
+
+  // Cancel order
+  cancelOrder: async (orderId) => {
+    try {
+      const response = await axios.delete(`${API}/orders/${orderId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error cancelling order:', error);
       throw error;
     }
   },
