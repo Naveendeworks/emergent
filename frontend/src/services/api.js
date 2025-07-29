@@ -71,13 +71,39 @@ export const ordersAPI = {
     }
   },
 
-  // Get orders by phone number (no authentication required)
-  getOrdersByPhone: async (phoneNumber) => {
+  // Get order by order number (no authentication required)
+  getOrderByNumber: async (orderNumber) => {
     try {
-      const response = await axios.get(`${API}/orders/myorder/${phoneNumber}`);
+      const response = await axios.get(`${API}/orders/myorder/${orderNumber}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching orders by phone:', error);
+      console.error('Error fetching order by number:', error);
+      throw error;
+    }
+  },
+
+  // Get orders grouped by items (requires authentication)
+  getOrdersByItem: async () => {
+    try {
+      const response = await axios.get(`${API}/orders/view-orders`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orders by item:', error);
+      throw error;
+    }
+  },
+
+  // Update cooking status of an item (requires authentication)
+  updateCookingStatus: async (orderId, itemName, cookingStatus) => {
+    try {
+      const response = await axios.patch(`${API}/orders/cooking-status`, {
+        order_id: orderId,
+        item_name: itemName,
+        cooking_status: cookingStatus
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating cooking status:', error);
       throw error;
     }
   }
