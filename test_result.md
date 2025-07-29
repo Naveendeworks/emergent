@@ -353,11 +353,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Order Creation with Phone Number Field"
-    - "Edit Order with Phone Number Field"
-    - "MyOrder Customer Self-Service Page"
-    - "MyOrder Route Implementation"
-    - "MyOrder API Integration"
+    - "Optional Phone Number - Order Creation WITHOUT Phone"
+    - "Optional Phone Number - Order Creation WITH Valid Phone"
+    - "Optional Phone Number - Order Creation WITH Invalid Phone"
+    - "Optional Phone Number - Order Update WITHOUT Phone"
+    - "Optional Phone Number - Order Update WITH Phone"
+    - "Optional Phone Number - MyOrder Endpoint Compatibility"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
