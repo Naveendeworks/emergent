@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Fresh Database with Complete Schema
-Tests creating new orders with complete schema after database cleanup
+Backend API Testing for Enhanced "Mem Famous Stall 2025" System
+Tests new features including category-based view orders, price analysis, and notification system preparation
 """
 
 import requests
