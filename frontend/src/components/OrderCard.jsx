@@ -121,9 +121,16 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
               {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
             </Badge>
           </div>
-          <span className="text-sm text-gray-500">
-            {order.totalItems} items total
-          </span>
+          <div className="text-right">
+            <span className="text-sm text-gray-500">
+              {order.totalItems} items
+            </span>
+            {order.totalAmount && (
+              <div className="text-lg font-bold text-green-600">
+                ${order.totalAmount.toFixed(2)}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Delivery Time Info */}
