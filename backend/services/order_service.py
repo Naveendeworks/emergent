@@ -25,6 +25,7 @@ class OrderService:
             current_time = self.get_eastern_time()
             order = Order(
                 customerName=order_data.customerName,
+                phoneNumber=order_data.phoneNumber,
                 items=order_data.items,
                 paymentMethod=order_data.paymentMethod,
                 orderTime=current_time,
