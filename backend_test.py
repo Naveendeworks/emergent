@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Pricing Functionality
-Tests the new pricing features in the order management system
+Backend API Testing for Fresh Database with Complete Schema
+Tests creating new orders with complete schema after database cleanup
 """
 
 import requests
