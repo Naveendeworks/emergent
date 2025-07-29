@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from routers import orders, menu
+from routers import orders, menu, auth
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -26,7 +26,8 @@ api_router = APIRouter(prefix="/api")
 async def root():
     return {"message": "Order Management API is running", "status": "healthy"}
 
-# Include order and menu routes
+# Include auth, order and menu routes
+api_router.include_router(auth.router)
 api_router.include_router(orders.router)
 api_router.include_router(menu.router)
 
