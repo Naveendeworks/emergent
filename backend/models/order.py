@@ -30,7 +30,7 @@ class OrderUpdate(BaseModel):
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     customerName: str
-    phoneNumber: str
+    phoneNumber: Optional[str] = None
     items: List[OrderItem]
     paymentMethod: str = Field(default='cash', pattern='^(zelle|cashapp|cash)$')
     status: str = Field(default='pending', pattern='^(pending|completed)$')
