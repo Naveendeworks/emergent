@@ -119,30 +119,30 @@ const MyOrder = ({ onBack }) => {
           Back to Dashboard
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
-          <p className="text-gray-600">Track your food orders by entering your phone number</p>
+          <h1 className="text-3xl font-bold text-gray-900">My Order</h1>
+          <p className="text-gray-600">Track your food order by entering your order number</p>
         </div>
       </div>
 
-      {/* Phone Number Search */}
+      {/* Order Number Search */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Phone className="h-5 w-5" />
-            Enter Your Phone Number
+            <Hash className="h-5 w-5" />
+            Enter Your Order Number
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="orderNumber">Order Number</Label>
             <div className="flex gap-3">
               <Input
-                id="phone"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Enter your phone number (e.g., 1234567890)"
-                type="tel"
+                id="orderNumber"
+                value={orderNumber}
+                onChange={(e) => setOrderNumber(e.target.value)}
+                placeholder="Enter your order number (e.g., ORD-ABC123)"
                 className="flex-1"
+                style={{textTransform: 'uppercase'}}
               />
               <Button 
                 onClick={handleSearch}
@@ -154,7 +154,7 @@ const MyOrder = ({ onBack }) => {
                 ) : (
                   <>
                     <Search className="h-4 w-4" />
-                    Search Orders
+                    Search Order
                   </>
                 )}
               </Button>
@@ -164,7 +164,7 @@ const MyOrder = ({ onBack }) => {
           {searched && (
             <div className="flex items-center justify-between pt-2 border-t">
               <p className="text-sm text-gray-600">
-                Found {orders.length} order{orders.length !== 1 ? 's' : ''} for {phoneNumber}
+                {order ? `Order ${orderNumber} found` : `No order found for ${orderNumber}`}
               </p>
               <Button variant="outline" size="sm" onClick={handleNewSearch}>
                 New Search
@@ -174,36 +174,39 @@ const MyOrder = ({ onBack }) => {
         </CardContent>
       </Card>
 
-      {/* Orders Display */}
-      {searched && orders.length > 0 && (
+      {/* Order Display */}
+      {searched && order && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Your Orders</h2>
-          {orders.map((order) => (
-            <Card key={order.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  {/* Order Info */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-semibold text-lg">{order.customerName}</h3>
-                        <p className="text-sm text-gray-600 flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          Ordered: {formatOrderTime(order.orderTime)}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge className={`${getStatusColor(order.status)} border`}>
-                          {order.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {order.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </Badge>
-                        <Badge className={`${getPaymentMethodColor(order.paymentMethod)} border`}>
-                          {getPaymentMethodIcon(order.paymentMethod)}
-                          {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
-                        </Badge>
-                      </div>
+          <h2 className="text-xl font-semibold text-gray-900">Order Details</h2>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                {/* Order Info */}
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg flex items-center gap-2">
+                        <Hash className="h-4 w-4" />
+                        {order.orderNumber}
+                      </h3>
+                      <p className="text-gray-700">Customer: {order.customerName}</p>
+                      <p className="text-sm text-gray-600 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        Ordered: {formatOrderTime(order.orderTime)}
+                      </p>
                     </div>
+                    <div className="flex gap-2">
+                      <Badge className={`${getStatusColor(order.status)} border`}>
+                        {order.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
+                        {order.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </Badge>
+                      <Badge className={`${getPaymentMethodColor(order.paymentMethod)} border`}>
+                        {getPaymentMethodIcon(order.paymentMethod)}
+                        {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
+                      </Badge>
+                    </div>
+                  </div>
 
                     {/* Order Items */}
                     <div className="space-y-2">
