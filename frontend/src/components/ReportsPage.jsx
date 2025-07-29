@@ -99,6 +99,26 @@ const ReportsPage = () => {
     }
   };
 
+  const handleDownloadPriceAnalysis = async () => {
+    try {
+      setDownloadingPriceAnalysis(true);
+      const result = await reportsAPI.downloadPriceAnalysis();
+      toast({
+        title: "Download Successful",
+        description: `Price analysis exported as ${result.filename}`,
+        duration: 4000,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Failed to export price analysis",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingPriceAnalysis(false);
+    }
+  };
+
   const getPaymentMethodIcon = (method) => {
     switch (method) {
       case 'zelle':
