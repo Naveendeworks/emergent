@@ -137,6 +137,19 @@ async def update_cooking_status(
         logger.error(f"Error in update_cooking_status endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to update cooking status")
 
+@router.get("/price-analysis", response_model=dict)
+async def get_price_analysis(
+    order_service: OrderService = Depends(get_order_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Get price analysis for all items (requires authentication)"""
+    try:
+        analysis = await order_service.get_price_analysis()
+        return analysis
+    except Exception as e:
+        logger.error(f"Error in get_price_analysis endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch price analysis")
+
 @router.put("/{order_id}/complete", response_model=Order)
 async def complete_order(
     order_id: str,
