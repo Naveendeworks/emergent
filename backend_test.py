@@ -42,13 +42,21 @@ INVALID_PHONE_NUMBERS = [
 ]
 
 SAMPLE_ORDER_DATA = {
-    "customerName": "John Smith",
-    "phoneNumber": "1234567890",
+    "customerName": "Fresh Database Test",
+    "phoneNumber": "9876543210",
     "items": [
-        {"name": "Burger", "quantity": 2},
-        {"name": "Fries", "quantity": 1}
+        {"name": "Tea", "quantity": 2},
+        {"name": "Coffee", "quantity": 1}
     ],
     "paymentMethod": "cash"
+}
+
+SAMPLE_ORDER_NO_PHONE = {
+    "customerName": "No Phone Test Customer",
+    "items": [
+        {"name": "Tea", "quantity": 1}
+    ],
+    "paymentMethod": "zelle"
 }
 
 # Global variables for test data
