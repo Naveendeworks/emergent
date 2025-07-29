@@ -86,14 +86,6 @@ const LoginForm = ({ onLogin }) => {
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-              <p className="font-medium">Demo Credentials:</p>
-              <p>Username: <span className="font-mono">admin</span></p>
-              <p>Password: <span className="font-mono">memfamous2025</span></p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
