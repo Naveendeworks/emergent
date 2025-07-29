@@ -197,7 +197,6 @@ class OrderService:
             
             update_data = {
                 "customerName": order_data.customerName,
-                "phoneNumber": order_data.phoneNumber,
                 "items": [item.dict() for item in order_items_with_prices],
                 "paymentMethod": order_data.paymentMethod,
                 "totalItems": total_items,
