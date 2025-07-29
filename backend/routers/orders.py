@@ -87,7 +87,7 @@ async def get_order_by_number(
     """Get order by order number (no authentication required - customer self-service)"""
     try:
         # Validate order number format (should be a simple number like 1, 2, 3...)
-        if not order_number.isdigit():
+        if not order_number.isdigit() or int(order_number) <= 0:
             raise HTTPException(status_code=400, detail="Invalid order number format")
         
         order = await order_service.get_order_by_number(order_number)
