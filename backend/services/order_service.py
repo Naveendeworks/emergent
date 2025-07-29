@@ -102,7 +102,7 @@ class OrderService:
             raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
-        """Update order with new items, customer name, and payment method"""
+        """Update order with new items, customer name, phone number, and payment method"""
         try:
             # Calculate new total items and estimated delivery time
             total_items = sum(item.quantity for item in order_data.items)
@@ -111,6 +111,7 @@ class OrderService:
             
             update_data = {
                 "customerName": order_data.customerName,
+                "phoneNumber": order_data.phoneNumber,
                 "items": [item.dict() for item in order_data.items],
                 "paymentMethod": order_data.paymentMethod,
                 "totalItems": total_items,
