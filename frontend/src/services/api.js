@@ -267,6 +267,45 @@ export const reportsAPI = {
       console.error('Error downloading item reports:', error);
       throw error;
     }
+  },
+
+  // Download price analysis as Excel
+  downloadPriceAnalysis: async () => {
+    try {
+      const response = await axios.get(`${API}/reports/price-analysis/export`, {
+        responseType: 'blob',
+      });
+      
+      // Create blob and download
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      
+      // Get filename from response headers
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'price_analysis_report.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]*)"?/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true, filename };
+    } catch (error) {
+      console.error('Error downloading price analysis:', error);
+      throw error;
+    }
   }
 };
 
