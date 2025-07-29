@@ -119,8 +119,50 @@ export const menuAPI = {
   }
 };
 
+// Reports API calls
+export const reportsAPI = {
+  // Get payment method reports
+  getPaymentReports: async () => {
+    try {
+      const response = await axios.get(`${API}/reports/payment`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching payment reports:', error);
+      throw error;
+    }
+  },
+
+  // Get item reports
+  getItemReports: async () => {
+    try {
+      const response = await axios.get(`${API}/reports/items`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching item reports:', error);
+      throw error;
+    }
+  }
+};
+
 // Utility functions
 export const formatOrderTime = (timeString) => {
   const time = new Date(timeString);
-  return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return time.toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+export const formatDeliveryTime = (minutes) => {
+  if (!minutes) return 'N/A';
+  if (minutes < 60) {
+    return `${Math.round(minutes)}m`;
+  } else {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return `${hours}h ${mins}m`;
+  }
 };
