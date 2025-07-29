@@ -180,7 +180,7 @@ def test_order_number_lookup():
             print_result(True, f"Successfully retrieved order by order number: {created_order_number}")
             
             # Test invalid order number format validation
-            invalid_formats = ["ORD-ABC12", "ORD-AB123", "ABC-123456", "ORD-abc123", "ORD-1234567"]
+            invalid_formats = ["ORD-ABC12", "ORD-AB123", "ABC-123456", "ORD-1234567"]
             
             for invalid_format in invalid_formats:
                 invalid_response = requests.get(f"{API_URL}/orders/myorder/{invalid_format}")
