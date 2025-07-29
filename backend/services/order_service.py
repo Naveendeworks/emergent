@@ -321,6 +321,71 @@ class OrderService:
         except Exception as e:
             logger.error(f"Error getting orders by category: {str(e)}")
             raise e
+
+    async def get_price_analysis(self) -> dict:
+        """Get price analysis for all items and generate Excel data"""
+        try:
+            # Get all completed orders for analysis
+            cursor = self.collection.find({"status": "completed"}).sort("orderTime", -1)
+            orders = []
+            async for order_doc in cursor:
+                order_doc['_id'] = str(order_doc['_id'])
+                if isinstance(order_doc.get('orderTime'), str):
+                    order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
+                orders.append(order_doc)
+            
+            # Get menu items for pricing information
+            menu_items = await self.menu_service.get_menu()
+            menu_item_map = {item.name: item for item in menu_items.items}
+            
+            # Analyze items
+            item_analysis = {}
+            total_revenue = 0.0
+            total_items_sold = 0
+            
+            for order in orders:
+                for item in order.get('items', []):
+                    item_name = item.get('name')
+                    quantity = item.get('quantity', 0)
+                    price = item.get('price', 0)
+                    subtotal = item.get('subtotal', price * quantity)
+                    
+                    if item_name not in item_analysis:
+                        menu_item = menu_item_map.get(item_name, None)
+                        item_analysis[item_name] = {
+                            'item_name': item_name,
+                            'category': menu_item.category if menu_item else 'Other',
+                            'unit_price': price,
+                            'total_quantity': 0,
+                            'total_revenue': 0.0,
+                            'order_count': 0
+                        }
+                    
+                    item_analysis[item_name]['total_quantity'] += quantity
+                    item_analysis[item_name]['total_revenue'] += subtotal
+                    item_analysis[item_name]['order_count'] += 1
+                    
+                    total_revenue += subtotal
+                    total_items_sold += quantity
+            
+            # Sort by revenue (highest first)
+            sorted_items = sorted(
+                item_analysis.values(), 
+                key=lambda x: x['total_revenue'], 
+                reverse=True
+            )
+            
+            return {
+                'items': sorted_items,
+                'total_revenue': round(total_revenue, 2),
+                'total_items_sold': total_items_sold,
+                'total_orders': len(orders),
+                'average_order_value': round(total_revenue / len(orders), 2) if orders else 0
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting price analysis: {str(e)}")
+            raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
         """Update order with new items, customer name, phone number, payment method, and recalculated prices"""
