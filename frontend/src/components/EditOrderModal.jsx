@@ -6,13 +6,12 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent } from './ui/card';
-import { Plus, Minus, Edit, X, CreditCard, Phone } from 'lucide-react';
+import { Plus, Minus, Edit, X, CreditCard } from 'lucide-react';
 import { menuAPI, ordersAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   const [customerName, setCustomerName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [menu, setMenu] = useState({ items: [], categories: [] });
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,7 +23,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
   useEffect(() => {
     if (open && order) {
       setCustomerName(order.customerName);
-      setPhoneNumber(formatPhoneNumber(order.phoneNumber || ''));
       setPaymentMethod(order.paymentMethod || 'cash');
       setOrderItems(order.items.map(item => ({
         id: item.name.toLowerCase().replace(/\s+/g, '_'),
@@ -52,33 +50,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatPhoneNumber = (value) => {
-    // Remove all non-numeric characters
-    const cleaned = value.replace(/\D/g, '');
-    
-    // Format based on length
-    if (cleaned.length <= 3) {
-      return cleaned;
-    } else if (cleaned.length <= 6) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
-    } else if (cleaned.length <= 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-    } else {
-      // Handle numbers with country code
-      return `+${cleaned.slice(0, 1)} (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7, 11)}`;
-    }
-  };
-
-  const handlePhoneChange = (e) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    setPhoneNumber(formatted);
-  };
-
-  const validatePhoneNumber = (phone) => {
-    const cleaned = phone.replace(/\D/g, '');
-    return cleaned.length === 10 || (cleaned.length === 11 && cleaned.startsWith('1'));
   };
 
   const addItemToOrder = (menuItem) => {
@@ -125,24 +96,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       return;
     }
 
-    if (!phoneNumber.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!validatePhoneNumber(phoneNumber)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid US phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (orderItems.length === 0) {
       toast({
         title: "Error",
@@ -154,14 +107,8 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
 
     try {
       setUpdating(true);
-      
-      // Clean phone number for API
-      const cleanedPhone = phoneNumber.replace(/\D/g, '');
-      const apiPhoneNumber = cleanedPhone.length === 10 ? `+1${cleanedPhone}` : `+${cleanedPhone}`;
-      
       const orderData = {
         customerName: customerName.trim(),
-        phoneNumber: apiPhoneNumber,
         paymentMethod: paymentMethod,
         items: orderItems.map(item => ({
           name: item.name,
@@ -226,34 +173,16 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Customer Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="customerName">Customer Name</Label>
-              <Input
-                id="customerName"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Enter customer name"
-                className="w-full"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                Phone Number
-              </Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
-                value={phoneNumber}
-                onChange={handlePhoneChange}
-                placeholder="(555) 123-4567"
-                className="w-full"
-                maxLength={18}
-              />
-            </div>
+          {/* Customer Name */}
+          <div className="space-y-2">
+            <Label htmlFor="customerName">Customer Name</Label>
+            <Input
+              id="customerName"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="Enter customer name"
+              className="w-full"
+            />
           </div>
 
           {/* Payment Method */}
@@ -410,7 +339,7 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
             </Button>
             <Button
               onClick={handleUpdateOrder}
-              disabled={updating || !customerName.trim() || !phoneNumber.trim() || orderItems.length === 0}
+              disabled={updating || !customerName.trim() || orderItems.length === 0}
               className="flex-1"
             >
               {updating ? 'Updating...' : `Update Order (${totalItems} items)`}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Check, Clock, User, Edit, Trash2, Timer, Phone, MessageCircle } from 'lucide-react';
+import { Check, Clock, User, Edit, Trash2, Timer } from 'lucide-react';
 import { formatOrderTime, formatDeliveryTime } from '../services/api';
 
 const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
@@ -44,17 +44,6 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
       default:
         return 'bg-gray-100 text-gray-700';
     }
-  };
-
-  const formatPhoneNumber = (phone) => {
-    if (!phone) return 'No phone';
-    
-    // Remove +1 if present and format
-    const cleaned = phone.replace(/^\+1/, '').replace(/\D/g, '');
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-    }
-    return phone;
   };
 
   const getDeliveryInfo = () => {
@@ -110,22 +99,6 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
             </span>
           </div>
         </div>
-
-        {/* Phone Number */}
-        {order.phoneNumber && (
-          <div className="flex items-center gap-2 mt-1">
-            <Phone className="h-3 w-3 text-gray-500" />
-            <span className="text-sm text-gray-600">
-              {formatPhoneNumber(order.phoneNumber)}
-            </span>
-            {order.status === 'completed' && (
-              <Badge variant="outline" className="text-xs">
-                <MessageCircle className="h-3 w-3 mr-1" />
-                {order.smsNotificationSent ? 'SMS Sent' : 'SMS Failed'}
-              </Badge>
-            )}
-          </div>
-        )}
         
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-2">
@@ -192,7 +165,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
               className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-200"
             >
               <Check className="h-4 w-4 mr-2" />
-              Complete & Send SMS
+              Mark as Complete
             </Button>
           </div>
         )}
