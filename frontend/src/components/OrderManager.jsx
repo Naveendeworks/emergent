@@ -19,6 +19,7 @@ const OrderManager = ({ onLogout }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [viewOrdersData, setViewOrdersData] = useState([]);
   const { toast } = useToast();
 
   useEffect(() => {
