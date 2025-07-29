@@ -25,10 +25,10 @@ const MyOrder = ({ onBack }) => {
       return;
     }
 
-    if (!orderNumber.trim().match(/^ORD-[A-Z]{3}[0-9]{3}$/)) {
+    if (!orderNumber.trim().match(/^[0-9]+$/)) {
       toast({
         title: "Error",
-        description: "Please enter a valid order number (format: ORD-ABC123)",
+        description: "Please enter a valid order number (e.g., 1, 2, 3...)",
         variant: "destructive",
       });
       return;
