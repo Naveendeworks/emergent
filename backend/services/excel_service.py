@@ -174,6 +174,104 @@ class ExcelService:
             logger.error(f"Error creating item report Excel: {str(e)}")
             raise e
     
+    def create_price_analysis_excel(self, price_analysis: dict) -> io.BytesIO:
+        """Create Excel file for price analysis"""
+        try:
+            # Convert price analysis items to DataFrame
+            data = []
+            for item in price_analysis.get('items', []):
+                data.append({
+                    'Item Name': item.get('item_name', ''),
+                    'Category': item.get('category', ''),
+                    'Unit Price ($)': round(item.get('unit_price', 0), 2),
+                    'Total Quantity Sold': item.get('total_quantity', 0),
+                    'Total Revenue ($)': round(item.get('total_revenue', 0), 2),
+                    'Number of Orders': item.get('order_count', 0),
+                    'Avg Qty per Order': round(item.get('total_quantity', 0) / item.get('order_count', 1), 2) if item.get('order_count', 0) > 0 else 0,
+                    'Revenue %': round((item.get('total_revenue', 0) / price_analysis.get('total_revenue', 1)) * 100, 2) if price_analysis.get('total_revenue', 0) > 0 else 0
+                })
+            
+            df = pd.DataFrame(data)
+            
+            # Create Excel file in memory
+            output = io.BytesIO()
+            
+            with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                # Write main report
+                df.to_excel(writer, sheet_name='Price Analysis Report', index=False)
+                
+                # Create top revenue items sheet (top 10)
+                if len(df) > 0:
+                    top_revenue = df.nlargest(10, 'Total Revenue ($)')[['Item Name', 'Total Revenue ($)', 'Total Quantity Sold', 'Unit Price ($)']]
+                    top_revenue.to_excel(writer, sheet_name='Top 10 by Revenue', index=False)
+                    
+                    # Create top selling items sheet (top 10)
+                    top_selling = df.nlargest(10, 'Total Quantity Sold')[['Item Name', 'Total Quantity Sold', 'Total Revenue ($)', 'Unit Price ($)']]
+                    top_selling.to_excel(writer, sheet_name='Top 10 by Quantity', index=False)
+                    
+                    # Create category analysis
+                    category_analysis = df.groupby('Category').agg({
+                        'Item Name': 'count',
+                        'Total Quantity Sold': 'sum',
+                        'Total Revenue ($)': 'sum',
+                        'Number of Orders': 'sum'
+                    }).reset_index()
+                    category_analysis.columns = ['Category', 'Number of Items', 'Total Quantity', 'Total Revenue ($)', 'Total Orders']
+                    category_analysis = category_analysis.sort_values('Total Revenue ($)', ascending=False)
+                    category_analysis.to_excel(writer, sheet_name='Category Analysis', index=False)
+                
+                # Create summary sheet
+                summary_data = {
+                    'Metric': [
+                        'Total Revenue',
+                        'Total Items Sold',
+                        'Total Orders',
+                        'Average Order Value',
+                        'Number of Menu Items',
+                        'Best Selling Item',
+                        'Highest Revenue Item'
+                    ],
+                    'Value': [
+                        f"${price_analysis.get('total_revenue', 0):,.2f}",
+                        f"{price_analysis.get('total_items_sold', 0):,}",
+                        f"{price_analysis.get('total_orders', 0):,}",
+                        f"${price_analysis.get('average_order_value', 0):,.2f}",
+                        len(price_analysis.get('items', [])),
+                        df.loc[df['Total Quantity Sold'].idxmax(), 'Item Name'] if len(df) > 0 else 'N/A',
+                        df.loc[df['Total Revenue ($)'].idxmax(), 'Item Name'] if len(df) > 0 else 'N/A'
+                    ]
+                }
+                summary_df = pd.DataFrame(summary_data)
+                summary_df.to_excel(writer, sheet_name='Summary', index=False)
+                
+                # Add metadata sheet
+                current_time = datetime.now(EASTERN_TZ)
+                metadata = {
+                    'Report Information': [
+                        'Report Generated',
+                        'Time Zone',
+                        'Report Type',
+                        'Analysis Period',
+                        'Data Source'
+                    ],
+                    'Details': [
+                        current_time.strftime('%Y-%m-%d %H:%M:%S %Z'),
+                        'Eastern Time (US/Eastern)',
+                        'Price Analysis & Revenue Report',
+                        'All completed orders',
+                        'Order Management System'
+                    ]
+                }
+                metadata_df = pd.DataFrame(metadata)
+                metadata_df.to_excel(writer, sheet_name='Report Info', index=False)
+            
+            output.seek(0)
+            return output
+            
+        except Exception as e:
+            logger.error(f"Error creating price analysis Excel: {str(e)}")
+            raise e
+    
     def get_filename(self, report_type: str) -> str:
         """Generate filename with timestamp"""
         current_time = datetime.now(EASTERN_TZ)
