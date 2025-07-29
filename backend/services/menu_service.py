@@ -21,7 +21,7 @@ class MenuService:
             MenuItem(id="keema", name="Keema", chef="Sreedhar", sousChef="Jnet", category="Meat"),
             MenuItem(id="tea", name="Tea", chef="Dera", category="Beverages"),
             MenuItem(id="aloo_masala", name="Aloo Masala", chef="Anusha Allu", category="Vegetarian"),
-            MenuItem(id="fruits_cutting", name="Fruits Cutting", chef="", category="Dessert")
+            MenuItem(id="fruits_cutting", name="Fruits Cutting", chef="Kitchen Staff", category="Dessert")
         ]
     
     async def get_menu(self) -> MenuResponse:
