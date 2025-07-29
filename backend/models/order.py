@@ -42,6 +42,7 @@ class Order(BaseModel):
     actualDeliveryTime: Optional[datetime] = None
     deliveryMinutes: Optional[int] = Field(default=30)  # Default 30 min delivery
     totalItems: int = Field(default=0)
+    totalAmount: float = Field(default=0.0, description="Total order amount in USD")
     
     class Config:
         allow_population_by_field_name = True
