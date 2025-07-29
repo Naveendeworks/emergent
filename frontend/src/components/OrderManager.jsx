@@ -16,6 +16,8 @@ const OrderManager = () => {
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ pending: 0, completed: 0, total: 0 });
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => {
