@@ -140,9 +140,9 @@ const MyOrder = ({ onBack }) => {
                 id="orderNumber"
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
-                placeholder="Enter your order number (e.g., ORD-ABC123)"
+                placeholder="Enter your order number (e.g., 1, 2, 3...)"
                 className="flex-1"
-                style={{textTransform: 'uppercase'}}
+                type="number"
               />
               <Button 
                 onClick={handleSearch}
