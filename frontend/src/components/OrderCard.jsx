@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Check, Clock, User, Edit, Trash2 } from 'lucide-react';
+import { Check, Clock, User, Edit, Trash2, CreditCard } from 'lucide-react';
 import { formatOrderTime } from '../services/api';
 
 const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
@@ -17,6 +17,32 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
   const handleCancel = () => {
     if (window.confirm(`Are you sure you want to cancel ${order.customerName}'s order?`)) {
       onCancel(order.id);
+    }
+  };
+
+  const getPaymentMethodIcon = (method) => {
+    switch (method) {
+      case 'zelle':
+        return '💳';
+      case 'cashapp':
+        return '💰';
+      case 'cash':
+        return '💵';
+      default:
+        return '💳';
+    }
+  };
+
+  const getPaymentMethodColor = (method) => {
+    switch (method) {
+      case 'zelle':
+        return 'bg-blue-100 text-blue-700';
+      case 'cashapp':
+        return 'bg-green-100 text-green-700';
+      case 'cash':
+        return 'bg-gray-100 text-gray-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
     }
   };
 
@@ -40,9 +66,15 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
           </div>
         </div>
         <div className="flex items-center justify-between mt-2">
-          <Badge variant={order.status === 'completed' ? 'secondary' : 'default'}>
-            {order.status === 'completed' ? 'Completed' : 'Pending'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant={order.status === 'completed' ? 'secondary' : 'default'}>
+              {order.status === 'completed' ? 'Completed' : 'Pending'}
+            </Badge>
+            <Badge className={`${getPaymentMethodColor(order.paymentMethod)} text-xs`}>
+              {getPaymentMethodIcon(order.paymentMethod)}
+              {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
+            </Badge>
+          </div>
           <span className="text-sm text-gray-500">
             {order.totalItems} items total
           </span>
