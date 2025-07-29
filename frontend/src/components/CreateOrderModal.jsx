@@ -177,19 +177,6 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             />
           </div>
 
-          {/* Phone Number */}
-          <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
-            <Input
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="Enter phone number (optional, e.g., 1234567890)"
-              className="w-full"
-              type="tel"
-            />
-          </div>
-
           {/* Payment Method */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
