@@ -338,6 +338,82 @@ const OrderManager = ({ onLogout }) => {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="view-orders" className="space-y-4">
+            {viewOrdersData.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Package className="h-16 w-16 text-gray-400 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No pending orders</h3>
+                  <p className="text-gray-600 text-center">
+                    Orders grouped by items will appear here.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {viewOrdersData.map((itemGroup) => (
+                  <Card key={itemGroup.item_name}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Package className="h-5 w-5" />
+                          {itemGroup.item_name}
+                        </span>
+                        <Badge variant="outline">
+                          Total Qty: {itemGroup.total_quantity}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {itemGroup.orders.map((orderInfo, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Hash className="h-4 w-4 text-gray-500" />
+                                <span className="font-medium">{orderInfo.orderNumber}</span>
+                                <span className="text-gray-600">• {orderInfo.customerName}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <span>Qty: {orderInfo.quantity}</span>
+                                <span>•</span>
+                                <span>{formatOrderTime(orderInfo.orderTime)}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                className={`${
+                                  orderInfo.cooking_status === 'finished' ? 'bg-green-100 text-green-800' :
+                                  orderInfo.cooking_status === 'cooking' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-gray-100 text-gray-800'
+                                } border`}
+                              >
+                                {orderInfo.cooking_status}
+                              </Badge>
+                              <Select 
+                                value={orderInfo.cooking_status} 
+                                onValueChange={(value) => handleCookingStatusUpdate(orderInfo.order_id, itemGroup.item_name, value)}
+                              >
+                                <SelectTrigger className="w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="not started">Not Started</SelectItem>
+                                  <SelectItem value="cooking">Cooking</SelectItem>
+                                  <SelectItem value="finished">Finished</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
 
         <CreateOrderModal 
