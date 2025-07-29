@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
-import { ClipboardList, CheckCircle, Clock } from 'lucide-react';
+import { Button } from './ui/button';
+import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw } from 'lucide-react';
 import OrderCard from './OrderCard';
-import { mockOrders, completeOrder } from '../mock';
+import CreateOrderModal from './CreateOrderModal';
+import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const OrderManager = () => {
