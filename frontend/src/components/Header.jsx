@@ -16,8 +16,8 @@ const Header = ({ onLogout, currentPage, onNavigate }) => {
       <div className="max-w-6xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
-            <p className="text-gray-600">Track and manage customer orders efficiently</p>
+            <h1 className="text-3xl font-bold text-blue-600">Mem Famous Stall 2025</h1>
+            <p className="text-gray-600">Traditional Food & Modern Management</p>
           </div>
           
           <div className="flex items-center gap-4">
