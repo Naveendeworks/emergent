@@ -19,7 +19,7 @@ class OrderCreate(BaseModel):
         return v
 
 class OrderUpdate(BaseModel):
-    status: Optional[str] = Field(None, regex='^(pending|completed)$')
+    status: Optional[str] = Field(None, pattern='^(pending|completed)$')
 
 class Order(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
