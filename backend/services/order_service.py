@@ -15,6 +15,7 @@ class OrderService:
         self.db = db
         self.collection = db.orders
         self.notification_service = NotificationService(db)
+        self.menu_service = MenuService()
     
     def get_eastern_time(self):
         """Get current Eastern time"""
