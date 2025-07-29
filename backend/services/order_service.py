@@ -100,6 +100,29 @@ class OrderService:
         except Exception as e:
             logger.error(f"Error fetching order {order_id}: {str(e)}")
             raise e
+
+    async def get_orders_by_phone(self, phone_number: str) -> List[Order]:
+        """Get orders by phone number (for customer self-service)"""
+        try:
+            cursor = self.collection.find({"phoneNumber": phone_number}).sort("orderTime", -1)
+            orders = []
+            async for order_doc in cursor:
+                order_doc['_id'] = str(order_doc['_id'])
+                # Convert ISO string back to datetime if needed
+                if isinstance(order_doc.get('orderTime'), str):
+                    order_doc['orderTime'] = datetime.fromisoformat(order_doc['orderTime'])
+                if isinstance(order_doc.get('completedTime'), str):
+                    order_doc['completedTime'] = datetime.fromisoformat(order_doc['completedTime'])
+                if isinstance(order_doc.get('estimatedDeliveryTime'), str):
+                    order_doc['estimatedDeliveryTime'] = datetime.fromisoformat(order_doc['estimatedDeliveryTime'])
+                if isinstance(order_doc.get('actualDeliveryTime'), str):
+                    order_doc['actualDeliveryTime'] = datetime.fromisoformat(order_doc['actualDeliveryTime'])
+                
+                orders.append(Order(**order_doc))
+            return orders
+        except Exception as e:
+            logger.error(f"Error fetching orders by phone {phone_number}: {str(e)}")
+            raise e
     
     async def update_order(self, order_id: str, order_data: OrderCreate) -> Optional[Order]:
         """Update order with new items, customer name, phone number, and payment method"""
