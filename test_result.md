@@ -547,13 +547,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Menu Items Include Prices"
-    - "Order Creation Calculates Prices and Totals"
-    - "Order Update Recalculates Prices and Totals"
-    - "Invalid Menu Items Rejected During Order Creation"
-    - "Orders Display Individual Item Prices and Subtotals"
-    - "MyOrder Endpoint Returns Orders with Pricing Information"
-    - "Optional Phone Number Compatibility with Pricing"
+    - "Frontend Menu Item Pricing Display"
+    - "Frontend Order Creation Pricing Calculations"
+    - "Frontend Order Editing Pricing Updates"
+    - "Frontend Customer MyOrder Page Pricing"
+    - "Frontend UI/UX Pricing Features"
+    - "Frontend Integration Testing End-to-End"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
