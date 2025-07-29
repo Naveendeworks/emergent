@@ -85,18 +85,29 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
       order.status === 'completed' ? 'opacity-60 bg-gray-50' : 'bg-white'
     }`}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        {/* Order Number - Prominent Display */}
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-gray-600" />
-            <h3 className="font-semibold text-lg text-gray-900">
-              {order.customerName}
-            </h3>
+            <Hash className="h-5 w-5 text-blue-600" />
+            <span className="text-xl font-bold text-blue-600">
+              Order #{order.orderNumber || order.id.slice(-6)}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-gray-500" />
             <span className="text-sm text-gray-600">
               {formatOrderTime(order.orderTime)}
             </span>
+          </div>
+        </div>
+
+        {/* Customer Name */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-gray-600" />
+            <h3 className="font-semibold text-lg text-gray-900">
+              {order.customerName}
+            </h3>
           </div>
         </div>
         
