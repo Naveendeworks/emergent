@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Check, Clock, User, Edit, Trash2, Timer, Hash } from 'lucide-react';
-import { formatOrderTime, formatDeliveryTime } from '../services/api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Check, Clock, User, Edit, Trash2, Timer, Hash, ChefHat, Package } from 'lucide-react';
+import { formatOrderTime, formatDeliveryTime, ordersAPI } from '../services/api';
+import { useToast } from '../hooks/use-toast';
 
 const OrderCard = ({ order, onComplete, onEdit, onCancel }) => {
   const handleComplete = () => {
