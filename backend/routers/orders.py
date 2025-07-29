@@ -6,6 +6,12 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 import logging
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 logger = logging.getLogger(__name__)
 
