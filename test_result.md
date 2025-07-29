@@ -104,6 +104,55 @@
 
 user_problem_statement: "Test the new phone number functionality in the order management system. I've added phone number support to orders: Updated order model to include phoneNumber field (required, 10-15 characters), Modified create and update order endpoints to accept phoneNumber, Added new endpoint `/api/orders/myorder/{phone_number}` for customer self-service (no authentication required)"
 
+backend:
+  - task: "Order Creation with Phone Number Validation"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routers/orders.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test order creation with valid phone numbers (10-15 digits) and phone number validation (too short/long numbers should fail)"
+
+  - task: "Customer Self-Service Endpoint"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/routers/orders.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test the new `/api/orders/myorder/{phone_number}` endpoint to retrieve orders by phone without authentication"
+
+  - task: "Order Update with Phone Number"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test that update order includes phone number and validates phone number format"
+
+  - task: "Phone Number Model Validation"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models/order.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "testing"
+        - comment: "Need to test phone number validation enforces 10-15 character limit in OrderCreate model"
+
 frontend:
   - task: "Authentication System"
     implemented: true
