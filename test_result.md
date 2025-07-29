@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component."
+user_problem_statement: "Add phone number while ordering, create route called /myorder page for registered numbers to see only their order details. Updated backend to include phone number in order model and APIs, created customer self-service endpoint, and built MyOrder page component. UPDATED: Phone numbers are now OPTIONAL instead of required in the order management system."
 
 backend:
   - task: "Order Creation with Phone Number Validation"
