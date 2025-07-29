@@ -204,12 +204,12 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
 
           {/* Phone Number */}
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
             <Input
               id="phoneNumber"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="Enter phone number (e.g., 1234567890)"
+              placeholder="Enter phone number (optional, e.g., 1234567890)"
               className="w-full"
               type="tel"
             />
