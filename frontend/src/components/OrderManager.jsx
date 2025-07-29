@@ -257,7 +257,7 @@ const OrderManager = ({ onLogout }) => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="pending" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               Pending Orders
@@ -273,6 +273,15 @@ const OrderManager = ({ onLogout }) => {
               {completedOrders.length > 0 && (
                 <Badge variant="secondary" className="ml-2">
                   {completedOrders.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="view-orders" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              View Orders
+              {viewOrdersData.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {viewOrdersData.length}
                 </Badge>
               )}
             </TabsTrigger>
