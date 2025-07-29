@@ -6,12 +6,13 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Card, CardContent } from './ui/card';
-import { Plus, Minus, ShoppingCart, X } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, X, CreditCard } from 'lucide-react';
 import { menuAPI, ordersAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
   const [customerName, setCustomerName] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [menu, setMenu] = useState({ items: [], categories: [] });
   const [selectedCategory, setSelectedCategory] = useState('');
   const [orderItems, setOrderItems] = useState([]);
@@ -101,6 +102,7 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
       setCreating(true);
       const orderData = {
         customerName: customerName.trim(),
+        paymentMethod: paymentMethod,
         items: orderItems.map(item => ({
           name: item.name,
           quantity: item.quantity
@@ -116,6 +118,7 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
 
       // Reset form
       setCustomerName('');
+      setPaymentMethod('cash');
       setOrderItems([]);
       onOrderCreated(createdOrder);
       onOpenChange(false);
@@ -135,6 +138,19 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
     : menu.items;
 
   const totalItems = orderItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const getPaymentMethodIcon = (method) => {
+    switch (method) {
+      case 'zelle':
+        return '💳';
+      case 'cashapp':
+        return '💰';
+      case 'cash':
+        return '💵';
+      default:
+        return '💳';
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -157,6 +173,36 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
               placeholder="Enter customer name"
               className="w-full"
             />
+          </div>
+
+          {/* Payment Method */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Payment Method
+            </Label>
+            <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select payment method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cash">
+                  <span className="flex items-center gap-2">
+                    💵 Cash
+                  </span>
+                </SelectItem>
+                <SelectItem value="zelle">
+                  <span className="flex items-center gap-2">
+                    💳 Zelle
+                  </span>
+                </SelectItem>
+                <SelectItem value="cashapp">
+                  <span className="flex items-center gap-2">
+                    💰 Cash App
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Category Filter */}
@@ -218,6 +264,10 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label>Order Items ({totalItems} items)</Label>
+                <Badge variant="outline" className="flex items-center gap-1">
+                  {getPaymentMethodIcon(paymentMethod)}
+                  {paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+                </Badge>
               </div>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {orderItems.map(item => (
