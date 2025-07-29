@@ -88,7 +88,9 @@ def test_menu_items_return_prices():
         response = requests.get(f"{API_URL}/menu/")
         
         if response.status_code == 200:
-            menu_items = response.json()
+            menu_data = response.json()
+            # Menu endpoint returns an object with "items" array
+            menu_items = menu_data.get("items", [])
             if not menu_items:
                 print_result(False, "No menu items returned")
                 return False
