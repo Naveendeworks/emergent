@@ -90,16 +90,8 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
       return;
     }
 
-    if (!phoneNumber.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter phone number",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (phoneNumber.trim().length < 10) {
+    // Phone number is optional, but if provided, validate it
+    if (phoneNumber.trim() && phoneNumber.trim().length < 10) {
       toast({
         title: "Error",
         description: "Please enter a valid phone number (at least 10 digits)",
@@ -121,13 +113,17 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
       setCreating(true);
       const orderData = {
         customerName: customerName.trim(),
-        phoneNumber: phoneNumber.trim(),
         paymentMethod: paymentMethod,
         items: orderItems.map(item => ({
           name: item.name,
           quantity: item.quantity
         }))
       };
+
+      // Only include phone number if provided
+      if (phoneNumber.trim()) {
+        orderData.phoneNumber = phoneNumber.trim();
+      }
 
       const createdOrder = await ordersAPI.createOrder(orderData);
       
