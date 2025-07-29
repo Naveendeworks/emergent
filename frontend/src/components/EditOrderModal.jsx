@@ -29,7 +29,8 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
       setOrderItems(order.items.map(item => ({
         id: item.name.toLowerCase().replace(/\s+/g, '_'),
         name: item.name,
-        quantity: item.quantity
+        quantity: item.quantity,
+        price: item.price || 0 // Use price from order if available
       })));
       loadMenu();
     }
