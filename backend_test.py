@@ -1201,7 +1201,8 @@ def test_view_orders_status_filtering_edge_cases():
         categories = view_orders_response.json()
         
         # Verify all orders in view-orders have valid structure and pending status
-        total_orders_in_view = 0
+        total_items_in_view = 0
+        unique_order_ids = set()
         invalid_orders = []
         
         for category in categories:
@@ -1215,7 +1216,8 @@ def test_view_orders_status_filtering_edge_cases():
                     return False
                 
                 for order in item['orders']:
-                    total_orders_in_view += 1
+                    total_items_in_view += 1
+                    unique_order_ids.add(order['order_id'])
                     
                     # Check required fields
                     required_fields = ['order_id', 'orderNumber', 'customerName', 'quantity', 'cooking_status', 'orderTime']
@@ -1238,7 +1240,8 @@ def test_view_orders_status_filtering_edge_cases():
                 print_result(False, error)
             return False
         
-        print_result(True, f"✅ All {total_orders_in_view} orders in view-orders have valid structure")
+        print_result(True, f"✅ All {total_items_in_view} order items in view-orders have valid structure")
+        print_result(True, f"✅ View-orders contains {len(unique_order_ids)} unique orders")
         
         # Cross-reference with all orders to ensure filtering is correct
         all_orders_response = requests.get(f"{API_URL}/orders/", headers=headers)
@@ -1248,20 +1251,32 @@ def test_view_orders_status_filtering_edge_cases():
             
             # Count orders by status
             status_counts = {}
+            pending_orders = []
             for order in all_orders:
                 status = order.get('status', 'unknown')
                 status_counts[status] = status_counts.get(status, 0) + 1
+                if status == 'pending':
+                    pending_orders.append(order)
             
             print_result(True, f"Database order status distribution: {status_counts}")
             
-            # Verify view-orders count matches pending orders count
+            # Verify view-orders unique order count matches pending orders count
             pending_count = status_counts.get('pending', 0)
             
-            if total_orders_in_view != pending_count:
-                print_result(False, f"Mismatch: view-orders shows {total_orders_in_view} orders, but database has {pending_count} pending orders")
+            if len(unique_order_ids) != pending_count:
+                print_result(False, f"Mismatch: view-orders shows {len(unique_order_ids)} unique orders, but database has {pending_count} pending orders")
                 return False
             
-            print_result(True, f"✅ View-orders count ({total_orders_in_view}) matches pending orders count ({pending_count})")
+            print_result(True, f"✅ View-orders unique order count ({len(unique_order_ids)}) matches pending orders count ({pending_count})")
+            
+            # Calculate expected total items from pending orders
+            expected_total_items = sum(len(order.get('items', [])) for order in pending_orders)
+            
+            if total_items_in_view != expected_total_items:
+                print_result(False, f"Item count mismatch: view-orders shows {total_items_in_view} items, expected {expected_total_items} from pending orders")
+                return False
+            
+            print_result(True, f"✅ View-orders item count ({total_items_in_view}) matches expected items from pending orders ({expected_total_items})")
         
         return True
         
