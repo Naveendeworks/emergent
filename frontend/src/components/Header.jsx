@@ -39,6 +39,14 @@ const Header = ({ onLogout, currentPage, onNavigate }) => {
                 <BarChart3 className="h-4 w-4" />
                 Reports
               </Button>
+              <Button
+                variant={currentPage === 'order-queue' ? 'default' : 'outline'}
+                onClick={() => onNavigate('order-queue')}
+                className="flex items-center gap-2"
+              >
+                <Monitor className="h-4 w-4" />
+                Order Queue
+              </Button>
             </div>
             
             <div className="flex items-center gap-2 text-gray-600">
