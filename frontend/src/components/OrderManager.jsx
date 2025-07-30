@@ -366,6 +366,7 @@ const OrderManager = ({ onLogout }) => {
                 {pendingOrders.map((order) => (
                   <OrderCard 
                     key={order.id} 
+                    id={`order-${order.id}`}
                     order={order} 
                     onComplete={handleCompleteOrder}
                     onEdit={handleEditOrder}
