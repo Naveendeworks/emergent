@@ -1283,6 +1283,12 @@ def run_enhanced_mem_famous_tests():
     
     # Run all tests in priority order
     tests = [
+        # CRITICAL PRIORITY - View Orders Bug Fix (User Reported Issue)
+        ("View Orders Excludes Completed Orders", test_view_orders_excludes_completed_orders, "CRITICAL"),
+        ("Order Completion Workflow - View Orders Integration", test_order_completion_workflow, "CRITICAL"),
+        ("Automatic Order Completion - Immediate View Orders Update", test_automatic_order_completion_view_orders, "CRITICAL"),
+        ("View Orders Status Filtering Edge Cases", test_view_orders_status_filtering_edge_cases, "CRITICAL"),
+        
         # HIGH PRIORITY - Category-Based View Orders
         ("Category-Based View Orders Endpoint", test_category_based_view_orders, "HIGH"),
         ("Category Grouping with Food Categories", test_category_grouping, "HIGH"),
