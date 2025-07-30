@@ -1330,6 +1330,8 @@ def run_enhanced_mem_famous_tests():
     
     passed = 0
     total = len(results)
+    critical_priority_passed = 0
+    critical_priority_total = 0
     high_priority_passed = 0
     high_priority_total = 0
     
@@ -1338,24 +1340,34 @@ def run_enhanced_mem_famous_tests():
         print(f"{status} [{priority}] {test_name}")
         if result:
             passed += 1
-        if priority == "HIGH":
+        if priority == "CRITICAL":
+            critical_priority_total += 1
+            if result:
+                critical_priority_passed += 1
+        elif priority == "HIGH":
             high_priority_total += 1
             if result:
                 high_priority_passed += 1
     
     print(f"\n🎯 Overall Results: {passed}/{total} tests passed")
+    print(f"🚨 CRITICAL Priority Results: {critical_priority_passed}/{critical_priority_total} tests passed")
     print(f"🔥 High Priority Results: {high_priority_passed}/{high_priority_total} tests passed")
     
     if passed == total:
         print("🎉 All enhanced Mem Famous Stall 2025 tests PASSED!")
         print("✅ System ready with all new features working correctly")
         return True
-    elif high_priority_passed == high_priority_total:
-        print("⚠️  All HIGH PRIORITY tests passed, some medium priority tests failed")
-        print("✅ Core enhanced functionality working correctly")
+    elif critical_priority_passed == critical_priority_total:
+        print("✅ All CRITICAL PRIORITY tests passed - View Orders bug fix verified!")
+        if high_priority_passed == high_priority_total:
+            print("✅ All HIGH PRIORITY tests also passed")
+            print("🎉 Core enhanced functionality working correctly")
+        else:
+            print("⚠️  Some HIGH PRIORITY tests failed, but critical View Orders functionality is working")
         return True
     else:
-        print("❌ Some HIGH PRIORITY tests FAILED - critical issues found")
+        print("❌ Some CRITICAL PRIORITY tests FAILED - View Orders bug still present!")
+        print("🚨 URGENT: View Orders functionality needs immediate attention")
         return False
 
 if __name__ == "__main__":
