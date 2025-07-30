@@ -4,11 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw, Package, Hash, ChefHat } from 'lucide-react';
+import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw, Package, Hash, ChefHat, Monitor } from 'lucide-react';
 import OrderCard from './OrderCard';
 import CreateOrderModal from './CreateOrderModal';
 import EditOrderModal from './EditOrderModal';
 import NotificationSystem from './NotificationSystem';
+import OrderQueue from './OrderQueue';
 import { ordersAPI, formatOrderTime, formatDeliveryTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
