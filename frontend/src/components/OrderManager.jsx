@@ -497,6 +497,26 @@ const OrderManager = ({ onLogout }) => {
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="order-queue" className="space-y-4">
+            <OrderQueue 
+              onNavigateToOrder={(order) => {
+                // Navigate to pending tab and scroll to specific order
+                setActiveTab('pending');
+                setTimeout(() => {
+                  const orderElement = document.getElementById(`order-${order.id}`);
+                  if (orderElement) {
+                    orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    orderElement.classList.add('ring-4', 'ring-blue-500', 'ring-opacity-50');
+                    setTimeout(() => {
+                      orderElement.classList.remove('ring-4', 'ring-blue-500', 'ring-opacity-50');
+                    }, 3000);
+                  }
+                }, 100);
+              }}
+              onBack={() => setActiveTab('pending')}
+            />
+          </TabsContent>
         </Tabs>
 
         <CreateOrderModal 
