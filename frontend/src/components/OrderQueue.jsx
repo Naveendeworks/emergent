@@ -208,27 +208,6 @@ const OrderQueue = () => {
           </div>
         )}
       </div>
-
-      {/* CSS Animation Styles */}
-      <style jsx>{`
-        @keyframes scrollUp {
-          0% {
-            transform: translateY(100vh);
-          }
-          100% {
-            transform: translateY(-100%);
-          }
-        }
-        
-        .animate-scroll-up {
-          animation: scrollUp 60s linear infinite;
-        }
-        
-        /* Pause animation on hover */
-        .animate-scroll-up:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 };
