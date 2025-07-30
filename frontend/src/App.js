@@ -84,6 +84,7 @@ function App() {
                 
                 {currentPage === 'orders' && <OrderManager onLogout={handleLogout} />}
                 {currentPage === 'reports' && <ReportsPage />}
+                {currentPage === 'order-queue' && <OrderQueue />}
               </div>
             )
           } />
