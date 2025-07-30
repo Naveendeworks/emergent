@@ -268,6 +268,42 @@ backend:
         - comment: "✅ PASSED - Complete end-to-end integration test PASSED! Step 1: Created integration test order #33. Step 2: Order found in view orders with correct cooking status. Step 3: Updated cooking status to 'cooking'. Step 4: Customer successfully looked up order by simple number. Step 5: All pricing functionality preserved ($3.00 for Coffee). Complete flow from order creation to customer lookup working seamlessly with sequential numbering system."
 
 frontend:
+  - task: "Order Queue Screen Implementation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderQueue.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Created full-screen Order Queue component with vibrant professional design. Shows pending orders as tiles with Order #, Customer Name, Items (max 5), and elapsed time since order placed. Includes navigation to specific order in pending list."
+
+  - task: "Order Queue Tab Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderManager.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Added Order Queue tab beside existing tabs. Integrated navigation functionality to scroll to specific order in pending list when tile is clicked. Updated tab layout to 4 columns."
+
+  - task: "Order Navigation Functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/OrderCard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Updated OrderCard to accept id prop for navigation. Implemented scroll-to-order functionality with visual highlight ring effect when navigating from Order Queue."
+
   - task: "Order Card Cooking Status Controls"
     implemented: true
     working: true
