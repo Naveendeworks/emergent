@@ -105,6 +105,18 @@
 user_problem_statement: "Enhanced order management system with cooking status updates and automatic order completion. NEW FEATURES: 1. Enhanced cooking status updates with automatic order completion when all items are finished 2. Individual item status management (not started/cooking/finished) directly from order cards 3. Automatic order completion when ALL items are marked as finished 4. Smart status management with completedTime and actualDeliveryTime 5. Enhanced API response with auto-completion information 6. Maintains sequential order numbers (1, 2, 3, 4...) and all existing functionality"
 
 backend:
+  - task: "View Orders Bug Fix - Remove Completed Orders"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/services/order_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Investigation shows View Orders already filters only pending orders (line 255: status: 'pending'). Bug may be frontend refresh issue rather than backend filtering issue."
+
   - task: "Enhanced Cooking Status Updates"
     implemented: true
     working: true
