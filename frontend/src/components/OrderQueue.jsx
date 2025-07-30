@@ -151,18 +151,6 @@ const OrderQueue = () => {
                         <div className="text-sm text-gray-500">Customer Name</div>
                       </div>
                     </div>
-                    
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">
-                        ${order.totalAmount?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="text-sm text-gray-500">Total Amount</div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-blue-600">{order.paymentMethod}</div>
-                      <div className="text-sm text-gray-500">Payment Method</div>
-                    </div>
                   </div>
 
                   {/* Order Items */}
