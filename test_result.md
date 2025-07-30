@@ -281,31 +281,67 @@ frontend:
     status_history:
         - working: "NA"
         - agent: "main"
-        - comment: "Created full-screen Order Queue component with vibrant professional design. Shows pending orders as tiles with Order #, Customer Name, Items (max 5), and elapsed time since order placed. Includes navigation to specific order in pending list."
+        - comment: "Completely redesigned as separate full-screen page component. Features: dark gradient background, upward scrolling animation (bottom-to-top), larger order tiles with comprehensive details, 60-second continuous scroll cycle with hover-pause functionality."
+
+  - task: "Order Queue Navigation Integration"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/Header.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Added Order Queue button to top navigation bar beside Orders and Reports. Updated Header component with Monitor icon and proper navigation handling."
+
+  - task: "Order Queue Page Routing"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Updated App.js to handle 'order-queue' page navigation. Added OrderQueue import and conditional rendering for separate page display."
+
+  - task: "Upward Scrolling Animation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Added CSS keyframe animation 'scrollUp' for continuous bottom-to-top scrolling. 60-second cycle duration with hover-pause functionality. Orders scroll upward like a conveyor belt display."
 
   - task: "Order Queue Tab Integration"
-    implemented: true
+    implemented: false
     working: "NA"
     file: "/app/frontend/src/components/OrderManager.jsx"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: true
+    priority: "low"
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
-        - comment: "Added Order Queue tab beside existing tabs. Integrated navigation functionality to scroll to specific order in pending list when tile is clicked. Updated tab layout to 4 columns."
+        - comment: "REVERTED: Removed Order Queue tab from OrderManager as user requested separate page in top navigation instead of tab within OrderManager."
 
   - task: "Order Navigation Functionality"
-    implemented: true
+    implemented: false
     working: "NA"
     file: "/app/frontend/src/components/OrderCard.jsx"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: true
+    priority: "low"
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
-        - comment: "Updated OrderCard to accept id prop for navigation. Implemented scroll-to-order functionality with visual highlight ring effect when navigating from Order Queue."
+        - comment: "REVERTED: Removed order navigation functionality as Order Queue is now separate page without click-to-navigate feature."
 
   - task: "Order Card Cooking Status Controls"
     implemented: true
