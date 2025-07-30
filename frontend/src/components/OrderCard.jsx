@@ -7,7 +7,7 @@ import { Check, Clock, User, Edit, Trash2, Timer, Hash, ChefHat, Package } from 
 import { formatOrderTime, formatDeliveryTime, ordersAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
-const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated }) => {
+const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ...props }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
 
