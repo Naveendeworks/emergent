@@ -7,7 +7,7 @@ import { Check, Clock, User, Edit, Trash2, Timer, Hash, ChefHat, Package } from 
 import { formatOrderTime, formatDeliveryTime, ordersAPI } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
-const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated }) => {
+const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ...props }) => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { toast } = useToast();
 
@@ -114,9 +114,13 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated }) => {
   const deliveryInfo = getDeliveryInfo();
 
   return (
-    <Card className={`transition-all duration-200 hover:shadow-lg ${
-      order.status === 'completed' ? 'opacity-60 bg-gray-50' : 'bg-white'
-    }`}>
+    <Card 
+      id={id}
+      className={`transition-all duration-200 hover:shadow-lg ${
+        order.status === 'completed' ? 'opacity-60 bg-gray-50' : 'bg-white'
+      }`}
+      {...props}
+    >
       <CardHeader className="pb-3">
         {/* Order Number - Prominent Display */}
         <div className="flex items-center justify-between mb-2">

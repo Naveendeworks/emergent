@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OrderManager from "./components/OrderManager";
 import ReportsPage from "./components/ReportsPage";
+import OrderQueue from "./components/OrderQueue";
 import LoginForm from "./components/LoginForm";
 import MyOrder from "./components/MyOrder";
 import Header from "./components/Header";
@@ -83,6 +84,7 @@ function App() {
                 
                 {currentPage === 'orders' && <OrderManager onLogout={handleLogout} />}
                 {currentPage === 'reports' && <ReportsPage />}
+                {currentPage === 'order-queue' && <OrderQueue />}
               </div>
             )
           } />

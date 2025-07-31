@@ -863,11 +863,433 @@ def test_cooking_status_preserved():
         print_result(False, f"Error testing cooking status preservation: {str(e)}")
         return False
 
+# HIGH PRIORITY TESTS - View Orders Bug Fix (Completed Orders Exclusion)
+
+def test_view_orders_excludes_completed_orders():
+    """Test that /api/orders/view-orders only returns pending orders and excludes completed orders"""
+    print_test_header("View Orders Excludes Completed Orders")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # First, get all orders to understand the current state
+        all_orders_response = requests.get(f"{API_URL}/orders/", headers=headers)
+        if all_orders_response.status_code != 200:
+            print_result(False, "Could not get all orders for comparison")
+            return False
+        
+        all_orders = all_orders_response.json()
+        pending_orders = [order for order in all_orders if order.get('status') == 'pending']
+        completed_orders = [order for order in all_orders if order.get('status') == 'completed']
+        
+        print_result(True, f"Database state: {len(pending_orders)} pending orders, {len(completed_orders)} completed orders")
+        
+        # Get view orders response
+        view_orders_response = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response.status_code == 200:
+            categories = view_orders_response.json()
+            
+            # Extract all order IDs from view-orders response
+            view_orders_order_ids = set()
+            for category in categories:
+                for item in category['items']:
+                    for order in item['orders']:
+                        view_orders_order_ids.add(order['order_id'])
+            
+            # Check that no completed orders appear in view-orders
+            completed_order_ids = {order['id'] for order in completed_orders}
+            completed_in_view = view_orders_order_ids.intersection(completed_order_ids)
+            
+            if completed_in_view:
+                print_result(False, f"CRITICAL: Found {len(completed_in_view)} completed orders in view-orders: {completed_in_view}")
+                return False
+            
+            # Check that only pending orders appear in view-orders
+            pending_order_ids = {order['id'] for order in pending_orders}
+            pending_in_view = view_orders_order_ids.intersection(pending_order_ids)
+            
+            print_result(True, f"✅ View orders correctly excludes all {len(completed_orders)} completed orders")
+            print_result(True, f"✅ View orders includes {len(pending_in_view)} pending orders (out of {len(pending_orders)} total pending)")
+            
+            # Verify all orders in view-orders have pending status
+            for category in categories:
+                for item in category['items']:
+                    for order in item['orders']:
+                        # Find the corresponding order in all_orders to check status
+                        matching_order = next((o for o in all_orders if o['id'] == order['order_id']), None)
+                        if matching_order and matching_order.get('status') != 'pending':
+                            print_result(False, f"CRITICAL: Non-pending order {order['order_id']} found in view-orders with status: {matching_order.get('status')}")
+                            return False
+            
+            print_result(True, "✅ All orders in view-orders have pending status")
+            return True
+        else:
+            print_result(False, f"Failed to get view orders: {view_orders_response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing view orders exclusion: {str(e)}")
+        return False
+
+def test_order_completion_workflow():
+    """Test that when an order is completed, it disappears from view-orders"""
+    print_test_header("Order Completion Workflow - View Orders Integration")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Create a test order first
+        test_order_data = {
+            "customerName": "View Orders Test Customer",
+            "items": [{"name": "Tea", "quantity": 1}],
+            "paymentMethod": "cash"
+        }
+        
+        create_response = requests.post(f"{API_URL}/orders/", json=test_order_data, headers=headers)
+        
+        if create_response.status_code != 201:
+            print_result(False, f"Failed to create test order: {create_response.status_code}")
+            return False
+        
+        created_order = create_response.json()
+        order_id = created_order['id']
+        order_number = created_order['orderNumber']
+        
+        print_result(True, f"Created test order {order_number} with ID {order_id}")
+        
+        # Verify order appears in view-orders (should be pending)
+        view_orders_response = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response.status_code != 200:
+            print_result(False, "Failed to get view orders")
+            return False
+        
+        categories = view_orders_response.json()
+        order_found_in_view = False
+        
+        for category in categories:
+            for item in category['items']:
+                for order in item['orders']:
+                    if order['order_id'] == order_id:
+                        order_found_in_view = True
+                        break
+        
+        if not order_found_in_view:
+            print_result(False, "Test order not found in view-orders (should be pending)")
+            return False
+        
+        print_result(True, "✅ Pending order correctly appears in view-orders")
+        
+        # Complete the order by marking all items as finished
+        update_data = {
+            "order_id": order_id,
+            "item_name": "Tea",
+            "cooking_status": "finished"
+        }
+        
+        update_response = requests.patch(f"{API_URL}/orders/cooking-status", json=update_data, headers=headers)
+        
+        if update_response.status_code != 200:
+            print_result(False, f"Failed to update cooking status: {update_response.status_code}")
+            return False
+        
+        update_result = update_response.json()
+        
+        if not update_result.get("order_auto_completed"):
+            print_result(False, "Order was not auto-completed when all items finished")
+            return False
+        
+        print_result(True, "✅ Order auto-completed when all items marked as finished")
+        
+        # Verify order no longer appears in view-orders
+        view_orders_response_after = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response_after.status_code != 200:
+            print_result(False, "Failed to get view orders after completion")
+            return False
+        
+        categories_after = view_orders_response_after.json()
+        order_found_after_completion = False
+        
+        for category in categories_after:
+            for item in category['items']:
+                for order in item['orders']:
+                    if order['order_id'] == order_id:
+                        order_found_after_completion = True
+                        break
+        
+        if order_found_after_completion:
+            print_result(False, "CRITICAL: Completed order still appears in view-orders")
+            return False
+        
+        print_result(True, "✅ Completed order correctly excluded from view-orders")
+        
+        # Verify order is still accessible via customer lookup
+        lookup_response = requests.get(f"{API_URL}/orders/myorder/{order_number}")
+        
+        if lookup_response.status_code != 200:
+            print_result(False, "Completed order not accessible via customer lookup")
+            return False
+        
+        looked_up_order = lookup_response.json()
+        if looked_up_order['status'] != 'completed':
+            print_result(False, f"Order status incorrect in customer lookup: {looked_up_order['status']}")
+            return False
+        
+        print_result(True, "✅ Completed order still accessible via customer lookup")
+        
+        return True
+        
+    except Exception as e:
+        print_result(False, f"Error testing order completion workflow: {str(e)}")
+        return False
+
+def test_automatic_order_completion_view_orders():
+    """Test that automatic order completion immediately removes orders from view-orders"""
+    print_test_header("Automatic Order Completion - Immediate View Orders Update")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Create a multi-item test order
+        test_order_data = {
+            "customerName": "Multi-Item Auto-Complete Test",
+            "items": [
+                {"name": "Tea", "quantity": 1},
+                {"name": "Coffee", "quantity": 1}
+            ],
+            "paymentMethod": "cash"
+        }
+        
+        create_response = requests.post(f"{API_URL}/orders/", json=test_order_data, headers=headers)
+        
+        if create_response.status_code != 201:
+            print_result(False, f"Failed to create multi-item test order: {create_response.status_code}")
+            return False
+        
+        created_order = create_response.json()
+        order_id = created_order['id']
+        order_number = created_order['orderNumber']
+        
+        print_result(True, f"Created multi-item test order {order_number}")
+        
+        # Mark first item as finished (order should remain pending)
+        update_data_1 = {
+            "order_id": order_id,
+            "item_name": "Tea",
+            "cooking_status": "finished"
+        }
+        
+        update_response_1 = requests.patch(f"{API_URL}/orders/cooking-status", json=update_data_1, headers=headers)
+        
+        if update_response_1.status_code != 200:
+            print_result(False, "Failed to update first item status")
+            return False
+        
+        update_result_1 = update_response_1.json()
+        
+        if update_result_1.get("order_auto_completed"):
+            print_result(False, "Order auto-completed prematurely (only 1 of 2 items finished)")
+            return False
+        
+        print_result(True, "✅ Order remains pending when only some items are finished")
+        
+        # Verify order still appears in view-orders
+        view_orders_response = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response.status_code != 200:
+            print_result(False, "Failed to get view orders")
+            return False
+        
+        categories = view_orders_response.json()
+        order_found = False
+        
+        for category in categories:
+            for item in category['items']:
+                for order in item['orders']:
+                    if order['order_id'] == order_id:
+                        order_found = True
+                        break
+        
+        if not order_found:
+            print_result(False, "Order disappeared from view-orders prematurely")
+            return False
+        
+        print_result(True, "✅ Partially completed order still appears in view-orders")
+        
+        # Mark second item as finished (order should auto-complete)
+        update_data_2 = {
+            "order_id": order_id,
+            "item_name": "Coffee",
+            "cooking_status": "finished"
+        }
+        
+        update_response_2 = requests.patch(f"{API_URL}/orders/cooking-status", json=update_data_2, headers=headers)
+        
+        if update_response_2.status_code != 200:
+            print_result(False, "Failed to update second item status")
+            return False
+        
+        update_result_2 = update_response_2.json()
+        
+        if not update_result_2.get("order_auto_completed"):
+            print_result(False, "Order was not auto-completed when all items finished")
+            return False
+        
+        print_result(True, "✅ Order auto-completed when all items marked as finished")
+        
+        # Verify order immediately disappears from view-orders
+        view_orders_response_final = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response_final.status_code != 200:
+            print_result(False, "Failed to get view orders after auto-completion")
+            return False
+        
+        categories_final = view_orders_response_final.json()
+        order_found_final = False
+        
+        for category in categories_final:
+            for item in category['items']:
+                for order in item['orders']:
+                    if order['order_id'] == order_id:
+                        order_found_final = True
+                        break
+        
+        if order_found_final:
+            print_result(False, "CRITICAL: Auto-completed order still appears in view-orders")
+            return False
+        
+        print_result(True, "✅ Auto-completed order immediately excluded from view-orders")
+        
+        return True
+        
+    except Exception as e:
+        print_result(False, f"Error testing automatic order completion: {str(e)}")
+        return False
+
+def test_view_orders_status_filtering_edge_cases():
+    """Test edge cases for view orders status filtering"""
+    print_test_header("View Orders Status Filtering Edge Cases")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Get current view orders state
+        view_orders_response = requests.get(f"{API_URL}/orders/view-orders", headers=headers)
+        
+        if view_orders_response.status_code != 200:
+            print_result(False, "Failed to get view orders")
+            return False
+        
+        categories = view_orders_response.json()
+        
+        # Verify all orders in view-orders have valid structure and pending status
+        total_items_in_view = 0
+        unique_order_ids = set()
+        invalid_orders = []
+        
+        for category in categories:
+            if not isinstance(category, dict) or 'items' not in category:
+                print_result(False, "Invalid category structure in view-orders")
+                return False
+            
+            for item in category['items']:
+                if not isinstance(item, dict) or 'orders' not in item:
+                    print_result(False, "Invalid item structure in view-orders")
+                    return False
+                
+                for order in item['orders']:
+                    total_items_in_view += 1
+                    unique_order_ids.add(order['order_id'])
+                    
+                    # Check required fields
+                    required_fields = ['order_id', 'orderNumber', 'customerName', 'quantity', 'cooking_status', 'orderTime']
+                    for field in required_fields:
+                        if field not in order:
+                            invalid_orders.append(f"Order {order.get('order_id', 'unknown')} missing field: {field}")
+                    
+                    # Validate cooking status
+                    valid_statuses = ['not started', 'cooking', 'finished']
+                    if order.get('cooking_status') not in valid_statuses:
+                        invalid_orders.append(f"Order {order.get('order_id', 'unknown')} has invalid cooking status: {order.get('cooking_status')}")
+                    
+                    # Validate order number format (should be numeric)
+                    order_number = order.get('orderNumber')
+                    if not str(order_number).isdigit():
+                        invalid_orders.append(f"Order {order.get('order_id', 'unknown')} has non-numeric order number: {order_number}")
+        
+        if invalid_orders:
+            for error in invalid_orders:
+                print_result(False, error)
+            return False
+        
+        print_result(True, f"✅ All {total_items_in_view} order items in view-orders have valid structure")
+        print_result(True, f"✅ View-orders contains {len(unique_order_ids)} unique orders")
+        
+        # Cross-reference with all orders to ensure filtering is correct
+        all_orders_response = requests.get(f"{API_URL}/orders/", headers=headers)
+        
+        if all_orders_response.status_code == 200:
+            all_orders = all_orders_response.json()
+            
+            # Count orders by status
+            status_counts = {}
+            pending_orders = []
+            for order in all_orders:
+                status = order.get('status', 'unknown')
+                status_counts[status] = status_counts.get(status, 0) + 1
+                if status == 'pending':
+                    pending_orders.append(order)
+            
+            print_result(True, f"Database order status distribution: {status_counts}")
+            
+            # Verify view-orders unique order count matches pending orders count
+            pending_count = status_counts.get('pending', 0)
+            
+            if len(unique_order_ids) != pending_count:
+                print_result(False, f"Mismatch: view-orders shows {len(unique_order_ids)} unique orders, but database has {pending_count} pending orders")
+                return False
+            
+            print_result(True, f"✅ View-orders unique order count ({len(unique_order_ids)}) matches pending orders count ({pending_count})")
+            
+            # Calculate expected total items from pending orders
+            expected_total_items = sum(len(order.get('items', [])) for order in pending_orders)
+            
+            if total_items_in_view != expected_total_items:
+                print_result(False, f"Item count mismatch: view-orders shows {total_items_in_view} items, expected {expected_total_items} from pending orders")
+                return False
+            
+            print_result(True, f"✅ View-orders item count ({total_items_in_view}) matches expected items from pending orders ({expected_total_items})")
+        
+        return True
+        
+    except Exception as e:
+        print_result(False, f"Error testing view orders edge cases: {str(e)}")
+        return False
+
 def run_enhanced_mem_famous_tests():
     """Run all enhanced Mem Famous Stall 2025 tests"""
     print(f"🚀 Starting Enhanced Mem Famous Stall 2025 System Tests")
     print(f"📅 Test run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"🏪 Testing enhanced system with category-based view orders, price analysis, and Excel export functionality")
+    print(f"🎯 SPECIAL FOCUS: View Orders Bug Fix - Testing completed orders exclusion")
     
     # Get authentication token first
     if not get_auth_token():
@@ -876,6 +1298,12 @@ def run_enhanced_mem_famous_tests():
     
     # Run all tests in priority order
     tests = [
+        # CRITICAL PRIORITY - View Orders Bug Fix (User Reported Issue)
+        ("View Orders Excludes Completed Orders", test_view_orders_excludes_completed_orders, "CRITICAL"),
+        ("Order Completion Workflow - View Orders Integration", test_order_completion_workflow, "CRITICAL"),
+        ("Automatic Order Completion - Immediate View Orders Update", test_automatic_order_completion_view_orders, "CRITICAL"),
+        ("View Orders Status Filtering Edge Cases", test_view_orders_status_filtering_edge_cases, "CRITICAL"),
+        
         # HIGH PRIORITY - Category-Based View Orders
         ("Category-Based View Orders Endpoint", test_category_based_view_orders, "HIGH"),
         ("Category Grouping with Food Categories", test_category_grouping, "HIGH"),
@@ -917,6 +1345,8 @@ def run_enhanced_mem_famous_tests():
     
     passed = 0
     total = len(results)
+    critical_priority_passed = 0
+    critical_priority_total = 0
     high_priority_passed = 0
     high_priority_total = 0
     
@@ -925,24 +1355,34 @@ def run_enhanced_mem_famous_tests():
         print(f"{status} [{priority}] {test_name}")
         if result:
             passed += 1
-        if priority == "HIGH":
+        if priority == "CRITICAL":
+            critical_priority_total += 1
+            if result:
+                critical_priority_passed += 1
+        elif priority == "HIGH":
             high_priority_total += 1
             if result:
                 high_priority_passed += 1
     
     print(f"\n🎯 Overall Results: {passed}/{total} tests passed")
+    print(f"🚨 CRITICAL Priority Results: {critical_priority_passed}/{critical_priority_total} tests passed")
     print(f"🔥 High Priority Results: {high_priority_passed}/{high_priority_total} tests passed")
     
     if passed == total:
         print("🎉 All enhanced Mem Famous Stall 2025 tests PASSED!")
         print("✅ System ready with all new features working correctly")
         return True
-    elif high_priority_passed == high_priority_total:
-        print("⚠️  All HIGH PRIORITY tests passed, some medium priority tests failed")
-        print("✅ Core enhanced functionality working correctly")
+    elif critical_priority_passed == critical_priority_total:
+        print("✅ All CRITICAL PRIORITY tests passed - View Orders bug fix verified!")
+        if high_priority_passed == high_priority_total:
+            print("✅ All HIGH PRIORITY tests also passed")
+            print("🎉 Core enhanced functionality working correctly")
+        else:
+            print("⚠️  Some HIGH PRIORITY tests failed, but critical View Orders functionality is working")
         return True
     else:
-        print("❌ Some HIGH PRIORITY tests FAILED - critical issues found")
+        print("❌ Some CRITICAL PRIORITY tests FAILED - View Orders bug still present!")
+        print("🚨 URGENT: View Orders functionality needs immediate attention")
         return False
 
 if __name__ == "__main__":

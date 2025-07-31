@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from './ui/button';
-import { LogOut, User, BarChart3, ClipboardList } from 'lucide-react';
+import { LogOut, User, BarChart3, ClipboardList, Monitor } from 'lucide-react';
 import { authService } from '../services/auth';
 
 const Header = ({ onLogout, currentPage, onNavigate }) => {
@@ -38,6 +38,14 @@ const Header = ({ onLogout, currentPage, onNavigate }) => {
               >
                 <BarChart3 className="h-4 w-4" />
                 Reports
+              </Button>
+              <Button
+                variant={currentPage === 'order-queue' ? 'default' : 'outline'}
+                onClick={() => onNavigate('order-queue')}
+                className="flex items-center gap-2"
+              >
+                <Monitor className="h-4 w-4" />
+                Order Queue
               </Button>
             </div>
             
