@@ -27,6 +27,10 @@ fastapi==0.110.1
     python-multipart>=0.0.9
     jq>=1.6.0
     typer>=0.9.0
+fastapi
+uvicorn[standard]
+databases
 asyncpg
 sqlalchemy
-databases
+python-dotenv
+
