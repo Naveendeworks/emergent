@@ -1,5 +1,5 @@
 from typing import List, Optional
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from asyncpg import Pool
 from models.notification import Notification, NotificationCreate, NotificationUpdate, EASTERN_TZ
 from models.order import Order, OrderItem
 from datetime import datetime, timedelta
@@ -8,9 +8,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 class NotificationService:
-    def __init__(self, db: AsyncIOMotorDatabase):
-        self.db = db
-        self.collection = db.notifications
+    def __init__(self, pool: Pool):
+        self.pool = pool
     
     def get_eastern_time(self):
         """Get current Eastern time"""
@@ -20,28 +19,29 @@ class NotificationService:
         """Create a new notification"""
         try:
             current_time = self.get_eastern_time()
-            notification = Notification(
-                customerName=notification_data.customerName,
-                message=notification_data.message,
-                orderId=notification_data.orderId,
-                createdAt=current_time
-            )
             
-            notification_dict = notification.dict()
-            # Convert datetime objects to strings for MongoDB
-            if notification_dict.get('createdAt'):
-                notification_dict['createdAt'] = notification_dict['createdAt'].isoformat()
-            
-            result = await self.collection.insert_one(notification_dict)
-            
-            if result.inserted_id:
-                notification_dict['_id'] = str(result.inserted_id)
-                # Convert back to datetime objects for response
-                if notification_dict.get('createdAt'):
-                    notification_dict['createdAt'] = datetime.fromisoformat(notification_dict['createdAt'])
-                return Notification(**notification_dict)
-            else:
-                raise Exception("Failed to create notification")
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow("""
+                    INSERT INTO notifications (
+                        customer_name, 
+                        message, 
+                        order_id, 
+                        created_at,
+                        status
+                    ) VALUES ($1, $2, $3, $4, $5)
+                    RETURNING *
+                """,
+                notification_data.customerName,
+                notification_data.message,
+                notification_data.orderId,
+                current_time,
+                'active'
+                )
+                
+                if row:
+                    return Notification(**dict(row))
+                else:
+                    raise Exception("Failed to create notification")
                 
         except Exception as e:
             logger.error(f"Error creating notification: {str(e)}")
@@ -50,16 +50,13 @@ class NotificationService:
     async def get_active_notifications(self) -> List[Notification]:
         """Get all active notifications for display"""
         try:
-            cursor = self.collection.find({"isActive": True}).sort("createdAt", -1)
-            notifications = []
-            async for notification_doc in cursor:
-                notification_doc['_id'] = str(notification_doc['_id'])
-                # Convert ISO string back to datetime if needed
-                if isinstance(notification_doc.get('createdAt'), str):
-                    notification_doc['createdAt'] = datetime.fromisoformat(notification_doc['createdAt'])
-                
-                notifications.append(Notification(**notification_doc))
-            return notifications
+            async with self.pool.acquire() as conn:
+                rows = await conn.fetch("""
+                    SELECT * FROM notifications 
+                    WHERE status = 'active' 
+                    ORDER BY created_at DESC
+                """)
+                return [Notification(**dict(row)) for row in rows]
         except Exception as e:
             logger.error(f"Error fetching active notifications: {str(e)}")
             raise e
@@ -67,16 +64,13 @@ class NotificationService:
     async def get_all_notifications(self, limit: int = 100) -> List[Notification]:
         """Get all notifications with limit"""
         try:
-            cursor = self.collection.find({}).sort("createdAt", -1).limit(limit)
-            notifications = []
-            async for notification_doc in cursor:
-                notification_doc['_id'] = str(notification_doc['_id'])
-                # Convert ISO string back to datetime if needed
-                if isinstance(notification_doc.get('createdAt'), str):
-                    notification_doc['createdAt'] = datetime.fromisoformat(notification_doc['createdAt'])
-                
-                notifications.append(Notification(**notification_doc))
-            return notifications
+            async with self.pool.acquire() as conn:
+                rows = await conn.fetch("""
+                    SELECT * FROM notifications 
+                    ORDER BY created_at DESC 
+                    LIMIT $1
+                """, limit)
+                return [Notification(**dict(row)) for row in rows]
         except Exception as e:
             logger.error(f"Error fetching notifications: {str(e)}")
             raise e
@@ -86,14 +80,26 @@ class NotificationService:
         try:
             update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
             
-            result = await self.collection.update_one(
-                {"id": notification_id},
-                {"$set": update_dict}
-            )
+            # Build SET clause and parameters
+            set_items = []
+            params = [notification_id]  # First parameter is notification_id
+            param_index = 2  # Start from $2 since $1 is notification_id
             
-            if result.modified_count > 0:
-                return await self.get_notification_by_id(notification_id)
-            return None
+            for key, value in update_dict.items():
+                set_items.append(f"{key} = ${param_index}")
+                params.append(value)
+                param_index += 1
+            
+            set_clause = ", ".join(set_items)
+            
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    f"UPDATE notifications SET {set_clause} WHERE id = $1 RETURNING *",
+                    *params
+                )
+                if row:
+                    return Notification(**dict(row))
+                return None
         except Exception as e:
             logger.error(f"Error updating notification {notification_id}: {str(e)}")
             raise e
@@ -101,14 +107,14 @@ class NotificationService:
     async def get_notification_by_id(self, notification_id: str) -> Optional[Notification]:
         """Get notification by ID"""
         try:
-            notification_doc = await self.collection.find_one({"id": notification_id})
-            if notification_doc:
-                notification_doc['_id'] = str(notification_doc['_id'])
-                if isinstance(notification_doc.get('createdAt'), str):
-                    notification_doc['createdAt'] = datetime.fromisoformat(notification_doc['createdAt'])
-                
-                return Notification(**notification_doc)
-            return None
+            async with self.pool.acquire() as conn:
+                row = await conn.fetchrow(
+                    "SELECT * FROM notifications WHERE id = $1",
+                    notification_id
+                )
+                if row:
+                    return Notification(**dict(row))
+                return None
         except Exception as e:
             logger.error(f"Error fetching notification {notification_id}: {str(e)}")
             raise e
@@ -116,8 +122,12 @@ class NotificationService:
     async def delete_notification(self, notification_id: str) -> bool:
         """Delete notification"""
         try:
-            result = await self.collection.delete_one({"id": notification_id})
-            return result.deleted_count > 0
+            async with self.pool.acquire() as conn:
+                result = await conn.execute(
+                    "DELETE FROM notifications WHERE id = $1",
+                    notification_id
+                )
+                return result == "DELETE 1"
         except Exception as e:
             logger.error(f"Error deleting notification {notification_id}: {str(e)}")
             raise e
@@ -146,12 +156,15 @@ class NotificationService:
         try:
             cutoff_time = self.get_eastern_time() - timedelta(hours=hours_old)
             
-            result = await self.collection.delete_many({
-                "createdAt": {"$lt": cutoff_time.isoformat()}
-            })
-            
-            logger.info(f"Cleared {result.deleted_count} old notifications")
-            return result.deleted_count
+            async with self.pool.acquire() as conn:
+                result = await conn.execute("""
+                    DELETE FROM notifications 
+                    WHERE created_at < $1
+                """, cutoff_time)
+                
+                deleted_count = int(result.split()[1]) if result else 0
+                logger.info(f"Cleared {deleted_count} old notifications")
+                return deleted_count
         except Exception as e:
             logger.error(f"Error clearing old notifications: {str(e)}")
             raise e

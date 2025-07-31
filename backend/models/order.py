@@ -4,9 +4,21 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 import uuid
 import pytz
+from sqlalchemy import Table, Column, Integer, String, MetaData
+
 
 # Define timezone
 EASTERN_TZ = pytz.timezone('US/Eastern')
+
+# SQLAlchemy table for orders (for use in server.py)
+metadata = MetaData()
+orders = Table(
+    "orders",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("token", String),
+    Column("status", String),
+)
 
 class OrderItem(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
@@ -65,7 +77,7 @@ class Order(BaseModel):
     totalAmount: float = Field(default=0.0, description="Total order amount in USD")
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         arbitrary_types_allowed = True
         json_encoders = {
             datetime: lambda v: v.isoformat() if v else None
