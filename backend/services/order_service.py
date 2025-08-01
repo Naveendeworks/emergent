@@ -571,6 +571,7 @@ class OrderService:
                     paymentMethod=result['_id'] or 'cash',
                     orderCount=result['orderCount'],
                     totalItems=result['totalItems'],
+                    totalAmount=result.get('totalAmount', 0.0),
                     pendingOrders=result['pendingOrders'],
                     completedOrders=result['completedOrders'],
                     averageDeliveryTime=avg_delivery_time
