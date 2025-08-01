@@ -111,7 +111,7 @@ const OrderQueue = () => {
           <div className="flex flex-col gap-6 p-6">
             {pendingOrders.map((order, index) => (
               <Card 
-                key={`${order.id}-${index}`}
+                key={order.id}
                 className="bg-white/95 backdrop-blur border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 mx-auto w-full max-w-4xl"
               >
                 <CardContent className="p-8">
