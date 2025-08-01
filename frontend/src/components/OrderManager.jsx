@@ -231,6 +231,46 @@ const OrderManager = ({ onLogout }) => {
     loadStats();
   };
 
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+    
+    try {
+      setIsSearching(true);
+      const results = await ordersAPI.searchOrders(query);
+      setSearchResults(results);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to search orders",
+        variant: "destructive",
+      });
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    // Debounce search
+    if (query.length >= 2) {
+      const timeoutId = setTimeout(() => {
+        handleSearch(query);
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+  };
+
   const pendingOrders = orders.filter(order => order.status === 'pending')
     .sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime)); // Old to new
   const completedOrders = orders.filter(order => order.status === 'completed');
