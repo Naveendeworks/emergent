@@ -260,7 +260,10 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
               <Button
                 onClick={handleCancel}
                 variant="outline"
-                className="flex-1 text-red-600 border-red-600 hover:bg-red-50"
+                disabled={hasItemInProcess}
+                className={`flex-1 ${hasItemInProcess 
+                  ? 'text-gray-400 border-gray-300 cursor-not-allowed' 
+                  : 'text-red-600 border-red-600 hover:bg-red-50'}`}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Cancel
