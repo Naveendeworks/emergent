@@ -197,76 +197,154 @@ const OrderQueue = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-6">
-              {/* Priority Orders */}
-              {orders.filter(order => getOrderPriority(order.orderTime) === 'critical').length > 0 && (
-                <div className="animate-fade-in-up">
-                  <div className="flex items-center gap-3 mb-4">
-                    <AlertTriangle className="h-6 w-6 text-red-400" />
-                    <h2 className="text-2xl font-bold text-red-400">URGENT - IMMEDIATE ATTENTION</h2>
-                    <div className="flex-1 h-0.5 bg-red-400/30"></div>
+            <>
+              {/* Pagination Controls - Top */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mb-6 animate-fade-in-up">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      onClick={prevPage}
+                      disabled={currentPage === 0}
+                      className="bg-white/10 text-white border-white/20 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+                    >
+                      <ChevronLeft className="h-5 w-5 mr-2" />
+                      Previous
+                    </Button>
+                    <Button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages - 1}
+                      className="bg-white/10 text-white border-white/20 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-md"
+                    >
+                      Next
+                      <ChevronRight className="h-5 w-5 ml-2" />
+                    </Button>
                   </div>
-                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                    {orders
-                      .filter(order => getOrderPriority(order.orderTime) === 'critical')
-                      .map((order, index) => (
-                        <OrderQueueCard 
-                          key={order.id} 
-                          order={order} 
-                          priority="critical"
-                          index={index}
-                        />
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* High Priority Orders */}
-              {orders.filter(order => getOrderPriority(order.orderTime) === 'high').length > 0 && (
-                <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <Timer className="h-6 w-6 text-amber-400" />
-                    <h2 className="text-2xl font-bold text-amber-400">HIGH PRIORITY</h2>
-                    <div className="flex-1 h-0.5 bg-amber-400/30"></div>
-                  </div>
-                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                    {orders
-                      .filter(order => getOrderPriority(order.orderTime) === 'high')
-                      .map((order, index) => (
-                        <OrderQueueCard 
-                          key={order.id} 
-                          order={order} 
-                          priority="high"
-                          index={index}
-                        />
-                      ))}
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium">Go to page:</span>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <Button
+                        key={i}
+                        onClick={() => goToPage(i)}
+                        className={`w-10 h-10 ${
+                          currentPage === i
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white/10 text-white hover:bg-white/20'
+                        } backdrop-blur-md`}
+                      >
+                        {i + 1}
+                      </Button>
+                    ))}
                   </div>
                 </div>
               )}
 
-              {/* Normal Priority Orders */}
-              {orders.filter(order => getOrderPriority(order.orderTime) === 'normal').length > 0 && (
-                <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <Clock className="h-6 w-6 text-blue-400" />
-                    <h2 className="text-2xl font-bold text-blue-400">STANDARD QUEUE</h2>
-                    <div className="flex-1 h-0.5 bg-blue-400/30"></div>
+              {/* Static Order Display - No Scrolling */}
+              <div className="space-y-6">
+                {/* Critical Priority Orders */}
+                {currentOrders.filter(order => getOrderPriority(order.orderTime) === 'critical').length > 0 && (
+                  <div className="animate-fade-in-up">
+                    <div className="flex items-center gap-3 mb-4">
+                      <AlertTriangle className="h-6 w-6 text-red-400" />
+                      <h2 className="text-2xl font-bold text-red-400">URGENT - IMMEDIATE ATTENTION</h2>
+                      <div className="flex-1 h-0.5 bg-red-400/30"></div>
+                    </div>
+                    <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                      {currentOrders
+                        .filter(order => getOrderPriority(order.orderTime) === 'critical')
+                        .map((order, index) => (
+                          <OrderQueueCard 
+                            key={order.id} 
+                            order={order} 
+                            priority="critical"
+                            index={index}
+                          />
+                        ))}
+                    </div>
                   </div>
-                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-                    {orders
-                      .filter(order => getOrderPriority(order.orderTime) === 'normal')
-                      .map((order, index) => (
-                        <OrderQueueCard 
-                          key={order.id} 
-                          order={order} 
-                          priority="normal"
-                          index={index}
-                        />
-                      ))}
+                )}
+
+                {/* High Priority Orders */}
+                {currentOrders.filter(order => getOrderPriority(order.orderTime) === 'high').length > 0 && (
+                  <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Timer className="h-6 w-6 text-amber-400" />
+                      <h2 className="text-2xl font-bold text-amber-400">HIGH PRIORITY</h2>
+                      <div className="flex-1 h-0.5 bg-amber-400/30"></div>
+                    </div>
+                    <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                      {currentOrders
+                        .filter(order => getOrderPriority(order.orderTime) === 'high')
+                        .map((order, index) => (
+                          <OrderQueueCard 
+                            key={order.id} 
+                            order={order} 
+                            priority="high"
+                            index={index}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Normal Priority Orders */}
+                {currentOrders.filter(order => getOrderPriority(order.orderTime) === 'normal').length > 0 && (
+                  <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Clock className="h-6 w-6 text-blue-400" />
+                      <h2 className="text-2xl font-bold text-blue-400">STANDARD QUEUE</h2>
+                      <div className="flex-1 h-0.5 bg-blue-400/30"></div>
+                    </div>
+                    <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                      {currentOrders
+                        .filter(order => getOrderPriority(order.orderTime) === 'normal')
+                        .map((order, index) => (
+                          <OrderQueueCard 
+                            key={order.id} 
+                            order={order} 
+                            priority="normal"
+                            index={index}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination Controls - Bottom */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center mt-8 animate-fade-in-up">
+                  <div className="flex items-center gap-4 p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                    <Button
+                      onClick={prevPage}
+                      disabled={currentPage === 0}
+                      className="bg-white/10 text-white border-white/20 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="h-5 w-5 mr-2" />
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center gap-2 px-4">
+                      <span className="text-white font-medium">
+                        Page {currentPage + 1} of {totalPages}
+                      </span>
+                      <span className="text-blue-200 text-sm">
+                        (Showing {currentOrders.length} of {orders.length} orders)
+                      </span>
+                    </div>
+                    
+                    <Button
+                      onClick={nextPage}
+                      disabled={currentPage === totalPages - 1}
+                      className="bg-white/10 text-white border-white/20 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                      <ChevronRight className="h-5 w-5 ml-2" />
+                    </Button>
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>
