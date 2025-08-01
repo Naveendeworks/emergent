@@ -93,6 +93,28 @@ const OrderQueue = () => {
     }
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(orders.length / ordersPerPage);
+  const startIndex = currentPage * ordersPerPage;
+  const endIndex = startIndex + ordersPerPage;
+  const currentOrders = orders.slice(startIndex, endIndex);
+
+  const nextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToPage = (pageIndex) => {
+    setCurrentPage(pageIndex);
+  };
+
   if (loading) {
     return (
       <div className="order-queue-bg min-h-screen flex items-center justify-center">
