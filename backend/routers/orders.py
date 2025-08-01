@@ -150,6 +150,20 @@ async def get_price_analysis(
         logger.error(f"Error in get_price_analysis endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to fetch price analysis")
 
+@router.get("/search/{query}", response_model=List[Order])
+async def search_orders(
+    query: str,
+    order_service: OrderService = Depends(get_order_service),
+    current_user: str = Depends(get_current_user)
+):
+    """Search orders by customer name (requires authentication)"""
+    try:
+        orders = await order_service.search_orders_by_customer(query)
+        return orders
+    except Exception as e:
+        logger.error(f"Error in search_orders endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to search orders")
+
 @router.put("/{order_id}/complete", response_model=Order)
 async def complete_order(
     order_id: str,
