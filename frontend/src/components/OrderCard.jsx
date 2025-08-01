@@ -214,7 +214,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                   <Badge 
                     className={`text-xs ${
                       item.cooking_status === 'finished' ? 'bg-green-100 text-green-800 border-green-200' :
-                      item.cooking_status === 'cooking' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
+                      item.cooking_status === 'in process' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                       'bg-gray-100 text-gray-800 border-gray-200'
                     }`}
                   >
