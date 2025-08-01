@@ -35,7 +35,7 @@ class OrderItemCookingUpdate(BaseModel):
     """Model for updating cooking status of an order item"""
     order_id: str = Field(..., min_length=1)
     item_name: str = Field(..., min_length=1, max_length=100)
-    cooking_status: str = Field(..., pattern='^(not started|cooking|finished)$')
+    cooking_status: str = Field(..., pattern='^(not started|in process|finished)$')
 
 class ItemOrderSummary(BaseModel):
     """Summary of orders for a specific menu item"""
