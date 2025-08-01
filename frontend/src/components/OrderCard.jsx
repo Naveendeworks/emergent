@@ -233,7 +233,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="not started">Not Started</SelectItem>
-                      <SelectItem value="cooking">Cooking</SelectItem>
+                      <SelectItem value="in process">In Process</SelectItem>
                       <SelectItem value="finished">Finished</SelectItem>
                     </SelectContent>
                   </Select>
