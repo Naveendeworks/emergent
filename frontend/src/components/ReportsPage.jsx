@@ -275,6 +275,7 @@ const ReportsPage = () => {
                     <TableHead>Payment Method</TableHead>
                     <TableHead>Total Orders</TableHead>
                     <TableHead>Total Items</TableHead>
+                    <TableHead>Total Amount</TableHead>
                     <TableHead>Pending</TableHead>
                     <TableHead>Completed</TableHead>
                     <TableHead>Avg Delivery Time</TableHead>
