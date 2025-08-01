@@ -360,12 +360,12 @@ const OrderQueueCard = ({ order, priority, index }) => {
   const getPrepStatusIcon = (status) => {
     switch (status) {
       case 'finished':
-        return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
+        return <CheckCircle2 className="h-3 w-3 text-emerald-400" />;
       case 'in process':
       case 'cooking':
-        return <Flame className="h-4 w-4 text-amber-400" />;
+        return <Flame className="h-3 w-3 text-amber-400" />;
       default:
-        return <Clock className="h-4 w-4 text-slate-400" />;
+        return <Clock className="h-3 w-3 text-slate-400" />;
     }
   };
 
@@ -383,22 +383,22 @@ const OrderQueueCard = ({ order, priority, index }) => {
 
   return (
     <Card 
-      className={`queue-card border-2 ${priorityClass} animate-ticket-slide-in backdrop-blur-md`}
+      className={`queue-card border-2 ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full`}
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <Hash className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-2">
+            <div className="p-1 bg-white/20 rounded-lg backdrop-blur-sm">
+              <Hash className="h-4 w-4 text-white" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold text-white">
+              <CardTitle className="text-lg font-bold text-white">
                 #{order.orderNumber || order.id.slice(-6)}
               </CardTitle>
-              <div className="flex items-center gap-2 text-blue-200">
-                <Clock className="h-4 w-4" />
-                <span className="text-sm font-medium">
+              <div className="flex items-center gap-1 text-blue-200">
+                <Clock className="h-3 w-3" />
+                <span className="text-xs font-medium">
                   {formatOrderTime(order.orderTime)}
                 </span>
               </div>
@@ -407,52 +407,52 @@ const OrderQueueCard = ({ order, priority, index }) => {
           
           {priority === 'critical' && (
             <div className="animate-pulse">
-              <Badge className="bg-red-500 text-white font-bold border-red-400">
+              <Badge className="bg-red-500 text-white text-xs font-bold border-red-400">
                 🚨 URGENT
               </Badge>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-4 p-3 bg-white/10 rounded-xl backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/20 rounded-lg">
-              <User className="h-4 w-4 text-emerald-300" />
+        <div className="flex items-center justify-between mt-2 p-2 bg-white/10 rounded-lg backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <div className="p-1 bg-emerald-500/20 rounded-lg">
+              <User className="h-3 w-3 text-emerald-300" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg">{order.customerName}</h3>
-              <p className="text-blue-200 text-sm">Customer Order</p>
+              <h3 className="font-bold text-white text-sm">{order.customerName}</h3>
+              <p className="text-blue-200 text-xs">Customer</p>
             </div>
           </div>
           
           <div className="text-right">
-            <div className="text-2xl font-bold text-emerald-400">
+            <div className="text-lg font-bold text-emerald-400">
               ${order.totalAmount?.toFixed(2) || '0.00'}
             </div>
-            <div className="text-blue-200 text-sm">
+            <div className="text-blue-200 text-xs">
               {order.totalItems} items
             </div>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="space-y-3">
-          <h4 className="font-bold text-white flex items-center gap-2 mb-4">
-            <ChefHat className="h-5 w-5 text-orange-400" />
-            Kitchen Preparation Status
+      <CardContent className="pt-0">
+        <div className="space-y-2">
+          <h4 className="font-bold text-white flex items-center gap-1 mb-2 text-sm">
+            <ChefHat className="h-4 w-4 text-orange-400" />
+            Kitchen Status
           </h4>
           
-          {order.items?.map((item, itemIndex) => (
-            <div key={itemIndex} className="p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <Package className="h-5 w-5 text-blue-300" />
+          {order.items?.slice(0, 3).map((item, itemIndex) => (
+            <div key={itemIndex} className="p-2 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Package className="h-3 w-3 text-blue-300" />
                   <div>
-                    <span className="font-bold text-white text-lg">{item.name}</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge className="bg-white/20 text-blue-200 border-white/30">
-                        Qty: {item.quantity}
+                    <span className="font-bold text-white text-sm">{item.name}</span>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <Badge className="bg-white/20 text-blue-200 border-white/30 text-xs">
+                        x{item.quantity}
                       </Badge>
                     </div>
                   </div>
@@ -461,21 +461,27 @@ const OrderQueueCard = ({ order, priority, index }) => {
               
               <div className="flex items-center justify-between">
                 <Badge 
-                  className={`${getPrepStatusColor(item.cooking_status)} border text-sm font-medium flex items-center gap-2`}
+                  className={`${getPrepStatusColor(item.cooking_status)} border text-xs font-medium flex items-center gap-1`}
                 >
                   {getPrepStatusIcon(item.cooking_status)}
                   {item.cooking_status === 'in process' || item.cooking_status === 'cooking' ? 'COOKING' :
-                   item.cooking_status === 'finished' ? 'READY' : 'NOT STARTED'}
+                   item.cooking_status === 'finished' ? 'READY' : 'WAITING'}
                 </Badge>
                 
                 {item.subtotal && (
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-emerald-400 font-bold text-sm">
                     ${item.subtotal.toFixed(2)}
                   </span>
                 )}
               </div>
             </div>
           ))}
+          
+          {order.items?.length > 3 && (
+            <div className="text-center p-1 bg-white/5 rounded text-blue-200 text-xs">
+              +{order.items.length - 3} more items
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
