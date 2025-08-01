@@ -156,7 +156,19 @@ const OrderQueue = () => {
             <div className="flex items-center gap-4 animate-slide-in-right">
               <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
                 <div className="text-2xl font-bold text-white">{orders.length}</div>
-                <div className="text-blue-100 text-sm">Active Orders</div>
+                <div className="text-blue-100 text-sm">Total Orders</div>
+              </div>
+              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-2xl font-bold text-emerald-400">
+                  {currentOrders.length}
+                </div>
+                <div className="text-blue-100 text-sm">Showing Now</div>
+              </div>
+              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-2xl font-bold text-purple-400">
+                  {totalPages > 0 ? currentPage + 1 : 0}/{totalPages}
+                </div>
+                <div className="text-blue-100 text-sm">Page</div>
               </div>
               <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
                 <div className="text-2xl font-bold text-emerald-400">
