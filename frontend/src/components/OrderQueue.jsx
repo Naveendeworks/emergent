@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Clock, Hash, User, ChefHat, RefreshCw } from 'lucide-react';
-import { ordersAPI } from '../services/api';
+import { ArrowLeft, Monitor, Clock, User, Hash, ChefHat, Package, Timer, Flame, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const OrderQueue = () => {
-  const [pendingOrders, setPendingOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     loadPendingOrders();
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(loadPendingOrders, 30000);
+    const interval = setInterval(loadPendingOrders, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
   const loadPendingOrders = async () => {
     try {
-      setLoading(true);
-      const allOrders = await ordersAPI.getOrders();
-      const pending = allOrders.filter(order => order.status === 'pending');
-      setPendingOrders(pending);
+      const ordersData = await ordersAPI.getOrders();
+      const pendingOrders = ordersData
+        .filter(order => order.status === 'pending')
+        .sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
+      setOrders(pendingOrders);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to load pending orders",
+        title: "Kitchen Display Error",
+        description: "Failed to load kitchen orders",
         variant: "destructive",
       });
     } finally {
@@ -35,148 +35,336 @@ const OrderQueue = () => {
     }
   };
 
-  const calculateElapsedTime = (orderTime) => {
+  const getOrderPriority = (orderTime) => {
     const now = new Date();
     const orderDate = new Date(orderTime);
-    const diffMs = now - orderDate;
-    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const minutesElapsed = (now - orderDate) / (1000 * 60);
     
-    if (diffMins < 60) {
-      return `${diffMins}m`;
-    } else {
-      const hours = Math.floor(diffMins / 60);
-      const remainingMins = diffMins % 60;
-      return `${hours}h ${remainingMins}m`;
+    if (minutesElapsed > 30) return 'critical';
+    if (minutesElapsed > 15) return 'high';
+    return 'normal';
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'critical':
+        return 'border-red-500 bg-gradient-to-br from-red-100 to-red-50';
+      case 'high':
+        return 'border-amber-500 bg-gradient-to-br from-amber-100 to-amber-50';
+      default:
+        return 'border-blue-500 bg-gradient-to-br from-blue-100 to-blue-50';
     }
   };
 
-  const getElapsedTimeColor = (orderTime) => {
-    const now = new Date();
-    const orderDate = new Date(orderTime);
-    const diffMs = now - orderDate;
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    
-    if (diffMins < 15) return 'text-green-600 bg-green-100';
-    if (diffMins < 30) return 'text-yellow-600 bg-yellow-100';
-    if (diffMins < 60) return 'text-orange-600 bg-orange-100';
-    return 'text-red-600 bg-red-100';
+  const getPriorityIcon = (priority) => {
+    switch (priority) {
+      case 'critical':
+        return <AlertTriangle className="h-5 w-5 text-red-600" />;
+      case 'high':
+        return <Timer className="h-5 w-5 text-amber-600" />;
+      default:
+        return <Clock className="h-5 w-5 text-blue-600" />;
+    }
   };
 
+  const getPrepStatusIcon = (status) => {
+    switch (status) {
+      case 'finished':
+        return <CheckCircle2 className="h-4 w-4 text-emerald-600" />;
+      case 'in process':
+      case 'cooking':
+        return <Flame className="h-4 w-4 text-amber-600" />;
+      default:
+        return <Clock className="h-4 w-4 text-slate-500" />;
+    }
+  };
+
+  const getPrepStatusColor = (status) => {
+    switch (status) {
+      case 'finished':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+      case 'in process':
+      case 'cooking':
+        return 'bg-amber-100 text-amber-800 border-amber-300';
+      default:
+        return 'bg-slate-100 text-slate-700 border-slate-300';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="order-queue-bg min-h-screen flex items-center justify-center">
+        <div className="text-center animate-fade-in-up">
+          <div className="relative">
+            <div className="w-24 h-24 mx-auto mb-6 bg-white/10 rounded-3xl shadow-2xl flex items-center justify-center animate-restaurant-pulse">
+              <Monitor className="h-12 w-12 text-white" />
+            </div>
+            <div className="absolute inset-0 w-24 h-24 mx-auto rounded-3xl bg-gradient-to-r from-blue-400 to-purple-500 opacity-20 animate-ping" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-2">
+            Kitchen Display System
+          </h2>
+          <p className="text-blue-100 mb-4">Loading live order queue...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-blue-600/10 via-purple-600/5 to-transparent"></div>
-      
-      {/* Header */}
-      <div className="relative z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-2xl">
+    <div className="order-queue-bg min-h-screen">
+      {/* KDS Header */}
+      <div className="p-8 border-b border-white/20 bg-black/20 backdrop-blur-md">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Mem Famous 2025 Order Queue</h1>
-              <p className="text-blue-100 text-lg">Live Order Display • Real-time Updates</p>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-right">
-                <div className="text-3xl font-bold">{pendingOrders.length}</div>
-                <div className="text-blue-200">Active Orders</div>
+            <div className="flex items-center gap-4 animate-slide-in-left">
+              <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl">
+                <Monitor className="h-10 w-10 text-white" />
               </div>
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={loadPendingOrders}
-                disabled={loading}
-                className="text-white hover:bg-white/20 border-white/30 border"
-              >
-                <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
+              <div>
+                <h1 className="text-4xl font-bold text-white">Kitchen Display System</h1>
+                <p className="text-blue-100 text-lg font-medium flex items-center gap-2">
+                  <ChefHat className="h-5 w-5" />
+                  Real-time Order Processing Dashboard
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4 animate-slide-in-right">
+              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-2xl font-bold text-white">{orders.length}</div>
+                <div className="text-blue-100 text-sm">Active Orders</div>
+              </div>
+              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-2xl font-bold text-emerald-400">
+                  {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+                <div className="text-blue-100 text-sm">Current Time</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Static Queue Content */}
-      <div className="relative overflow-y-auto max-h-[calc(100vh-140px)]">
-        {pendingOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-white">
-            <div className="bg-gradient-to-br from-green-500 to-blue-600 p-12 rounded-full mb-8 shadow-2xl">
-              <ChefHat className="h-20 w-20 text-white" />
+      {/* Order Queue Content */}
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
+          {orders.length === 0 ? (
+            <Card className="queue-card animate-fade-in-up">
+              <CardContent className="text-center py-20">
+                <div className="p-8 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full mx-auto mb-6 w-fit">
+                  <CheckCircle2 className="h-16 w-16 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-white mb-4">Kitchen All Clear! 🎉</h2>
+                <p className="text-blue-100 text-lg">
+                  No pending orders in the kitchen queue. Outstanding work team!
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {/* Priority Orders */}
+              {orders.filter(order => getOrderPriority(order.orderTime) === 'critical').length > 0 && (
+                <div className="animate-fade-in-up">
+                  <div className="flex items-center gap-3 mb-4">
+                    <AlertTriangle className="h-6 w-6 text-red-400" />
+                    <h2 className="text-2xl font-bold text-red-400">URGENT - IMMEDIATE ATTENTION</h2>
+                    <div className="flex-1 h-0.5 bg-red-400/30"></div>
+                  </div>
+                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                    {orders
+                      .filter(order => getOrderPriority(order.orderTime) === 'critical')
+                      .map((order, index) => (
+                        <OrderQueueCard 
+                          key={order.id} 
+                          order={order} 
+                          priority="critical"
+                          index={index}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* High Priority Orders */}
+              {orders.filter(order => getOrderPriority(order.orderTime) === 'high').length > 0 && (
+                <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Timer className="h-6 w-6 text-amber-400" />
+                    <h2 className="text-2xl font-bold text-amber-400">HIGH PRIORITY</h2>
+                    <div className="flex-1 h-0.5 bg-amber-400/30"></div>
+                  </div>
+                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                    {orders
+                      .filter(order => getOrderPriority(order.orderTime) === 'high')
+                      .map((order, index) => (
+                        <OrderQueueCard 
+                          key={order.id} 
+                          order={order} 
+                          priority="high"
+                          index={index}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Normal Priority Orders */}
+              {orders.filter(order => getOrderPriority(order.orderTime) === 'normal').length > 0 && (
+                <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Clock className="h-6 w-6 text-blue-400" />
+                    <h2 className="text-2xl font-bold text-blue-400">STANDARD QUEUE</h2>
+                    <div className="flex-1 h-0.5 bg-blue-400/30"></div>
+                  </div>
+                  <div className="kds-scroll grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                    {orders
+                      .filter(order => getOrderPriority(order.orderTime) === 'normal')
+                      .map((order, index) => (
+                        <OrderQueueCard 
+                          key={order.id} 
+                          order={order} 
+                          priority="normal"
+                          index={index}
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <h2 className="text-3xl font-bold mb-4">All Caught Up!</h2>
-            <p className="text-blue-200 text-center text-lg max-w-md">
-              No pending orders in the queue. All orders have been processed successfully.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 p-4">
-            {pendingOrders.map((order, index) => (
-              <Card 
-                key={order.id}
-                className="bg-white/95 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-              >
-                <CardContent className="p-4">
-                  {/* Header Row - Order # and Time */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg shadow-md">
-                        <Hash className="h-4 w-4 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-lg font-bold text-gray-800">#{order.orderNumber}</div>
-                        <div className="text-xs text-gray-500">{order.customerName}</div>
-                      </div>
-                    </div>
-                    <Badge className={`px-2 py-1 text-xs font-bold ${getElapsedTimeColor(order.orderTime)}`}>
-                      <Clock className="h-3 w-3 mr-1" />
-                      {calculateElapsedTime(order.orderTime)}
-                    </Badge>
-                  </div>
-
-                  {/* Items Summary */}
-                  <div className="space-y-2">
-                    {order.items.slice(0, 3).map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-800 truncate">{item.name}</div>
-                          <div className="text-xs text-gray-500">Qty: {item.quantity} • ${item.subtotal?.toFixed(2) || '0.00'}</div>
-                        </div>
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs px-2 py-1 font-medium ml-2 ${
-                            item.cooking_status === 'finished' ? 'bg-green-100 text-green-700 border-green-300' :
-                            item.cooking_status === 'in process' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
-                            'bg-gray-100 text-gray-600 border-gray-300'
-                          }`}
-                        >
-                          {item.cooking_status === 'not started' ? 'PENDING' : 
-                           item.cooking_status === 'in process' ? 'IN PROCESS' : 'READY'}
-                        </Badge>
-                      </div>
-                    ))}
-                    
-                    {order.items.length > 3 && (
-                      <div className="text-center py-1">
-                        <Badge className="bg-blue-100 text-blue-700 px-2 py-1 text-xs">
-                          +{order.items.length - 3} more items
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer - Total Amount */}
-                  {order.totalAmount && (
-                    <div className="flex justify-between items-center mt-3 pt-2 border-t">
-                      <span className="text-xs text-gray-500">Total:</span>
-                      <span className="text-sm font-bold text-green-600">${order.totalAmount.toFixed(2)}</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
+  );
+};
+
+const OrderQueueCard = ({ order, priority, index }) => {
+  const priorityClass = priority === 'critical' ? 'border-red-500 bg-gradient-to-br from-red-900/50 to-red-800/30' :
+                       priority === 'high' ? 'border-amber-500 bg-gradient-to-br from-amber-900/50 to-amber-800/30' :
+                       'border-blue-500 bg-gradient-to-br from-blue-900/50 to-blue-800/30';
+
+  const getPrepStatusIcon = (status) => {
+    switch (status) {
+      case 'finished':
+        return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
+      case 'in process':
+      case 'cooking':
+        return <Flame className="h-4 w-4 text-amber-400" />;
+      default:
+        return <Clock className="h-4 w-4 text-slate-400" />;
+    }
+  };
+
+  const getPrepStatusColor = (status) => {
+    switch (status) {
+      case 'finished':
+        return 'bg-emerald-900/50 text-emerald-200 border-emerald-500';
+      case 'in process':
+      case 'cooking':
+        return 'bg-amber-900/50 text-amber-200 border-amber-500';
+      default:
+        return 'bg-slate-900/50 text-slate-300 border-slate-500';
+    }
+  };
+
+  return (
+    <Card 
+      className={`queue-card border-2 ${priorityClass} animate-ticket-slide-in backdrop-blur-md`}
+      style={{ animationDelay: `${index * 0.1}s` }}
+    >
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+              <Hash className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold text-white">
+                #{order.orderNumber || order.id.slice(-6)}
+              </CardTitle>
+              <div className="flex items-center gap-2 text-blue-200">
+                <Clock className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  {formatOrderTime(order.orderTime)}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          {priority === 'critical' && (
+            <div className="animate-pulse">
+              <Badge className="bg-red-500 text-white font-bold border-red-400">
+                🚨 URGENT
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between mt-4 p-3 bg-white/10 rounded-xl backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-500/20 rounded-lg">
+              <User className="h-4 w-4 text-emerald-300" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-lg">{order.customerName}</h3>
+              <p className="text-blue-200 text-sm">Customer Order</p>
+            </div>
+          </div>
+          
+          <div className="text-right">
+            <div className="text-2xl font-bold text-emerald-400">
+              ${order.totalAmount?.toFixed(2) || '0.00'}
+            </div>
+            <div className="text-blue-200 text-sm">
+              {order.totalItems} items
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-3">
+          <h4 className="font-bold text-white flex items-center gap-2 mb-4">
+            <ChefHat className="h-5 w-5 text-orange-400" />
+            Kitchen Preparation Status
+          </h4>
+          
+          {order.items?.map((item, itemIndex) => (
+            <div key={itemIndex} className="p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <Package className="h-5 w-5 text-blue-300" />
+                  <div>
+                    <span className="font-bold text-white text-lg">{item.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge className="bg-white/20 text-blue-200 border-white/30">
+                        Qty: {item.quantity}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Badge 
+                  className={`${getPrepStatusColor(item.cooking_status)} border text-sm font-medium flex items-center gap-2`}
+                >
+                  {getPrepStatusIcon(item.cooking_status)}
+                  {item.cooking_status === 'in process' || item.cooking_status === 'cooking' ? 'COOKING' :
+                   item.cooking_status === 'finished' ? 'READY' : 'NOT STARTED'}
+                </Badge>
+                
+                {item.subtotal && (
+                  <span className="text-emerald-400 font-bold">
+                    ${item.subtotal.toFixed(2)}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
