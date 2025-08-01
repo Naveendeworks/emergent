@@ -468,11 +468,22 @@ const OrderQueueCard = ({ order, priority, index }) => {
                    item.cooking_status === 'finished' ? 'READY' : 'WAITING'}
                 </Badge>
                 
-                {item.subtotal && (
-                  <span className="text-emerald-400 font-bold text-sm">
-                    ${item.subtotal.toFixed(2)}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {item.subtotal && (
+                    <span className="text-emerald-400 font-bold text-sm">
+                      ${item.subtotal.toFixed(2)}
+                    </span>
+                  )}
+                  <select 
+                    value={item.cooking_status || 'not started'} 
+                    onChange={(e) => handleStatusUpdate(order.id, item.name, e.target.value)}
+                    className="bg-white/10 text-white border border-white/30 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
+                  >
+                    <option value="not started" style={{color: 'black'}}>Not Started</option>
+                    <option value="cooking" style={{color: 'black'}}>Cooking</option>
+                    <option value="finished" style={{color: 'black'}}>Finished</option>
+                  </select>
+                </div>
               </div>
             </div>
           ))}
