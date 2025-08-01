@@ -276,6 +276,7 @@ const OrderQueue = () => {
                             order={order} 
                             priority="critical"
                             index={index}
+                            onStatusUpdate={handleStatusUpdate}
                           />
                         ))}
                     </div>
