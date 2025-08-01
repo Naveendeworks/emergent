@@ -538,6 +538,61 @@ const ReportsPage = () => {
               </Table>
             )}
           </div>
+
+          {/* Payment Method Analysis */}
+          {priceAnalysis?.payment_methods && (
+            <>
+              <div className="mt-8 mb-4">
+                <h3 className="text-lg font-semibold">Revenue by Payment Method</h3>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Payment Method</TableHead>
+                    <TableHead>Total Orders</TableHead>
+                    <TableHead>Total Items</TableHead>
+                    <TableHead>Total Revenue</TableHead>
+                    <TableHead>Avg Order Value</TableHead>
+                    <TableHead>Revenue %</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {priceAnalysis.payment_methods.map((method) => (
+                    <TableRow key={method.payment_method}>
+                      <TableCell>
+                        <Badge className={`${getPaymentMethodColor(method.payment_method)} text-xs`}>
+                          {getPaymentMethodIcon(method.payment_method)}
+                          {method.payment_method.charAt(0).toUpperCase() + method.payment_method.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">{method.total_orders}</TableCell>
+                      <TableCell>{method.total_items}</TableCell>
+                      <TableCell className="font-medium text-green-600">
+                        ${method.total_revenue?.toFixed(2) || '0.00'}
+                      </TableCell>
+                      <TableCell>
+                        ${method.total_orders > 0 
+                          ? (method.total_revenue / method.total_orders).toFixed(2) 
+                          : '0.00'
+                        }
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs text-blue-600 bg-blue-50"
+                        >
+                          {priceAnalysis.total_revenue > 0 
+                            ? ((method.total_revenue / priceAnalysis.total_revenue) * 100).toFixed(1)
+                            : '0.0'
+                          }%
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
+          )}
         </TabsContent>
       </Tabs>
     </div>
