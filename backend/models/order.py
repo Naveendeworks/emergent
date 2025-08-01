@@ -13,7 +13,7 @@ class OrderItem(BaseModel):
     quantity: int = Field(..., ge=1, le=100)
     price: float = Field(..., gt=0, description="Price per item in USD")
     subtotal: float = Field(..., gt=0, description="Total for this item (price * quantity)")
-    cooking_status: str = Field(default="not started", pattern='^(not started|cooking|finished)$')
+    cooking_status: str = Field(default="not started", pattern='^(not started|in process|finished)$')
 
 class OrderItemCreate(BaseModel):
     """Simplified order item for frontend - backend will calculate prices"""
