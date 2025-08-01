@@ -227,7 +227,8 @@ const OrderManager = ({ onLogout }) => {
     loadStats();
   };
 
-  const pendingOrders = orders.filter(order => order.status === 'pending');
+  const pendingOrders = orders.filter(order => order.status === 'pending')
+    .sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime)); // Old to new
   const completedOrders = orders.filter(order => order.status === 'completed');
 
   return (
