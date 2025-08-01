@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { ArrowLeft, Monitor, Clock, User, Hash, ChefHat, Package, Timer, Flame, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Monitor, Clock, User, Hash, ChefHat, Package, Timer, Flame, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ordersAPI, formatOrderTime } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const OrderQueue = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [ordersPerPage] = useState(10);
   const { toast } = useToast();
 
   useEffect(() => {
