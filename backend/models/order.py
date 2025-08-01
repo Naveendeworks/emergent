@@ -104,6 +104,7 @@ class PaymentReport(BaseModel):
     totalItems: int
     pendingOrders: int
     completedOrders: int
+    totalAmount: float  # Total revenue for this payment method
     averageDeliveryTime: Optional[float] = None
 
 class ItemReport(BaseModel):
