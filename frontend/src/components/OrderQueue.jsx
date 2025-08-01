@@ -171,12 +171,12 @@ const OrderQueue = () => {
                             variant="outline" 
                             className={`text-sm px-3 py-1 font-semibold ${
                               item.cooking_status === 'finished' ? 'bg-green-100 text-green-700 border-green-300' :
-                              item.cooking_status === 'cooking' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
+                              item.cooking_status === 'in process' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
                               'bg-gray-100 text-gray-600 border-gray-300'
                             }`}
                           >
                             {item.cooking_status === 'not started' ? 'PENDING' : 
-                             item.cooking_status === 'cooking' ? 'COOKING' : 'READY'}
+                             item.cooking_status === 'in process' ? 'IN PROCESS' : 'READY'}
                           </Badge>
                         </div>
                       ))}
