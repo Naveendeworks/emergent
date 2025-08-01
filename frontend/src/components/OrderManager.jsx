@@ -298,7 +298,56 @@ const OrderManager = ({ onLogout }) => {
               </Button>
             </div>
           </div>
+          
+          {/* Search Section */}
+          <div className="mt-4">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search orders by customer name..."
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                className="pl-10 pr-4"
+              />
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Search Results Section */}
+        {searchQuery && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">
+              Search Results for "{searchQuery}"
+              {searchResults.length > 0 && (
+                <span className="text-sm text-gray-500 ml-2">({searchResults.length} found)</span>
+              )}
+            </h3>
+            {searchResults.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {searchResults.map((order) => (
+                  <OrderCard 
+                    key={order.id} 
+                    order={order} 
+                    onComplete={handleCompleteOrder}
+                    onEdit={handleEditOrder}
+                    onCancel={handleCancelOrder}
+                    onOrderUpdated={handleOrderUpdated}
+                  />
+                ))}
+              </div>
+            ) : (
+              !isSearching && (
+                <p className="text-gray-500">No orders found matching "{searchQuery}"</p>
+              )
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
