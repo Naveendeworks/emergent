@@ -272,7 +272,7 @@ const OrderQueue = () => {
                       <h2 className="text-2xl font-bold text-amber-400">HIGH PRIORITY</h2>
                       <div className="flex-1 h-0.5 bg-amber-400/30"></div>
                     </div>
-                    <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                       {currentOrders
                         .filter(order => getOrderPriority(order.orderTime) === 'high')
                         .map((order, index) => (
