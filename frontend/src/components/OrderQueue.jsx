@@ -62,11 +62,8 @@ const OrderQueue = () => {
     return 'text-red-600 bg-red-100';
   };
 
-  // Duplicate orders for continuous scrolling effect
-  const duplicatedOrders = [...pendingOrders, ...pendingOrders, ...pendingOrders];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-t from-blue-600/10 via-purple-600/5 to-transparent"></div>
       
@@ -98,10 +95,10 @@ const OrderQueue = () => {
         </div>
       </div>
 
-      {/* Scrolling Queue Content */}
-      <div className="relative h-[calc(100vh-140px)] overflow-hidden">
+      {/* Static Queue Content */}
+      <div className="relative overflow-y-auto max-h-[calc(100vh-140px)]">
         {pendingOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-white">
+          <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-white">
             <div className="bg-gradient-to-br from-green-500 to-blue-600 p-12 rounded-full mb-8 shadow-2xl">
               <ChefHat className="h-20 w-20 text-white" />
             </div>
@@ -111,13 +108,8 @@ const OrderQueue = () => {
             </p>
           </div>
         ) : (
-          <div 
-            className="animate-scroll-up flex flex-col gap-6 p-6"
-            style={{
-              animation: 'scrollUp 60s linear infinite',
-            }}
-          >
-            {duplicatedOrders.map((order, index) => (
+          <div className="flex flex-col gap-6 p-6">
+            {pendingOrders.map((order, index) => (
               <Card 
                 key={`${order.id}-${index}`}
                 className="bg-white/95 backdrop-blur border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 mx-auto w-full max-w-4xl"
