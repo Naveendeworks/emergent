@@ -497,7 +497,7 @@ const OrderQueueCard = ({ order, priority, index, onStatusUpdate }) => {
                   )}
                   <select 
                     value={item.cooking_status || 'not started'} 
-                    onChange={(e) => handleStatusUpdate(order.id, item.name, e.target.value)}
+                    onChange={(e) => onStatusUpdate(order.id, item.name, e.target.value)}
                     className="bg-white/10 text-white border border-white/30 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
                   >
                     <option value="not started" style={{color: 'black'}}>Not Started</option>
