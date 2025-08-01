@@ -117,6 +117,17 @@ export const ordersAPI = {
       console.error('Error fetching price analysis:', error);
       throw error;
     }
+  },
+
+  // Search orders by customer name (requires authentication)
+  searchOrders: async (query) => {
+    try {
+      const response = await axios.get(`${API}/orders/search/${encodeURIComponent(query)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching orders:', error);
+      throw error;
+    }
   }
 };
 
