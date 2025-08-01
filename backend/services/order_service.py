@@ -638,3 +638,25 @@ class OrderService:
         except Exception as e:
             logger.error(f"Error deleting order {order_id}: {str(e)}")
             raise e
+    
+    async def search_orders_by_customer(self, query: str) -> List[Order]:
+        """Search orders by customer name"""
+        try:
+            # Use case-insensitive regex search
+            search_pattern = {"customerName": {"$regex": query, "$options": "i"}}
+            
+            cursor = self.collection.find(search_pattern).sort("orderTime", -1)
+            orders = []
+            
+            async for order_doc in cursor:
+                try:
+                    order = Order(**order_doc)
+                    orders.append(order)
+                except Exception as e:
+                    logger.warning(f"Error parsing order {order_doc.get('id')}: {str(e)}")
+                    continue
+            
+            return orders
+        except Exception as e:
+            logger.error(f"Error searching orders by customer '{query}': {str(e)}")
+            raise e
