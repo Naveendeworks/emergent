@@ -373,7 +373,7 @@ const OrderQueue = () => {
   );
 };
 
-const OrderQueueCard = ({ order, priority, index }) => {
+const OrderQueueCard = ({ order, priority, index, onStatusUpdate }) => {
   const priorityClass = priority === 'critical' ? 'border-red-500 bg-gradient-to-br from-red-900/50 to-red-800/30' :
                        priority === 'high' ? 'border-amber-500 bg-gradient-to-br from-amber-900/50 to-amber-800/30' :
                        'border-blue-500 bg-gradient-to-br from-blue-900/50 to-blue-800/30';
