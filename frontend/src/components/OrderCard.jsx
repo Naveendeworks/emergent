@@ -113,6 +113,9 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
 
   const deliveryInfo = getDeliveryInfo();
 
+  // Check if any item is in process to disable cancel button
+  const hasItemInProcess = order.items?.some(item => item.cooking_status === 'in process') || false;
+
   return (
     <Card 
       id={id}
