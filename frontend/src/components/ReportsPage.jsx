@@ -292,6 +292,9 @@ const ReportsPage = () => {
                       </TableCell>
                       <TableCell className="font-medium">{report.orderCount}</TableCell>
                       <TableCell>{report.totalItems}</TableCell>
+                      <TableCell className="font-medium text-green-600">
+                        ${report.totalAmount?.toFixed(2) || '0.00'}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-orange-600">
                           {report.pendingOrders}
