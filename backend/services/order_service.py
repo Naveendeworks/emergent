@@ -323,7 +323,7 @@ class OrderService:
             raise e
 
     async def get_price_analysis(self) -> dict:
-        """Get price analysis for all items and generate Excel data"""
+        """Get price analysis for all items and generate Excel data with payment method breakdown"""
         try:
             # Get all completed orders for analysis
             cursor = self.collection.find({"status": "completed"}).sort("orderTime", -1)
@@ -340,15 +340,33 @@ class OrderService:
             
             # Analyze items
             item_analysis = {}
+            payment_method_analysis = {}
             total_revenue = 0.0
             total_items_sold = 0
             
             for order in orders:
+                payment_method = order.get('paymentMethod', 'cash')
+                order_total = order.get('totalAmount', 0)
+                
+                # Initialize payment method analysis
+                if payment_method not in payment_method_analysis:
+                    payment_method_analysis[payment_method] = {
+                        'payment_method': payment_method,
+                        'total_revenue': 0.0,
+                        'total_orders': 0,
+                        'total_items': 0
+                    }
+                
+                payment_method_analysis[payment_method]['total_revenue'] += order_total
+                payment_method_analysis[payment_method]['total_orders'] += 1
+                
                 for item in order.get('items', []):
                     item_name = item.get('name')
                     quantity = item.get('quantity', 0)
                     price = item.get('price', 0)
                     subtotal = item.get('subtotal', price * quantity)
+                    
+                    payment_method_analysis[payment_method]['total_items'] += quantity
                     
                     if item_name not in item_analysis:
                         menu_item = menu_item_map.get(item_name, None)
@@ -358,8 +376,19 @@ class OrderService:
                             'unit_price': price,
                             'total_quantity': 0,
                             'total_revenue': 0.0,
-                            'order_count': 0
+                            'order_count': 0,
+                            'payment_methods': {}
                         }
+                    
+                    # Track payment method breakdown for each item
+                    if payment_method not in item_analysis[item_name]['payment_methods']:
+                        item_analysis[item_name]['payment_methods'][payment_method] = {
+                            'quantity': 0,
+                            'revenue': 0.0
+                        }
+                    
+                    item_analysis[item_name]['payment_methods'][payment_method]['quantity'] += quantity
+                    item_analysis[item_name]['payment_methods'][payment_method]['revenue'] += subtotal
                     
                     item_analysis[item_name]['total_quantity'] += quantity
                     item_analysis[item_name]['total_revenue'] += subtotal
@@ -375,8 +404,16 @@ class OrderService:
                 reverse=True
             )
             
+            # Sort payment methods by revenue
+            sorted_payment_methods = sorted(
+                payment_method_analysis.values(),
+                key=lambda x: x['total_revenue'],
+                reverse=True
+            )
+            
             return {
                 'items': sorted_items,
+                'payment_methods': sorted_payment_methods,
                 'total_revenue': round(total_revenue, 2),
                 'total_items_sold': total_items_sold,
                 'total_orders': len(orders),
