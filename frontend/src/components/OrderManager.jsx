@@ -23,6 +23,9 @@ const OrderManager = ({ onLogout }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [viewOrdersData, setViewOrdersData] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
