@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Input } from './ui/input';
-import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw, Package, Hash, ChefHat, Search } from 'lucide-react';
+import { ClipboardList, CheckCircle, Clock, Plus, RefreshCw, Package, Hash, ChefHat, Search, TrendingUp, Users, DollarSign, Timer, Utensils, Store } from 'lucide-react';
 import OrderCard from './OrderCard';
 import CreateOrderModal from './CreateOrderModal';
 import EditOrderModal from './EditOrderModal';
@@ -31,7 +31,7 @@ const OrderManager = ({ onLogout }) => {
   useEffect(() => {
     loadOrders();
     loadStats();
-    if (activeTab === 'view-orders') {
+    if (activeTab === 'kitchen-board') {
       loadViewOrdersData();
     }
   }, [activeTab]);
@@ -43,8 +43,8 @@ const OrderManager = ({ onLogout }) => {
       setOrders(ordersData);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to load orders",
+        title: "System Error",
+        description: "Failed to load order tickets",
         variant: "destructive",
       });
     } finally {
@@ -57,7 +57,7 @@ const OrderManager = ({ onLogout }) => {
       const statsData = await ordersAPI.getOrderStats();
       setStats(statsData);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      console.error('Failed to load restaurant metrics:', error);
     }
   };
 
@@ -68,8 +68,8 @@ const OrderManager = ({ onLogout }) => {
       setViewOrdersData(data);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to load view orders data",
+        title: "Kitchen Error",
+        description: "Failed to load kitchen preparation board",
         variant: "destructive",
       });
     } finally {
@@ -80,16 +80,15 @@ const OrderManager = ({ onLogout }) => {
   const handleCookingStatusUpdate = async (orderId, itemName, newStatus) => {
     try {
       await ordersAPI.updateCookingStatus(orderId, itemName, newStatus);
-      // Reload view orders data to reflect changes
       loadViewOrdersData();
       toast({
-        title: "Success",
-        description: `${itemName} status updated to ${newStatus}`,
+        title: "Kitchen Update",
+        description: `${itemName} preparation status updated to ${newStatus}`,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update cooking status",
+        title: "Kitchen Error",
+        description: "Failed to update preparation status",
         variant: "destructive",
       });
     }
@@ -99,7 +98,6 @@ const OrderManager = ({ onLogout }) => {
     try {
       const updatedOrder = await ordersAPI.completeOrder(orderId);
       
-      // Update orders list
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.id === orderId 
@@ -108,25 +106,23 @@ const OrderManager = ({ onLogout }) => {
         )
       );
 
-      // Update stats
       await loadStats();
 
       const completedOrder = orders.find(order => order.id === orderId);
       toast({
-        title: "Order Completed",
-        description: `Order for ${completedOrder?.customerName} has been marked as complete.`,
-        duration: 3000,
+        title: "Order Served! 🎉",
+        description: `Ticket for ${completedOrder?.customerName} has been successfully served.`,
+        duration: 4000,
       });
 
-      // Auto-switch to pending tab if no more pending orders
       const remainingPending = orders.filter(order => order.status === 'pending' && order.id !== orderId);
       if (remainingPending.length === 0) {
-        setTimeout(() => setActiveTab('completed'), 1500);
+        setTimeout(() => setActiveTab('served'), 1500);
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to complete order",
+        title: "Service Error",
+        description: "Failed to complete order service",
         variant: "destructive",
       });
     }
@@ -161,17 +157,14 @@ const OrderManager = ({ onLogout }) => {
 
   const handleOrderUpdated = (updatedOrder = null) => {
     if (updatedOrder) {
-      // Update specific order if provided
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.id === updatedOrder.id ? updatedOrder : order
         )
       );
       
-      // Check if this is an update (not creation) and add notifications for new items
       const existingOrder = orders.find(o => o.id === updatedOrder.id);
       if (existingOrder) {
-        // Compare items to find new additions
         const existingItems = existingOrder.items || [];
         const newItems = updatedOrder.items || [];
         
@@ -190,14 +183,12 @@ const OrderManager = ({ onLogout }) => {
         });
       }
     } else {
-      // Reload all orders if no specific order provided
       loadOrders();
     }
     
     loadStats();
     
-    // Reload view orders data if on that tab
-    if (activeTab === 'view-orders') {
+    if (activeTab === 'kitchen-board') {
       loadViewOrdersData();
     }
   };
@@ -206,21 +197,18 @@ const OrderManager = ({ onLogout }) => {
     try {
       await ordersAPI.cancelOrder(orderId);
       
-      // Remove order from list
       setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-      
-      // Update stats
       await loadStats();
 
       toast({
         title: "Order Cancelled",
-        description: "Order has been successfully cancelled.",
+        description: "Order ticket has been successfully cancelled.",
         duration: 3000,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to cancel order",
+        title: "Cancellation Error",
+        description: "Failed to cancel order ticket",
         variant: "destructive",
       });
     }
@@ -244,8 +232,8 @@ const OrderManager = ({ onLogout }) => {
       setSearchResults(results);
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to search orders",
+        title: "Search Error",
+        description: "Failed to search order tickets",
         variant: "destructive",
       });
       setSearchResults([]);
@@ -258,7 +246,6 @@ const OrderManager = ({ onLogout }) => {
     const query = e.target.value;
     setSearchQuery(query);
     
-    // Debounce search
     if (query.length >= 2) {
       const timeoutId = setTimeout(() => {
         handleSearch(query);
@@ -272,300 +259,365 @@ const OrderManager = ({ onLogout }) => {
   };
 
   const pendingOrders = orders.filter(order => order.status === 'pending')
-    .sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime)); // Old to new
+    .sort((a, b) => new Date(a.orderTime) - new Date(b.orderTime));
   const completedOrders = orders.filter(order => order.status === 'completed');
 
+  const statsCards = [
+    {
+      title: "Active Tickets",
+      value: stats.pending,
+      icon: Clock,
+      color: "text-amber-600",
+      bgColor: "bg-amber-100",
+      description: "Orders in preparation"
+    },
+    {
+      title: "Served Today",
+      value: stats.completed,
+      icon: CheckCircle,
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-100",
+      description: "Successfully completed"
+    },
+    {
+      title: "Total Orders",
+      value: stats.total,
+      icon: TrendingUp,
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
+      description: "Today's volume"
+    },
+    {
+      title: "Avg Service Time",
+      value: formatDeliveryTime(stats.averageDeliveryTime),
+      icon: Timer,
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
+      description: "Kitchen to customer"
+    }
+  ];
+
   return (
-    <div className="p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
+    <div className="p-6 animate-fade-in-up">
+      <div className="max-w-7xl mx-auto">
+        {/* Service Station Header */}
+        <div className="mb-8 animate-slide-in-left">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl">
+                <Store className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold restaurant-heading">Service Station</h1>
+                <p className="text-gray-600 font-medium">Restaurant Order Ticket Management</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
               <Button 
                 variant="outline" 
                 onClick={handleRefresh}
                 disabled={loading}
+                className="group hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                Refresh System
               </Button>
               <Button 
                 onClick={() => setCreateModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="btn-restaurant-primary text-white font-semibold group"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                New Order
+                <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                New Order Ticket
               </Button>
             </div>
           </div>
           
-          {/* Search Section */}
-          <div className="mt-4">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          {/* Advanced Search */}
+          <div className="mt-6">
+            <div className="relative max-w-lg">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search orders by customer name..."
+                placeholder="Search order tickets by customer name..."
                 value={searchQuery}
                 onChange={handleSearchInputChange}
-                className="pl-10 pr-4"
+                className="pl-12 pr-4 py-3 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-400 transition-all duration-300"
               />
               {isSearching && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Search Results Section */}
+        {/* Search Results */}
         {searchQuery && (
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">
+          <div className="mb-8 animate-fade-in-up">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Search className="h-5 w-5 text-blue-600" />
               Search Results for "{searchQuery}"
               {searchResults.length > 0 && (
-                <span className="text-sm text-gray-500 ml-2">({searchResults.length} found)</span>
+                <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                  {searchResults.length} found
+                </Badge>
               )}
             </h3>
             {searchResults.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {searchResults.map((order) => (
-                  <OrderCard 
-                    key={order.id} 
-                    order={order} 
-                    onComplete={handleCompleteOrder}
-                    onEdit={handleEditOrder}
-                    onCancel={handleCancelOrder}
-                    onOrderUpdated={handleOrderUpdated}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {searchResults.map((order, index) => (
+                  <div key={order.id} className="animate-ticket-slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <OrderCard 
+                      order={order} 
+                      onComplete={handleCompleteOrder}
+                      onEdit={handleEditOrder}
+                      onCancel={handleCancelOrder}
+                      onOrderUpdated={handleOrderUpdated}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
               !isSearching && (
-                <p className="text-gray-500">No orders found matching "{searchQuery}"</p>
+                <div className="text-center py-8 text-gray-500">
+                  <Search className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>No order tickets found matching "{searchQuery}"</p>
+                </div>
               )
             )}
           </div>
         )}
 
+        {/* Restaurant Metrics Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
-              <Clock className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
-                {stats.pending}
-              </div>
-              <p className="text-xs text-gray-600">Orders awaiting completion</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {stats.completed}
-              </div>
-              <p className="text-xs text-gray-600">Orders completed today</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <ClipboardList className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">
-                {stats.total}
-              </div>
-              <p className="text-xs text-gray-600">All orders today</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Delivery Time</CardTitle>
-              <Clock className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
-                {formatDeliveryTime(stats.averageDeliveryTime)}
-              </div>
-              <p className="text-xs text-gray-600">Order to completion</p>
-            </CardContent>
-          </Card>
+          {statsCards.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <Card key={stat.title} className="stats-card animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-gray-700">
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                    <IconComponent className={`h-5 w-5 ${stat.color}`} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className={`text-3xl font-bold ${stat.color} mb-1`}>
+                    {stat.value}
+                  </div>
+                  <p className="text-xs text-gray-600 font-medium">
+                    {stat.description}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
+        {/* Restaurant Operations Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="pending" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-3 bg-white p-1 rounded-xl border-2 border-gray-100">
+            <TabsTrigger 
+              value="pending" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white transition-all duration-300"
+            >
               <Clock className="h-4 w-4" />
-              Pending Orders
+              <span className="font-semibold">Active Kitchen</span>
               {pendingOrders.length > 0 && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2 bg-white text-amber-600">
                   {pendingOrders.length}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="completed" className="flex items-center gap-2">
+            
+            <TabsTrigger 
+              value="served" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white transition-all duration-300"
+            >
               <CheckCircle className="h-4 w-4" />
-              Completed Orders
+              <span className="font-semibold">Served Orders</span>
               {completedOrders.length > 0 && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2 bg-white text-emerald-600">
                   {completedOrders.length}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="view-orders" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              View Orders
+            
+            <TabsTrigger 
+              value="kitchen-board" 
+              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-300"
+            >
+              <ChefHat className="h-4 w-4" />
+              <span className="font-semibold">Kitchen Board</span>
               {viewOrdersData.length > 0 && (
-                <Badge variant="secondary" className="ml-2">
+                <Badge variant="secondary" className="ml-2 bg-white text-blue-600">
                   {viewOrdersData.length}
                 </Badge>
               )}
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="pending" className="space-y-4">
+          {/* Active Kitchen Tab */}
+          <TabsContent value="pending" className="space-y-6">
             {pendingOrders.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">All caught up!</h3>
-                  <p className="text-gray-600 text-center">
-                    No pending orders at the moment. Great work!
+              <Card className="restaurant-card-bg animate-fade-in-up">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="p-6 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full mb-6">
+                    <CheckCircle className="h-16 w-16 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Kitchen All Clear! 🎉</h3>
+                  <p className="text-gray-600 text-center text-lg">
+                    No active order tickets in the kitchen. Great work team!
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {pendingOrders.map((order) => (
-                  <OrderCard 
-                    key={order.id} 
-                    order={order} 
-                    onComplete={handleCompleteOrder}
-                    onEdit={handleEditOrder}
-                    onCancel={handleCancelOrder}
-                    onOrderUpdated={handleOrderUpdated}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {pendingOrders.map((order, index) => (
+                  <div key={order.id} className="animate-ticket-slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <OrderCard 
+                      order={order} 
+                      onComplete={handleCompleteOrder}
+                      onEdit={handleEditOrder}
+                      onCancel={handleCancelOrder}
+                      onOrderUpdated={handleOrderUpdated}
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="completed" className="space-y-4">
+          {/* Served Orders Tab */}
+          <TabsContent value="served" className="space-y-6">
             {completedOrders.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <Clock className="h-16 w-16 text-gray-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No completed orders yet</h3>
-                  <p className="text-gray-600 text-center">
-                    Completed orders will appear here.
+              <Card className="restaurant-card-bg animate-fade-in-up">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="p-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-6">
+                    <Utensils className="h-16 w-16 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">No Served Orders Yet</h3>
+                  <p className="text-gray-600 text-center text-lg">
+                    Completed order tickets will appear here.
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {completedOrders.map((order) => (
-                  <OrderCard 
-                    key={order.id} 
-                    order={order} 
-                    onComplete={handleCompleteOrder}
-                    onEdit={handleEditOrder}
-                    onCancel={handleCancelOrder}
-                    onOrderUpdated={handleOrderUpdated}
-                  />
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {completedOrders.map((order, index) => (
+                  <div key={order.id} className="animate-ticket-slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <OrderCard 
+                      order={order} 
+                      onComplete={handleCompleteOrder}
+                      onEdit={handleEditOrder}
+                      onCancel={handleCancelOrder}
+                      onOrderUpdated={handleOrderUpdated}
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="view-orders" className="space-y-4">
+          {/* Kitchen Preparation Board */}
+          <TabsContent value="kitchen-board" className="space-y-6">
             {viewOrdersData.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <ChefHat className="h-16 w-16 text-gray-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No pending orders</h3>
-                  <p className="text-gray-600 text-center">
-                    Orders grouped by food category will appear here.
+              <Card className="restaurant-card-bg animate-fade-in-up">
+                <CardContent className="flex flex-col items-center justify-center py-16">
+                  <div className="p-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-full mb-6">
+                    <ChefHat className="h-16 w-16 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Kitchen Board Empty</h3>
+                  <p className="text-gray-600 text-center text-lg">
+                    Menu items grouped by preparation category will appear here.
                   </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-6">
-                {viewOrdersData.map((categoryGroup) => (
-                  <Card key={categoryGroup.category_name} className="border-l-4 border-l-blue-500">
+                {viewOrdersData.map((categoryGroup, categoryIndex) => (
+                  <Card key={categoryGroup.category_name} className="restaurant-card-bg border-l-4 border-l-gradient-to-b from-blue-500 to-purple-600 animate-fade-in-up" style={{ animationDelay: `${categoryIndex * 0.1}s` }}>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <ChefHat className="h-5 w-5 text-blue-600" />
-                          <span className="text-blue-800">{categoryGroup.category_name}</span>
+                        <span className="flex items-center gap-3">
+                          <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                            <ChefHat className="h-5 w-5 text-white" />
+                          </div>
+                          <span className="text-xl font-bold restaurant-heading">
+                            {categoryGroup.category_name} Station
+                          </span>
                         </span>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                          {categoryGroup.total_items} items
+                        <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-sm font-semibold">
+                          {categoryGroup.total_items} items to prepare
                         </Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {categoryGroup.items.map((itemGroup) => (
-                          <div key={itemGroup.item_name} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <Package className="h-4 w-4 text-gray-600" />
-                                <span className="font-semibold text-gray-800">{itemGroup.item_name}</span>
+                        {categoryGroup.items.map((itemGroup, itemIndex) => (
+                          <div key={itemGroup.item_name} className="border-2 border-gray-200 rounded-xl p-4 bg-gradient-to-r from-white to-gray-50 animate-ticket-slide-in" style={{ animationDelay: `${(categoryIndex * 2 + itemIndex) * 0.1}s` }}>
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <Package className="h-5 w-5 text-gray-600" />
+                                <span className="font-bold text-gray-800 text-lg">{itemGroup.item_name}</span>
                               </div>
-                              <Badge variant="outline" className="bg-white">
-                                Total Qty: {itemGroup.total_quantity}
+                              <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-semibold">
+                                Total: {itemGroup.total_quantity} portions
                               </Badge>
                             </div>
                             
-                            <div className="space-y-2">
-                              {itemGroup.orders.map((orderInfo, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 bg-white rounded border">
+                            <div className="space-y-3">
+                              {itemGroup.orders.map((orderInfo, orderIndex) => (
+                                <div key={orderIndex} className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300">
                                   <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <Hash className="h-4 w-4 text-gray-500" />
-                                      <span className="font-medium">#{orderInfo.orderNumber}</span>
-                                      <span className="text-gray-600">• {orderInfo.customerName}</span>
+                                    <div className="flex items-center gap-3 mb-2">
+                                      <Hash className="h-4 w-4 text-blue-600" />
+                                      <span className="font-bold text-blue-600">#{orderInfo.orderNumber}</span>
+                                      <Users className="h-4 w-4 text-gray-500" />
+                                      <span className="text-gray-700 font-medium">{orderInfo.customerName}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                                      <span>Qty: {orderInfo.quantity}</span>
-                                      <span>•</span>
-                                      <span>${orderInfo.subtotal?.toFixed(2) || '0.00'}</span>
-                                      <span>•</span>
-                                      <span>{formatOrderTime(orderInfo.orderTime)}</span>
+                                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                                      <span className="flex items-center gap-1">
+                                        <Package className="h-3 w-3" />
+                                        Qty: {orderInfo.quantity}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <DollarSign className="h-3 w-3" />
+                                        ${orderInfo.subtotal?.toFixed(2) || '0.00'}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <Clock className="h-3 w-3" />
+                                        {formatOrderTime(orderInfo.orderTime)}
+                                      </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-3">
                                     <Badge 
                                       className={`${
-                                        orderInfo.cooking_status === 'finished' ? 'bg-green-100 text-green-800 border-green-200' :
-                                        orderInfo.cooking_status === 'cooking' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-                                        'bg-gray-100 text-gray-800 border-gray-200'
-                                      } border text-xs`}
+                                        orderInfo.cooking_status === 'finished' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                                        orderInfo.cooking_status === 'cooking' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                                        'bg-slate-100 text-slate-700 border-slate-200'
+                                      } border text-sm font-medium flex items-center gap-1`}
                                     >
-                                      {orderInfo.cooking_status}
+                                      {orderInfo.cooking_status === 'finished' ? '✅' :
+                                       orderInfo.cooking_status === 'cooking' ? '🔥' : '🔸'}
+                                      {orderInfo.cooking_status === 'cooking' ? 'In Progress' :
+                                       orderInfo.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
                                     </Badge>
                                     <Select 
                                       value={orderInfo.cooking_status} 
                                       onValueChange={(value) => handleCookingStatusUpdate(orderInfo.order_id, itemGroup.item_name, value)}
                                     >
-                                      <SelectTrigger className="w-32 h-8">
+                                      <SelectTrigger className="w-40 h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="not started">Not Started</SelectItem>
-                                        <SelectItem value="cooking">Cooking</SelectItem>
-                                        <SelectItem value="finished">Finished</SelectItem>
+                                        <SelectItem value="not started">🔸 Not Started</SelectItem>
+                                        <SelectItem value="cooking">🔥 Cooking</SelectItem>
+                                        <SelectItem value="finished">✅ Ready</SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
@@ -583,6 +635,7 @@ const OrderManager = ({ onLogout }) => {
           </TabsContent>
         </Tabs>
 
+        {/* Modals */}
         <CreateOrderModal 
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
