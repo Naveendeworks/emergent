@@ -540,6 +540,7 @@ class OrderService:
                         "_id": "$paymentMethod",
                         "orderCount": {"$sum": 1},
                         "totalItems": {"$sum": "$totalItems"},
+                        "totalAmount": {"$sum": "$totalAmount"},
                         "pendingOrders": {"$sum": {"$cond": [{"$eq": ["$status", "pending"]}, 1, 0]}},
                         "completedOrders": {"$sum": {"$cond": [{"$eq": ["$status", "completed"]}, 1, 0]}},
                         "orders": {"$push": "$$ROOT"}
