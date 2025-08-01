@@ -108,80 +108,68 @@ const OrderQueue = () => {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 p-4">
             {pendingOrders.map((order, index) => (
               <Card 
                 key={order.id}
-                className="bg-white/95 backdrop-blur border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 mx-auto w-full max-w-4xl"
+                className="bg-white/95 backdrop-blur border-0 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
               >
-                <CardContent className="p-8">
-                  {/* Order Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-xl shadow-lg">
-                        <Hash className="h-6 w-6 text-white" />
+                <CardContent className="p-4">
+                  {/* Header Row - Order # and Time */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-2 rounded-lg shadow-md">
+                        <Hash className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-gray-800">#{order.orderNumber}</div>
-                        <div className="text-sm text-gray-500">Order Number</div>
+                        <div className="text-lg font-bold text-gray-800">#{order.orderNumber}</div>
+                        <div className="text-xs text-gray-500">{order.customerName}</div>
                       </div>
                     </div>
-                    <Badge className={`px-4 py-2 text-lg font-bold ${getElapsedTimeColor(order.orderTime)}`}>
-                      <Clock className="h-4 w-4 mr-2" />
+                    <Badge className={`px-2 py-1 text-xs font-bold ${getElapsedTimeColor(order.orderTime)}`}>
+                      <Clock className="h-3 w-3 mr-1" />
                       {calculateElapsedTime(order.orderTime)}
                     </Badge>
                   </div>
 
-                  {/* Customer & Order Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-gradient-to-r from-green-400 to-teal-500 p-3 rounded-xl shadow-lg">
-                        <User className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-xl font-semibold text-gray-800">{order.customerName}</div>
-                        <div className="text-sm text-gray-500">Customer Name</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Order Items */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 mb-4">
-                      <ChefHat className="h-5 w-5 text-gray-600" />
-                      <span className="text-lg font-semibold text-gray-700">Order Items</span>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      {order.items.slice(0, 5).map((item, itemIndex) => (
-                        <div key={itemIndex} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border">
-                          <div className="flex-1">
-                            <div className="text-lg font-semibold text-gray-800">{item.name}</div>
-                            <div className="text-sm text-gray-500">Quantity: {item.quantity} • ${item.subtotal?.toFixed(2) || '0.00'}</div>
-                          </div>
-                          <Badge 
-                            variant="outline" 
-                            className={`text-sm px-3 py-1 font-semibold ${
-                              item.cooking_status === 'finished' ? 'bg-green-100 text-green-700 border-green-300' :
-                              item.cooking_status === 'in process' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
-                              'bg-gray-100 text-gray-600 border-gray-300'
-                            }`}
-                          >
-                            {item.cooking_status === 'not started' ? 'PENDING' : 
-                             item.cooking_status === 'in process' ? 'IN PROCESS' : 'READY'}
-                          </Badge>
+                  {/* Items Summary */}
+                  <div className="space-y-2">
+                    {order.items.slice(0, 3).map((item, itemIndex) => (
+                      <div key={itemIndex} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-gray-800 truncate">{item.name}</div>
+                          <div className="text-xs text-gray-500">Qty: {item.quantity} • ${item.subtotal?.toFixed(2) || '0.00'}</div>
                         </div>
-                      ))}
-                    </div>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs px-2 py-1 font-medium ml-2 ${
+                            item.cooking_status === 'finished' ? 'bg-green-100 text-green-700 border-green-300' :
+                            item.cooking_status === 'in process' ? 'bg-yellow-100 text-yellow-700 border-yellow-300' :
+                            'bg-gray-100 text-gray-600 border-gray-300'
+                          }`}
+                        >
+                          {item.cooking_status === 'not started' ? 'PENDING' : 
+                           item.cooking_status === 'in process' ? 'IN PROCESS' : 'READY'}
+                        </Badge>
+                      </div>
+                    ))}
                     
-                    {order.items.length > 5 && (
-                      <div className="text-center py-3">
-                        <Badge className="bg-blue-100 text-blue-700 px-4 py-2 text-lg">
-                          +{order.items.length - 5} more items
+                    {order.items.length > 3 && (
+                      <div className="text-center py-1">
+                        <Badge className="bg-blue-100 text-blue-700 px-2 py-1 text-xs">
+                          +{order.items.length - 3} more items
                         </Badge>
                       </div>
                     )}
                   </div>
+
+                  {/* Footer - Total Amount */}
+                  {order.totalAmount && (
+                    <div className="flex justify-between items-center mt-3 pt-2 border-t">
+                      <span className="text-xs text-gray-500">Total:</span>
+                      <span className="text-sm font-bold text-green-600">${order.totalAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
