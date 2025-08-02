@@ -163,21 +163,26 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Enhanced Card Hover Effects - Industry Standard Containment */
+/* Enhanced Card Hover Effects - Back to Good Design */
 .ticket-card {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  min-height: 500px;
-  max-height: 650px;
+  border: 2px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(20px);
 }
 
 .ticket-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
-              0 15px 30px rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15),
+              0 20px 40px rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.95) 100%);
 }
 
 .ticket-card-urgent {
@@ -196,28 +201,6 @@
   border-left: 8px solid #059669;
   background: linear-gradient(145deg, #ecfdf5, #ffffff, #f0fdf4);
   box-shadow: 0 8px 25px rgba(5, 150, 105, 0.25);
-}
-
-/* Industry Standard Responsive Card Heights */
-@media (min-width: 768px) {
-  .ticket-card {
-    min-height: 450px;
-    max-height: 550px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .ticket-card {
-    min-height: 400px;
-    max-height: 500px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .ticket-card {
-    min-height: 450px;
-    max-height: 520px;
-  }
 }
 
 /* Kitchen Display System Animations - Static Display */
