@@ -115,24 +115,6 @@ const OrderQueue = () => {
     setCurrentPage(pageIndex);
   };
 
-  const handleStatusUpdate = async (orderId, itemName, newStatus) => {
-    try {
-      await ordersAPI.updateCookingStatus(orderId, itemName, newStatus);
-      // Reload orders to reflect changes
-      loadPendingOrders();
-      toast({
-        title: "Kitchen Update",
-        description: `${itemName} status updated to ${newStatus}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Kitchen Error", 
-        description: "Failed to update preparation status",
-        variant: "destructive",
-      });
-    }
-  };
-
   if (loading) {
     return (
       <div className="order-queue-bg min-h-screen flex items-center justify-center">
