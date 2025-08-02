@@ -306,55 +306,55 @@ const OrderManager = ({ onLogout }) => {
   ];
 
   return (
-    <div className="p-6 animate-fade-in-up">
+    <div className="p-3 sm:p-6 animate-fade-in-up">
       <div className="max-w-7xl mx-auto">
         {/* Service Station Header */}
-        <div className="mb-8 animate-slide-in-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl">
-                <Store className="h-8 w-8 text-white" />
+        <div className="mb-6 sm:mb-8 animate-slide-in-left">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl">
+                <Store className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold restaurant-heading">Service Station</h1>
-                <p className="text-gray-600 font-medium">Restaurant Order Ticket Management</p>
+                <h1 className="text-2xl sm:text-3xl font-bold restaurant-heading">Service Station</h1>
+                <p className="text-gray-600 font-medium text-sm sm:text-base">Restaurant Order Ticket Management</p>
               </div>
             </div>
             
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
               <Button 
                 variant="outline" 
                 onClick={handleRefresh}
                 disabled={loading}
-                className="group hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                className="group hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 text-sm sm:text-base"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 mr-2 ${loading ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
                 Refresh System
               </Button>
               <Button 
                 onClick={() => setCreateModalOpen(true)}
-                className="btn-restaurant-primary text-white font-semibold group"
+                className="btn-restaurant-primary text-white font-semibold group text-sm sm:text-base"
               >
-                <Plus className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
                 New Order Ticket
               </Button>
             </div>
           </div>
           
           {/* Advanced Search */}
-          <div className="mt-6">
-            <div className="relative max-w-lg">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <div className="mt-4 sm:mt-6">
+            <div className="relative max-w-full sm:max-w-lg">
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Search order tickets by customer name..."
                 value={searchQuery}
                 onChange={handleSearchInputChange}
-                className="pl-12 pr-4 py-3 text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-400 transition-all duration-300"
+                className="pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-base sm:text-lg bg-white border-2 border-gray-200 rounded-xl focus:border-blue-400 transition-all duration-300"
               />
               {isSearching && (
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-blue-600"></div>
                 </div>
               )}
             </div>
