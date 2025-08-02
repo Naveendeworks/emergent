@@ -372,75 +372,77 @@ const OrderQueueCard = ({ order, priority, index }) => {
   const getPrepStatusColor = (status) => {
     switch (status) {
       case 'finished':
-        return 'bg-emerald-900/50 text-emerald-200';
+        return 'bg-emerald-600 text-white shadow-md';
       case 'in process':
       case 'cooking':
-        return 'bg-amber-900/50 text-amber-200';
+        return 'bg-orange-500 text-white shadow-md';
       default:
-        return 'bg-slate-900/50 text-slate-300';
+        return 'bg-slate-600 text-white shadow-md';
     }
   };
 
   return (
     <Card 
-      className={`queue-card border ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full min-h-[180px]`}
+      className={`queue-card border-2 ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full min-h-[200px] max-h-[220px] overflow-hidden`}
       style={{ animationDelay: `${index * 0.05}s` }}
     >
-      <CardContent className="p-2">
-        <div className="space-y-1">
+      <CardContent className="p-3 h-full flex flex-col">
+        <div className="space-y-2 flex-1 overflow-hidden">
           {/* Order Header - Compact */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Hash className="h-3 w-3 text-white" />
-              <span className="text-sm font-bold text-white">
+            <div className="flex items-center gap-2">
+              <Hash className="h-4 w-4 text-white" />
+              <span className="text-base font-bold text-white">
                 #{order.orderNumber || order.id.slice(-6)}
               </span>
             </div>
             {priority === 'critical' && (
-              <div className="text-xs bg-red-500 text-white px-1 py-0.5 rounded animate-pulse">
-                🚨
+              <div className="text-xs bg-red-600 text-white px-2 py-1 rounded-md animate-pulse font-bold shadow-lg">
+                🚨 URGENT
               </div>
             )}
           </div>
 
           {/* Customer & Amount */}
-          <div className="text-xs text-blue-200">
-            <div className="font-medium truncate">{order.customerName}</div>
-            <div className="flex justify-between items-center">
-              <span>{order.totalItems} items</span>
-              <span className="text-emerald-400 font-bold">
+          <div className="text-sm text-blue-100">
+            <div className="font-bold truncate text-white">{order.customerName}</div>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-blue-200 font-medium">{order.totalItems} items</span>
+              <span className="text-emerald-300 font-bold text-base">
                 ${order.totalAmount?.toFixed(2) || '0.00'}
               </span>
             </div>
           </div>
 
-          {/* Items Status - Compact */}
-          <div className="space-y-1">
-            {order.items?.slice(0, 5).map((item, itemIndex) => (
-              <div key={itemIndex} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-1 flex-1 min-w-0">
-                  <span className="truncate font-medium text-white text-xs">
-                    {item.name}
-                  </span>
-                  <span className="text-blue-300 text-xs">x{item.quantity}</span>
+          {/* Items Status - Fixed Height Container */}
+          <div className="flex-1 overflow-y-auto max-h-[110px]">
+            <div className="space-y-1">
+              {order.items?.slice(0, 5).map((item, itemIndex) => (
+                <div key={itemIndex} className="flex items-center justify-between text-xs bg-white/10 rounded-md p-1.5">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="truncate font-semibold text-white text-xs leading-tight">
+                      {item.name}
+                    </span>
+                    <span className="text-blue-300 font-bold flex-shrink-0">x{item.quantity}</span>
+                  </div>
+                  <div className={`px-2 py-1 rounded-md text-xs font-bold ${getPrepStatusColor(item.cooking_status)} flex-shrink-0`}>
+                    {getPrepStatusIcon(item.cooking_status)}
+                  </div>
                 </div>
-                <div className={`px-1 py-0.5 rounded text-xs ${getPrepStatusColor(item.cooking_status)}`}>
-                  {getPrepStatusIcon(item.cooking_status)}
+              ))}
+              
+              {order.items?.length > 5 && (
+                <div className="text-xs text-blue-200 text-center py-1 bg-white/5 rounded-md font-medium">
+                  +{order.items.length - 5} more items
                 </div>
-              </div>
-            ))}
-            
-            {order.items?.length > 5 && (
-              <div className="text-xs text-blue-200 text-center">
-                +{order.items.length - 5} more
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Time */}
-          <div className="flex items-center justify-center gap-1 text-xs text-blue-300">
+          {/* Time - Fixed at bottom */}
+          <div className="flex items-center justify-center gap-2 text-sm text-blue-200 bg-white/10 rounded-md p-1.5 mt-auto">
             <Clock className="h-3 w-3" />
-            <span>{formatOrderTime(order.orderTime)}</span>
+            <span className="font-medium">{formatOrderTime(order.orderTime)}</span>
           </div>
         </div>
       </CardContent>
