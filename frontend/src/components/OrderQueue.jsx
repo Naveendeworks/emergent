@@ -353,9 +353,9 @@ const OrderQueue = () => {
 };
 
 const OrderQueueCard = ({ order, priority, index }) => {
-  const priorityClass = priority === 'critical' ? 'border-red-500 bg-gradient-to-br from-red-900/50 to-red-800/30' :
-                       priority === 'high' ? 'border-amber-500 bg-gradient-to-br from-amber-900/50 to-amber-800/30' :
-                       'border-blue-500 bg-gradient-to-br from-blue-900/50 to-blue-800/30';
+  const priorityClass = priority === 'critical' ? 'border-red-600 bg-gradient-to-br from-red-800/80 to-red-700/60' :
+                       priority === 'high' ? 'border-orange-500 bg-gradient-to-br from-orange-800/80 to-orange-700/60' :
+                       'border-blue-500 bg-gradient-to-br from-slate-800/80 to-slate-700/60';
 
   const getPrepStatusIcon = (status) => {
     switch (status) {
