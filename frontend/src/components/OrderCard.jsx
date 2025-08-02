@@ -279,15 +279,15 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                   </div>
                 </div>
                 
-                {/* Kitchen Prep Status Controls - Constrained */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-white rounded-lg border">
+                {/* Kitchen Prep Status Controls - Always Bottom Layout */}
+                <div className="flex flex-col items-start justify-start gap-3 p-3 bg-white rounded-lg border">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-700">Prep Status:</span>
                     <Badge 
                       className={`${getPrepStatusColor(item.cooking_status)} flex items-center gap-1 text-sm font-medium`}
                     >
                       {getPrepStatusIcon(item.cooking_status)}
-                      {item.cooking_status === 'in process' ? 'Cooking' : 
+                      {item.cooking_status === 'in process' ? 'In Process' : 
                        item.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
                     </Badge>
                   </div>
@@ -298,12 +298,12 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                       onValueChange={(value) => handleCookingStatusUpdate(item.name, value)}
                       disabled={updatingStatus}
                     >
-                      <SelectTrigger className="w-full sm:w-40 h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
+                      <SelectTrigger className="w-full max-w-xs h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="not started">🔸 Not Started</SelectItem>
-                        <SelectItem value="in process">🔥 Cooking</SelectItem>
+                        <SelectItem value="in process">🔥 In Process</SelectItem>
                         <SelectItem value="finished">✅ Ready</SelectItem>
                       </SelectContent>
                     </Select>
