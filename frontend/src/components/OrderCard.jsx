@@ -154,7 +154,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
   return (
     <Card 
       id={id}
-      className={`ticket-card animate-ticket-slide-in transition-all duration-300 ${
+      className={`ticket-card animate-ticket-slide-in transition-all duration-300 h-full max-h-[650px] flex flex-col overflow-hidden ${
         priority === 'urgent' ? 'ticket-card-urgent' : 
         priority === 'medium' ? 'ticket-card-cooking' :
         order.status === 'completed' ? 'ticket-card-ready opacity-75' : 
@@ -162,24 +162,24 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
       } ${order.status === 'completed' ? 'bg-gradient-to-br from-green-50 to-emerald-50' : ''}`}
       {...props}
     >
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 flex-shrink-0">
         {/* Order Ticket Header */}
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="p-2 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex-shrink-0">
               <Hash className="h-4 w-4 text-white" />
             </div>
-            <div>
-              <span className="text-2xl font-bold restaurant-heading">
+            <div className="min-w-0 flex-1">
+              <span className="text-2xl font-bold restaurant-heading block truncate">
                 Ticket #{order.orderNumber || order.id.slice(-6)}
               </span>
               <div className="flex items-center gap-2 mt-1">
-                <Clock className="h-3 w-3 text-gray-500" />
-                <span className="text-sm text-gray-600 font-medium">
+                <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                <span className="text-sm text-gray-600 font-medium truncate">
                   {formatOrderTime(order.orderTime)}
                 </span>
                 {priority === 'urgent' && (
-                  <Badge className="bg-red-100 text-red-700 border-red-200 text-xs animate-pulse">
+                  <Badge className="bg-red-100 text-red-700 border-red-200 text-xs animate-pulse flex-shrink-0">
                     ⚡ URGENT
                   </Badge>
                 )}
@@ -187,10 +187,10 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Badge 
               variant={order.status === 'completed' ? 'secondary' : 'default'}
-              className={`status-badge ${
+              className={`status-badge flex-shrink-0 ${
                 order.status === 'completed' 
                   ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
                   : 'bg-amber-100 text-amber-700 border-amber-200'
@@ -203,31 +203,33 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
 
         {/* Customer & Payment Info */}
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex-shrink-0">
               <User className="h-4 w-4 text-white" />
             </div>
-            <div>
-              <h3 className="font-bold text-lg text-gray-900">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-lg text-gray-900 truncate">
                 {order.customerName}
               </h3>
               <p className="text-sm text-gray-600">Customer</p>
             </div>
           </div>
           
-          <div className="text-right">
-            <div className="flex items-center gap-2 mb-1">
-              <Badge className={`${getPaymentMethodColor(order.paymentMethod)} text-xs flex items-center gap-1`}>
+          <div className="text-right flex-shrink-0">
+            <div className="flex items-center gap-2 mb-1 justify-end">
+              <Badge className={`${getPaymentMethodColor(order.paymentMethod)} text-xs flex items-center gap-1 flex-shrink-0`}>
                 {getPaymentMethodIcon(order.paymentMethod)}
-                {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
+                <span className="truncate max-w-[80px]">
+                  {order.paymentMethod.charAt(0).toUpperCase() + order.paymentMethod.slice(1)}
+                </span>
               </Badge>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center gap-2 justify-end">
+              <span className="text-sm text-gray-600 flex-shrink-0">
                 {order.totalItems} items
               </span>
               {order.totalAmount && (
-                <div className="text-xl font-bold text-emerald-600">
+                <div className="text-xl font-bold text-emerald-600 flex-shrink-0">
                   ${order.totalAmount.toFixed(2)}
                 </div>
               )}
@@ -237,9 +239,9 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
 
         {/* Service Time Info */}
         {deliveryInfo && (
-          <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
-            <Timer className="h-4 w-4 text-blue-600" />
-            <span className={`text-sm font-semibold ${deliveryInfo.color}`}>
+          <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg mt-3">
+            <Timer className="h-4 w-4 text-blue-600 flex-shrink-0" />
+            <span className={`text-sm font-semibold ${deliveryInfo.color} truncate`}>
               {deliveryInfo.type === 'delivered' && `✅ Served in ${deliveryInfo.time}`}
               {deliveryInfo.type === 'estimated' && `⏱️ Est. ${deliveryInfo.time} remaining`}
               {deliveryInfo.type === 'overdue' && `🚨 Overdue by ${deliveryInfo.time}`}
