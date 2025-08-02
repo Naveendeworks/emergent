@@ -305,30 +305,34 @@
   border-color: rgba(59, 130, 246, 0.4);
 }
 
-/* Order Queue specific styles */
+/* Order Queue specific styles - True Tone Dark */
 .order-queue-bg {
   background: linear-gradient(180deg, 
-    #1a1a2e 0%,
-    #16213e 50%,
-    #0f3460 100%);
+    #0f172a 0%,     /* Slate 900 */
+    #1e293b 25%,    /* Slate 800 */
+    #334155 50%,    /* Slate 700 */
+    #475569 75%,    /* Slate 600 */
+    #64748b 100%);  /* Slate 500 */
   min-height: 100vh;
 }
 
 .queue-card {
   background: linear-gradient(145deg, 
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%);
+    rgba(30, 41, 59, 0.95) 0%,     /* Slate 800 with opacity */
+    rgba(51, 65, 85, 0.9) 100%);   /* Slate 700 with opacity */
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(148, 163, 184, 0.3);  /* Slate 400 */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .queue-card:hover {
   background: linear-gradient(145deg, 
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(255, 255, 255, 0.1) 100%);
-  transform: scale(1.05);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    rgba(30, 41, 59, 0.98) 0%,
+    rgba(51, 65, 85, 0.95) 100%);
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(59, 130, 246, 0.6);  /* Blue 500 */
 }
 
 /* Responsive Design */
