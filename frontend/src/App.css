@@ -213,14 +213,14 @@
   transform: scale(1.02);
 }
 
-/* Professional Button Styles - True Tone */
+/* Professional Button Styles - Rich Service Station */
 .btn-restaurant-primary {
-  background: linear-gradient(135deg, #1e40af, #7c3aed);
-  border: 2px solid #3b82f6;
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #1e40af, #6366f1, #8b5cf6);
+  border: 2px solid #4f46e5;
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.35), 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-restaurant-primary::before {
@@ -230,8 +230,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s;
 }
 
 .btn-restaurant-primary:hover::before {
@@ -239,9 +239,10 @@
 }
 
 .btn-restaurant-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(30, 64, 175, 0.4);
-  border-color: #60a5fa;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(30, 64, 175, 0.4), 0 8px 16px rgba(99, 102, 241, 0.3);
+  border-color: #7c3aed;
+  background: linear-gradient(135deg, #1e40af, #6366f1, #a855f7);
 }
 
 /* Status Badge Animations */
