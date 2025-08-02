@@ -267,7 +267,7 @@ const OrderQueue = () => {
                       <h2 className="text-2xl font-bold text-red-400">URGENT - IMMEDIATE ATTENTION</h2>
                       <div className="flex-1 h-0.5 bg-red-400/30"></div>
                     </div>
-                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                    <div className="grid gap-2 grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                       {currentOrders
                         .filter(order => getOrderPriority(order.orderTime) === 'critical')
                         .map((order, index) => (
@@ -276,7 +276,6 @@ const OrderQueue = () => {
                             order={order} 
                             priority="critical"
                             index={index}
-                            onStatusUpdate={handleStatusUpdate}
                           />
                         ))}
                     </div>
