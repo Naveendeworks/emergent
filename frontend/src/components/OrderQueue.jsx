@@ -10,7 +10,7 @@ const OrderQueue = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [ordersPerPage] = useState(10);
+  const [ordersPerPage] = useState(20);
   const { toast } = useToast();
 
   useEffect(() => {
