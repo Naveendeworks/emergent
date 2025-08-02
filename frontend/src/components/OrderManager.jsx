@@ -426,16 +426,16 @@ const OrderManager = ({ onLogout }) => {
         </div>
 
         {/* Restaurant Operations Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-3 bg-white p-1 rounded-xl border-2 border-gray-100">
             <TabsTrigger 
               value="pending" 
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white transition-all duration-300"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 py-2"
             >
-              <Clock className="h-4 w-4" />
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="font-semibold">Active Kitchen</span>
               {pendingOrders.length > 0 && (
-                <Badge variant="secondary" className="ml-2 bg-white text-amber-600">
+                <Badge variant="secondary" className="ml-0 sm:ml-2 bg-white text-amber-600 text-xs">
                   {pendingOrders.length}
                 </Badge>
               )}
@@ -443,12 +443,12 @@ const OrderManager = ({ onLogout }) => {
             
             <TabsTrigger 
               value="served" 
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white transition-all duration-300"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-600 data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 py-2"
             >
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="font-semibold">Served Orders</span>
               {completedOrders.length > 0 && (
-                <Badge variant="secondary" className="ml-2 bg-white text-emerald-600">
+                <Badge variant="secondary" className="ml-0 sm:ml-2 bg-white text-emerald-600 text-xs">
                   {completedOrders.length}
                 </Badge>
               )}
@@ -456,12 +456,12 @@ const OrderManager = ({ onLogout }) => {
             
             <TabsTrigger 
               value="kitchen-board" 
-              className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-300"
+              className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-300 text-xs sm:text-sm px-2 py-2"
             >
-              <ChefHat className="h-4 w-4" />
+              <ChefHat className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="font-semibold">Kitchen Board</span>
               {viewOrdersData.length > 0 && (
-                <Badge variant="secondary" className="ml-2 bg-white text-blue-600">
+                <Badge variant="secondary" className="ml-0 sm:ml-2 bg-white text-blue-600 text-xs">
                   {viewOrdersData.length}
                 </Badge>
               )}
