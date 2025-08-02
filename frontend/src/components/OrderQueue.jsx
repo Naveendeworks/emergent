@@ -370,7 +370,7 @@ const OrderQueue = () => {
   );
 };
 
-const OrderQueueCard = ({ order, priority, index, onStatusUpdate }) => {
+const OrderQueueCard = ({ order, priority, index }) => {
   const priorityClass = priority === 'critical' ? 'border-red-500 bg-gradient-to-br from-red-900/50 to-red-800/30' :
                        priority === 'high' ? 'border-amber-500 bg-gradient-to-br from-amber-900/50 to-amber-800/30' :
                        'border-blue-500 bg-gradient-to-br from-blue-900/50 to-blue-800/30';
@@ -378,139 +378,88 @@ const OrderQueueCard = ({ order, priority, index, onStatusUpdate }) => {
   const getPrepStatusIcon = (status) => {
     switch (status) {
       case 'finished':
-        return <CheckCircle2 className="h-3 w-3 text-emerald-400" />;
+        return '✅';
       case 'in process':
       case 'cooking':
-        return <Flame className="h-3 w-3 text-amber-400" />;
+        return '🔥';
       default:
-        return <Clock className="h-3 w-3 text-slate-400" />;
+        return '⏳';
     }
   };
 
   const getPrepStatusColor = (status) => {
     switch (status) {
       case 'finished':
-        return 'bg-emerald-900/50 text-emerald-200 border-emerald-500';
+        return 'bg-emerald-900/50 text-emerald-200';
       case 'in process':
       case 'cooking':
-        return 'bg-amber-900/50 text-amber-200 border-amber-500';
+        return 'bg-amber-900/50 text-amber-200';
       default:
-        return 'bg-slate-900/50 text-slate-300 border-slate-500';
+        return 'bg-slate-900/50 text-slate-300';
     }
   };
 
   return (
     <Card 
-      className={`queue-card border-2 ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full`}
-      style={{ animationDelay: `${index * 0.1}s` }}
+      className={`queue-card border ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full`}
+      style={{ animationDelay: `${index * 0.05}s` }}
     >
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-white/20 rounded-lg backdrop-blur-sm">
-              <Hash className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-lg font-bold text-white">
+      <CardContent className="p-2">
+        <div className="space-y-1">
+          {/* Order Header - Compact */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Hash className="h-3 w-3 text-white" />
+              <span className="text-sm font-bold text-white">
                 #{order.orderNumber || order.id.slice(-6)}
-              </CardTitle>
-              <div className="flex items-center gap-1 text-blue-200">
-                <Clock className="h-3 w-3" />
-                <span className="text-xs font-medium">
-                  {formatOrderTime(order.orderTime)}
-                </span>
+              </span>
+            </div>
+            {priority === 'critical' && (
+              <div className="text-xs bg-red-500 text-white px-1 py-0.5 rounded animate-pulse">
+                🚨
               </div>
-            </div>
+            )}
           </div>
-          
-          {priority === 'critical' && (
-            <div className="animate-pulse">
-              <Badge className="bg-red-500 text-white text-xs font-bold border-red-400">
-                🚨 URGENT
-              </Badge>
-            </div>
-          )}
-        </div>
 
-        <div className="flex items-center justify-between mt-2 p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-emerald-500/20 rounded-lg">
-              <User className="h-3 w-3 text-emerald-300" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-sm">{order.customerName}</h3>
-              <p className="text-blue-200 text-xs">Customer</p>
-            </div>
-          </div>
-          
-          <div className="text-right">
-            <div className="text-lg font-bold text-emerald-400">
-              ${order.totalAmount?.toFixed(2) || '0.00'}
-            </div>
-            <div className="text-blue-200 text-xs">
-              {order.totalItems} items
+          {/* Customer & Amount */}
+          <div className="text-xs text-blue-200">
+            <div className="font-medium truncate">{order.customerName}</div>
+            <div className="flex justify-between items-center">
+              <span>{order.totalItems} items</span>
+              <span className="text-emerald-400 font-bold">
+                ${order.totalAmount?.toFixed(2) || '0.00'}
+              </span>
             </div>
           </div>
-        </div>
-      </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="space-y-2">
-          <h4 className="font-bold text-white flex items-center gap-1 mb-2 text-sm">
-            <ChefHat className="h-4 w-4 text-orange-400" />
-            Kitchen Status
-          </h4>
-          
-          {order.items?.slice(0, 3).map((item, itemIndex) => (
-            <div key={itemIndex} className="p-2 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <Package className="h-3 w-3 text-blue-300" />
-                  <div>
-                    <span className="font-bold text-white text-sm">{item.name}</span>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Badge className="bg-white/20 text-blue-200 border-white/30 text-xs">
-                        x{item.quantity}
-                      </Badge>
-                    </div>
-                  </div>
+          {/* Items Status - Compact */}
+          <div className="space-y-1">
+            {order.items?.slice(0, 2).map((item, itemIndex) => (
+              <div key={itemIndex} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-1 flex-1 min-w-0">
+                  <span className="truncate font-medium text-white">
+                    {item.name}
+                  </span>
+                  <span className="text-blue-300">x{item.quantity}</span>
                 </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <Badge 
-                  className={`${getPrepStatusColor(item.cooking_status)} border text-xs font-medium flex items-center gap-1`}
-                >
+                <div className={`px-1 py-0.5 rounded text-xs ${getPrepStatusColor(item.cooking_status)}`}>
                   {getPrepStatusIcon(item.cooking_status)}
-                  {item.cooking_status === 'in process' || item.cooking_status === 'cooking' ? 'COOKING' :
-                   item.cooking_status === 'finished' ? 'READY' : 'WAITING'}
-                </Badge>
-                
-                <div className="flex items-center gap-2">
-                  {item.subtotal && (
-                    <span className="text-emerald-400 font-bold text-sm">
-                      ${item.subtotal.toFixed(2)}
-                    </span>
-                  )}
-                  <select 
-                    value={item.cooking_status || 'not started'} 
-                    onChange={(e) => onStatusUpdate(order.id, item.name, e.target.value)}
-                    className="bg-white/10 text-white border border-white/30 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-400"
-                  >
-                    <option value="not started" style={{color: 'black'}}>Not Started</option>
-                    <option value="cooking" style={{color: 'black'}}>Cooking</option>
-                    <option value="finished" style={{color: 'black'}}>Finished</option>
-                  </select>
                 </div>
               </div>
-            </div>
-          ))}
-          
-          {order.items?.length > 3 && (
-            <div className="text-center p-1 bg-white/5 rounded text-blue-200 text-xs">
-              +{order.items.length - 3} more items
-            </div>
-          )}
+            ))}
+            
+            {order.items?.length > 2 && (
+              <div className="text-xs text-blue-200 text-center">
+                +{order.items.length - 2} more
+              </div>
+            )}
+          </div>
+
+          {/* Time */}
+          <div className="flex items-center justify-center gap-1 text-xs text-blue-300">
+            <Clock className="h-3 w-3" />
+            <span>{formatOrderTime(order.orderTime)}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
