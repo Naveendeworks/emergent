@@ -154,7 +154,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
   return (
     <Card 
       id={id}
-      className={`ticket-card animate-ticket-slide-in transition-all duration-300 h-full max-h-[600px] md:max-h-[550px] lg:max-h-[500px] flex flex-col ${
+      className={`ticket-card animate-ticket-slide-in transition-all duration-300 ${
         priority === 'urgent' ? 'ticket-card-urgent' : 
         priority === 'medium' ? 'ticket-card-cooking' :
         order.status === 'completed' ? 'ticket-card-ready opacity-75' : 
