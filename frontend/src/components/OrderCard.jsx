@@ -250,29 +250,29 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
         )}
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="flex-1 flex flex-col overflow-hidden">
         {/* Menu Items & Preparation Status */}
-        <div className="space-y-3 mb-6">
-          <h4 className="font-bold flex items-center gap-2 text-gray-800 text-lg mb-3">
+        <div className="flex-1 flex flex-col min-h-0">
+          <h4 className="font-bold flex items-center gap-2 text-gray-800 text-lg mb-3 flex-shrink-0">
             <ChefHat className="h-5 w-5 text-orange-600" />
             Kitchen Preparation Board
           </h4>
           
-          {/* Constrained items container - no scroll, just proper sizing */}
-          <div className="space-y-3">
+          {/* Scrollable items container with fixed max height */}
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 max-h-[200px] lg:max-h-[150px]">
             {order.items.map((item, index) => (
-              <div key={index} className="border-2 border-gray-200 rounded-xl p-4 bg-gradient-to-r from-white to-gray-50 transition-all duration-300 hover:shadow-md">
+              <div key={index} className="border-2 border-gray-200 rounded-xl p-3 bg-gradient-to-r from-white to-gray-50 transition-all duration-300 hover:shadow-md flex-shrink-0">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-gray-600" />
-                    <div className="flex-1 min-w-0">
-                      <span className="font-bold text-gray-800 text-lg">{item.name}</span>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Package className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <span className="font-bold text-gray-800 text-base block truncate">{item.name}</span>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="bg-white border-blue-200 text-blue-700">
+                        <Badge variant="outline" className="bg-white border-blue-200 text-blue-700 text-xs flex-shrink-0">
                           Qty: {item.quantity}
                         </Badge>
                         {item.subtotal && (
-                          <span className="text-sm font-semibold text-emerald-600">
+                          <span className="text-sm font-semibold text-emerald-600 flex-shrink-0">
                             ${item.subtotal.toFixed(2)}
                           </span>
                         )}
@@ -282,15 +282,17 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                 </div>
                 
                 {/* Kitchen Prep Status Controls - Always Bottom Layout */}
-                <div className="flex flex-col items-start justify-start gap-3 p-3 bg-white rounded-lg border">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">Prep Status:</span>
+                <div className="flex flex-col items-start justify-start gap-2 p-2 bg-white rounded-lg border">
+                  <div className="flex items-center gap-3 w-full">
+                    <span className="text-sm font-medium text-gray-700 flex-shrink-0">Prep Status:</span>
                     <Badge 
-                      className={`${getPrepStatusColor(item.cooking_status)} flex items-center gap-1 text-sm font-medium`}
+                      className={`${getPrepStatusColor(item.cooking_status)} flex items-center gap-1 text-xs font-medium flex-shrink-0`}
                     >
                       {getPrepStatusIcon(item.cooking_status)}
-                      {item.cooking_status === 'in process' ? 'In Process' : 
-                       item.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
+                      <span className="truncate max-w-[80px]">
+                        {item.cooking_status === 'in process' ? 'In Process' : 
+                         item.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
+                      </span>
                     </Badge>
                   </div>
                   
@@ -300,7 +302,7 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
                       onValueChange={(value) => handleCookingStatusUpdate(item.name, value)}
                       disabled={updatingStatus}
                     >
-                      <SelectTrigger className="w-full max-w-xs h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
+                      <SelectTrigger className="w-full h-8 bg-white border-gray-300 hover:border-blue-400 transition-colors text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -316,47 +318,49 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
           </div>
         </div>
         
-        {/* Action Buttons */}
-        {order.status === 'pending' && (
-          <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+        {/* Action Buttons - Always Visible at Bottom */}
+        <div className="pt-4 flex-shrink-0">
+          {order.status === 'pending' && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  onClick={handleEdit}
+                  variant="outline"
+                  className="text-blue-600 border-blue-300 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300 group text-sm py-2"
+                >
+                  <Edit className="h-3 w-3 mr-1 group-hover:rotate-12 transition-transform" />
+                  <span className="truncate">Modify</span>
+                </Button>
+                <Button
+                  onClick={handleCancel}
+                  variant="outline"
+                  disabled={hasItemInProcess}
+                  className={`transition-all duration-300 group text-sm py-2 ${hasItemInProcess 
+                    ? 'text-gray-400 border-gray-300 cursor-not-allowed' 
+                    : 'text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}`}
+                >
+                  <Trash2 className="h-3 w-3 mr-1 group-hover:rotate-12 transition-transform" />
+                  <span className="truncate">Cancel</span>
+                </Button>
+              </div>
+              
               <Button
-                onClick={handleEdit}
-                variant="outline"
-                className="flex-1 text-blue-600 border-blue-300 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300 group"
+                onClick={handleComplete}
+                className="w-full btn-restaurant-primary text-white font-semibold py-2 text-sm transition-all duration-300 hover:shadow-xl group"
               >
-                <Edit className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform" />
-                Modify Order
-              </Button>
-              <Button
-                onClick={handleCancel}
-                variant="outline"
-                disabled={hasItemInProcess}
-                className={`flex-1 transition-all duration-300 group ${hasItemInProcess 
-                  ? 'text-gray-400 border-gray-300 cursor-not-allowed' 
-                  : 'text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}`}
-              >
-                <Trash2 className="h-4 w-4 mr-2 group-hover:rotate-12 transition-transform" />
-                Cancel
+                <Check className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+                <span className="truncate">Complete & Serve Order</span>
               </Button>
             </div>
-            
-            <Button
-              onClick={handleComplete}
-              className="w-full btn-restaurant-primary text-white font-semibold py-3 text-lg transition-all duration-300 hover:shadow-xl group"
-            >
-              <Check className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-              ✨ Complete & Serve Order
-            </Button>
-          </div>
-        )}
-        
-        {order.status === 'completed' && (
-          <div className="flex items-center justify-center py-4 text-emerald-600 bg-emerald-50 rounded-xl border border-emerald-200">
-            <CheckCircle2 className="h-6 w-6 mr-3 animate-pulse" />
-            <span className="font-bold text-lg">Order Successfully Served! 🎉</span>
-          </div>
-        )}
+          )}
+          
+          {order.status === 'completed' && (
+            <div className="flex items-center justify-center py-3 text-emerald-600 bg-emerald-50 rounded-xl border border-emerald-200">
+              <CheckCircle2 className="h-5 w-5 mr-2 animate-pulse flex-shrink-0" />
+              <span className="font-bold text-sm truncate">Order Successfully Served! 🎉</span>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
