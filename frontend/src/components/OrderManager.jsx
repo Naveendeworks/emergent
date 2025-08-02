@@ -79,16 +79,24 @@ const OrderManager = ({ onLogout }) => {
 
   const handleCookingStatusUpdate = async (orderId, itemName, newStatus) => {
     try {
-      await ordersAPI.updateCookingStatus(orderId, itemName, newStatus);
+      console.log('Updating status:', { orderId, itemName, newStatus });
+      const result = await ordersAPI.updateCookingStatus(orderId, itemName, newStatus);
+      console.log('Update result:', result);
+      
+      // Reload both views
       loadViewOrdersData();
+      loadOrders();
+      loadStats();
+      
       toast({
         title: "Kitchen Update",
         description: `${itemName} preparation status updated to ${newStatus}`,
       });
     } catch (error) {
+      console.error('Kitchen Board Status Update Error:', error);
       toast({
         title: "Kitchen Error",
-        description: "Failed to update preparation status",
+        description: `Failed to update ${itemName} status: ${error.response?.data?.detail || error.message}`,
         variant: "destructive",
       });
     }
