@@ -416,13 +416,13 @@ const OrderQueueCard = ({ order, priority, index }) => {
 
           {/* Items Status - Compact */}
           <div className="space-y-1">
-            {order.items?.slice(0, 2).map((item, itemIndex) => (
+            {order.items?.slice(0, 5).map((item, itemIndex) => (
               <div key={itemIndex} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-1 flex-1 min-w-0">
-                  <span className="truncate font-medium text-white">
+                  <span className="truncate font-medium text-white text-xs">
                     {item.name}
                   </span>
-                  <span className="text-blue-300">x{item.quantity}</span>
+                  <span className="text-blue-300 text-xs">x{item.quantity}</span>
                 </div>
                 <div className={`px-1 py-0.5 rounded text-xs ${getPrepStatusColor(item.cooking_status)}`}>
                   {getPrepStatusIcon(item.cooking_status)}
@@ -430,9 +430,9 @@ const OrderQueueCard = ({ order, priority, index }) => {
               </div>
             ))}
             
-            {order.items?.length > 2 && (
+            {order.items?.length > 5 && (
               <div className="text-xs text-blue-200 text-center">
-                +{order.items.length - 2} more
+                +{order.items.length - 5} more
               </div>
             )}
           </div>
