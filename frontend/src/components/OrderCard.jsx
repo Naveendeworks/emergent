@@ -248,67 +248,70 @@ const OrderCard = ({ order, onComplete, onEdit, onCancel, onOrderUpdated, id, ..
         )}
       </CardHeader>
       
-      <CardContent>
+      <CardContent className="flex flex-col h-full">
         {/* Menu Items & Preparation Status */}
-        <div className="space-y-3 mb-6">
+        <div className="flex-1 overflow-hidden mb-6">
           <h4 className="font-bold flex items-center gap-2 text-gray-800 text-lg mb-3">
             <ChefHat className="h-5 w-5 text-orange-600" />
             Kitchen Preparation Board
           </h4>
           
-          {order.items.map((item, index) => (
-            <div key={index} className="border-2 border-gray-200 rounded-xl p-4 bg-gradient-to-r from-white to-gray-50 transition-all duration-300 hover:shadow-md">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <Package className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <span className="font-bold text-gray-800 text-lg">{item.name}</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="bg-white border-blue-200 text-blue-700">
-                        Qty: {item.quantity}
-                      </Badge>
-                      {item.subtotal && (
-                        <span className="text-sm font-semibold text-emerald-600">
-                          ${item.subtotal.toFixed(2)}
-                        </span>
-                      )}
+          {/* Fixed height container with scroll */}
+          <div className="max-h-[300px] md:max-h-[250px] lg:max-h-[200px] overflow-y-auto space-y-3 pr-2">
+            {order.items.map((item, index) => (
+              <div key={index} className="border-2 border-gray-200 rounded-xl p-3 bg-gradient-to-r from-white to-gray-50 transition-all duration-300 hover:shadow-md">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4 text-gray-600" />
+                    <div>
+                      <span className="font-bold text-gray-800 text-base">{item.name}</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="bg-white border-blue-200 text-blue-700 text-xs">
+                          Qty: {item.quantity}
+                        </Badge>
+                        {item.subtotal && (
+                          <span className="text-sm font-semibold text-emerald-600">
+                            ${item.subtotal.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              
-              {/* Kitchen Prep Status Controls */}
-              <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-700">Prep Status:</span>
-                  <Badge 
-                    className={`${getPrepStatusColor(item.cooking_status)} flex items-center gap-1 text-sm font-medium`}
-                  >
-                    {getPrepStatusIcon(item.cooking_status)}
-                    {item.cooking_status === 'in process' ? 'Cooking' : 
-                     item.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
-                  </Badge>
-                </div>
                 
-                {order.status === 'pending' && (
-                  <Select 
-                    value={item.cooking_status || 'not started'} 
-                    onValueChange={(value) => handleCookingStatusUpdate(item.name, value)}
-                    disabled={updatingStatus}
-                  >
-                    <SelectTrigger className="w-40 h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="not started">🔸 Not Started</SelectItem>
-                      <SelectItem value="in process">🔥 Cooking</SelectItem>
-                      <SelectItem value="finished">✅ Ready</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
+                {/* Kitchen Prep Status Controls */}
+                <div className="flex items-center justify-between p-2 bg-white rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">Prep Status:</span>
+                    <Badge 
+                      className={`${getPrepStatusColor(item.cooking_status)} flex items-center gap-1 text-xs font-medium`}
+                    >
+                      {getPrepStatusIcon(item.cooking_status)}
+                      {item.cooking_status === 'in process' ? 'Cooking' : 
+                       item.cooking_status === 'finished' ? 'Ready' : 'Not Started'}
+                    </Badge>
+                  </div>
+                  
+                  {order.status === 'pending' && (
+                    <Select 
+                      value={item.cooking_status || 'not started'} 
+                      onValueChange={(value) => handleCookingStatusUpdate(item.name, value)}
+                      disabled={updatingStatus}
+                    >
+                      <SelectTrigger className="w-32 h-8 bg-white border-gray-300 hover:border-blue-400 transition-colors text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="not started">🔸 Not Started</SelectItem>
+                        <SelectItem value="in process">🔥 Cooking</SelectItem>
+                        <SelectItem value="finished">✅ Ready</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         
         {/* Action Buttons */}
