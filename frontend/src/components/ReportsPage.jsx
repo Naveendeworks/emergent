@@ -352,12 +352,12 @@ const ReportsPage = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item Name</TableHead>
-                    <TableHead>Total Ordered</TableHead>
-                    <TableHead>Order Count</TableHead>
-                    <TableHead>Avg per Order</TableHead>
-                    <TableHead>Popular Payment</TableHead>
-                    <TableHead>Recent Customers</TableHead>
+                    <TableHead className="text-black font-bold">Item Name</TableHead>
+                    <TableHead className="text-black font-bold">Total Ordered</TableHead>
+                    <TableHead className="text-black font-bold">Order Count</TableHead>
+                    <TableHead className="text-black font-bold">Avg per Order</TableHead>
+                    <TableHead className="text-black font-bold">Popular Payment</TableHead>
+                    <TableHead className="text-black font-bold">Recent Customers</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
