@@ -263,14 +263,15 @@
   border-radius: 4px;
 }
 
-/* Professional Typography */
+/* Professional Typography - High Contrast */
 .restaurant-heading {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #1e40af, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Notification slide-in animation */
