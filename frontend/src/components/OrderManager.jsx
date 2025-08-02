@@ -579,15 +579,15 @@ const OrderManager = ({ onLogout }) => {
                             
                             <div className="space-y-3">
                               {itemGroup.orders.map((orderInfo, orderIndex) => (
-                                <div key={orderIndex} className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                      <Hash className="h-4 w-4 text-blue-600" />
+                                <div key={orderIndex} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300 gap-3 sm:gap-0">
+                                  <div className="flex-1 w-full sm:w-auto">
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                                      <Hash className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
                                       <span className="font-bold text-blue-600">#{orderInfo.orderNumber}</span>
-                                      <Users className="h-4 w-4 text-gray-500" />
+                                      <Users className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
                                       <span className="text-gray-700 font-medium">{orderInfo.customerName}</span>
                                     </div>
-                                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
                                       <span className="flex items-center gap-1">
                                         <Package className="h-3 w-3" />
                                         Qty: {orderInfo.quantity}
@@ -602,13 +602,13 @@ const OrderManager = ({ onLogout }) => {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                                     <Badge 
                                       className={`${
                                         orderInfo.cooking_status === 'finished' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
                                         orderInfo.cooking_status === 'in process' ? 'bg-amber-100 text-amber-800 border-amber-200' :
                                         'bg-slate-100 text-slate-700 border-slate-200'
-                                      } border text-sm font-medium flex items-center gap-1`}
+                                      } border text-xs sm:text-sm font-medium flex items-center gap-1`}
                                     >
                                       {orderInfo.cooking_status === 'finished' ? '✅' :
                                        orderInfo.cooking_status === 'in process' ? '🔥' : '🔸'}
@@ -619,7 +619,7 @@ const OrderManager = ({ onLogout }) => {
                                       value={orderInfo.cooking_status} 
                                       onValueChange={(value) => handleCookingStatusUpdate(orderInfo.order_id, itemGroup.item_name, value)}
                                     >
-                                      <SelectTrigger className="w-40 h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors">
+                                      <SelectTrigger className="w-full sm:w-40 h-8 sm:h-9 bg-white border-gray-300 hover:border-blue-400 transition-colors text-xs sm:text-sm">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
