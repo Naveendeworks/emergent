@@ -483,7 +483,7 @@ const OrderManager = ({ onLogout }) => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
                 {pendingOrders.map((order, index) => (
                   <div key={order.id} className="animate-ticket-slide-in" style={{ animationDelay: `${index * 0.1}s` }}>
                     <OrderCard 
