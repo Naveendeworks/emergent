@@ -157,26 +157,6 @@ const LoginForm = ({ onLogin }) => {
                 )}
               </Button>
             </form>
-
-            {/* Login Credentials Info */}
-            <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="p-1 bg-blue-100 rounded-lg">
-                  <Shield className="h-4 w-4 text-blue-600" />
-                </div>
-                <span className="text-sm font-semibold text-blue-800">Demo Credentials</span>
-              </div>
-              <div className="text-sm text-blue-700 space-y-1">
-                <div className="flex justify-between">
-                  <span className="font-medium">Username:</span>
-                  <code className="bg-blue-100 px-2 py-1 rounded font-mono">admin</code>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Password:</span>
-                  <code className="bg-blue-100 px-2 py-1 rounded font-mono">memfamous2025</code>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
