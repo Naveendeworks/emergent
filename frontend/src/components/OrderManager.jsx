@@ -624,7 +624,7 @@ const OrderManager = ({ onLogout }) => {
                                       </SelectTrigger>
                                       <SelectContent>
                                         <SelectItem value="not started">🔸 Not Started</SelectItem>
-                                        <SelectItem value="cooking">🔥 Cooking</SelectItem>
+                                        <SelectItem value="in process">🔥 Cooking</SelectItem>
                                         <SelectItem value="finished">✅ Ready</SelectItem>
                                       </SelectContent>
                                     </Select>
