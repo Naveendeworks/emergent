@@ -155,44 +155,44 @@ const OrderQueue = () => {
   return (
     <div className="order-queue-bg min-h-screen">
       {/* KDS Header */}
-      <div className="p-8 border-b border-white/20 bg-black/20 backdrop-blur-md">
+      <div className="p-4 sm:p-8 border-b border-white/20 bg-black/20 backdrop-blur-md">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 animate-slide-in-left">
-              <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl">
-                <Monitor className="h-10 w-10 text-white" />
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 animate-slide-in-left">
+              <div className="p-3 sm:p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl">
+                <Monitor className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-white">Kitchen Display System</h1>
-                <p className="text-blue-100 text-lg font-medium flex items-center gap-2">
-                  <ChefHat className="h-5 w-5" />
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Kitchen Display System</h1>
+                <p className="text-blue-100 text-sm sm:text-lg font-medium flex items-center gap-1 sm:gap-2">
+                  <ChefHat className="h-4 w-4 sm:h-5 sm:w-5" />
                   Real-time Order Processing Dashboard
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4 animate-slide-in-right">
-              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
-                <div className="text-2xl font-bold text-white">{orders.length}</div>
-                <div className="text-blue-100 text-sm">Total Orders</div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 animate-slide-in-right w-full lg:w-auto">
+              <div className="text-center p-2 sm:p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-lg sm:text-2xl font-bold text-white">{orders.length}</div>
+                <div className="text-blue-100 text-xs sm:text-sm">Total Orders</div>
               </div>
-              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
-                <div className="text-2xl font-bold text-emerald-400">
+              <div className="text-center p-2 sm:p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-lg sm:text-2xl font-bold text-emerald-400">
                   {currentOrders.length}
                 </div>
-                <div className="text-blue-100 text-sm">Showing Now</div>
+                <div className="text-blue-100 text-xs sm:text-sm">Showing Now</div>
               </div>
-              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
-                <div className="text-2xl font-bold text-purple-400">
+              <div className="text-center p-2 sm:p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-lg sm:text-2xl font-bold text-purple-400">
                   {totalPages > 0 ? currentPage + 1 : 0}/{totalPages}
                 </div>
-                <div className="text-blue-100 text-sm">Page</div>
+                <div className="text-blue-100 text-xs sm:text-sm">Page</div>
               </div>
-              <div className="text-center p-4 bg-white/10 rounded-2xl backdrop-blur-md">
-                <div className="text-2xl font-bold text-emerald-400">
+              <div className="text-center p-2 sm:p-4 bg-white/10 rounded-2xl backdrop-blur-md">
+                <div className="text-lg sm:text-2xl font-bold text-emerald-400">
                   {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
-                <div className="text-blue-100 text-sm">Current Time</div>
+                <div className="text-blue-100 text-xs sm:text-sm">Current Time</div>
               </div>
             </div>
           </div>
