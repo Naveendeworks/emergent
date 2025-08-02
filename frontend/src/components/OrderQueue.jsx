@@ -383,7 +383,7 @@ const OrderQueueCard = ({ order, priority, index }) => {
 
   return (
     <Card 
-      className={`queue-card border ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full`}
+      className={`queue-card border ${priorityClass} animate-ticket-slide-in backdrop-blur-md h-full min-h-[180px]`}
       style={{ animationDelay: `${index * 0.05}s` }}
     >
       <CardContent className="p-2">
