@@ -159,31 +159,37 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Enhanced Card Hover Effects */
+/* Enhanced Card Hover Effects - True Tone */
 .ticket-card {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
+  border: 2px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .ticket-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
-              0 10px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15),
+              0 15px 30px rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .ticket-card-urgent {
-  border-left: 4px solid #ef4444;
+  border-left: 6px solid #dc2626;
   background: linear-gradient(145deg, #fef2f2, #ffffff);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
 }
 
 .ticket-card-cooking {
-  border-left: 4px solid #f59e0b;
-  background: linear-gradient(145deg, #fffbeb, #ffffff);
+  border-left: 6px solid #ea580c;
+  background: linear-gradient(145deg, #fff7ed, #ffffff);
+  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.2);
 }
 
 .ticket-card-ready {
-  border-left: 4px solid #10b981;
-  background: linear-gradient(145deg, #f0fdf4, #ffffff);
+  border-left: 6px solid #059669;
+  background: linear-gradient(145deg, #ecfdf5, #ffffff);
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.2);
 }
 
 /* Kitchen Display System Animations - Static Display */
