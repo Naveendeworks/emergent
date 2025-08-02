@@ -399,21 +399,21 @@ const OrderManager = ({ onLogout }) => {
         )}
 
         {/* Restaurant Metrics Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           {statsCards.map((stat, index) => {
             const IconComponent = stat.icon;
             return (
               <Card key={stat.title} className="stats-card animate-scale-in" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-gray-700">
+                  <CardTitle className="text-xs sm:text-sm font-semibold text-gray-700">
                     {stat.title}
                   </CardTitle>
-                  <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                    <IconComponent className={`h-5 w-5 ${stat.color}`} />
+                  <div className={`p-1 sm:p-2 rounded-lg ${stat.bgColor}`}>
+                    <IconComponent className={`h-3 w-3 sm:h-5 sm:w-5 ${stat.color}`} />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className={`text-3xl font-bold ${stat.color} mb-1`}>
+                  <div className={`text-xl sm:text-3xl font-bold ${stat.color} mb-1`}>
                     {stat.value}
                   </div>
                   <p className="text-xs text-gray-600 font-medium">
