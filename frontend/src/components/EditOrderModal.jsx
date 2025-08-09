@@ -66,7 +66,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
         id: menuItem.id,
         name: menuItem.name,
         quantity: 1,
-        chef: menuItem.chef,
         price: menuItem.price || 0
       }]);
     }
