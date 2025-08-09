@@ -238,7 +238,6 @@ const EditOrderModal = ({ open, onOpenChange, order, onOrderUpdated }) => {
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="font-medium">{item.name}</span>
-                          {item.chef && <p className="text-xs text-gray-600">Chef: {item.chef}</p>}
                           <p className="text-xs text-green-600 font-medium">
                             ${(item.price || 0).toFixed(2)} each
                           </p>
