@@ -3,25 +3,66 @@ from models.menu import MenuItem, MenuResponse
 
 class MenuService:
     def __init__(self):
-        # Static menu items with prices based on the provided pricing list
+        # Updated menu items based on station list with correct categories and prices
         self.menu_items = [
-            MenuItem(id="dosa", name="Dosa", chef="Sunoj", sousChef="Rakesh", category="South Indian", price=10.99),
-            MenuItem(id="chicken_biryani", name="Chicken Biryani", chef="Nachu", sousChef="Sreedhar", category="Biryani", price=12.99),
-            MenuItem(id="goat_biryani", name="Goat Biryani", chef="Mario", sousChef="Rakesh", category="Biryani", price=12.99),
-            MenuItem(id="goat_curry", name="Goat Curry", chef="Mario", category="Curry", price=14.99),
-            MenuItem(id="fish_pulusu", name="Fish Pulusu", chef="Sunoj", category="Fish", price=12.99),
-            MenuItem(id="chicken_65", name="Chicken 65", chef="Sunoj", sousChef="Jnet", category="Starters", price=9.99),
-            MenuItem(id="idly", name="Idly", chef="Jose", sousChef="Ranjitha Mom", category="South Indian", price=9.99),
-            MenuItem(id="coffee", name="Coffee", chef="Ravi Mom", category="Beverages", price=3.00),
-            MenuItem(id="chaat_items", name="Chaat Items", chef="Bhavana", sousChef="Abhiram", category="Chaat", price=5.99),
-            MenuItem(id="bajji", name="Bajji", chef="Gupta", sousChef="Akula", category="Snacks", price=6.99),
-            MenuItem(id="punugulu", name="Punugulu", chef="Akula", sousChef="Bhavana(Batter)", category="Snacks", price=5.99),
-            MenuItem(id="nellore_kaaram", name="Nellore Kaaram", chef="Mridula", sousChef="Sravani", category="Spicy", price=10.99),
-            MenuItem(id="paya_soup", name="Paya Soup", chef="Sreedhar", sousChef="Jnet", category="Soup", price=8.99),
-            MenuItem(id="keema", name="Keema", chef="Sreedhar", sousChef="Jnet", category="Meat", price=15.99),
-            MenuItem(id="tea", name="Tea", chef="Dera", category="Beverages", price=2.00),
-            MenuItem(id="aloo_masala", name="Aloo Masala", chef="Anusha Allu", category="Vegetarian", price=6.99),
-            MenuItem(id="fruits_cutting", name="Fruits Cutting", chef="Kitchen Staff", category="Dessert", price=5.99)
+            # Soup Station
+            MenuItem(id="paya", name="Paya", category="Soup", price=10.00),
+            
+            # Non-veg Appetizer Station
+            MenuItem(id="chicken_65_boneless", name="Chicken 65 (Boneless)", category="Non-veg Appetizer", price=10.00),
+            
+            # South Indian Delicacies Station
+            MenuItem(id="idly_3", name="Idly (3)", category="South Indian Delicacies", price=7.00),
+            MenuItem(id="guntur_ghee_podi_idly", name="Guntur Ghee Podi Idly", category="South Indian Delicacies", price=8.00),
+            MenuItem(id="idly_natukodi_curry", name="Idly with Natukodi curry", category="South Indian Delicacies", price=10.00),
+            MenuItem(id="idly_mutton_curry", name="Idly with Mutton curry", category="South Indian Delicacies", price=10.00),
+            MenuItem(id="ragi_sangati_natukodi_curry", name="Ragi Sangati with Natukodi curry", category="South Indian Delicacies", price=10.00),
+            MenuItem(id="ragi_sangati_mutton_curry", name="Ragi Sangati with Mutton curry", category="South Indian Delicacies", price=10.00),
+            
+            # Dosas Station
+            MenuItem(id="keema_dosa", name="Keema Dosa", category="Dosas", price=15.00),
+            MenuItem(id="mutton_curry_dosa", name="Mutton curry Dosa", category="Dosas", price=16.00),
+            MenuItem(id="pesarattu_upma_dosa", name="Pesarattu Upma Dosa", category="Dosas", price=12.00),
+            MenuItem(id="nellore_kaaram_dosa", name="Nellore Kaaram Dosa", category="Dosas", price=12.00),
+            MenuItem(id="ghee_massala_dosa", name="Ghee Massala Dosa", category="Dosas", price=12.00),
+            MenuItem(id="ghee_roast", name="Ghee Roast", category="Dosas", price=10.00),
+            MenuItem(id="plain_roast", name="Plain Roast", category="Dosas", price=10.00),
+            MenuItem(id="chocolate_dosa", name="Chocolate Dosa", category="Dosas", price=8.00),
+            
+            # Biryani's Station
+            MenuItem(id="thalapakatti_goat_biryani", name="Thalapakatti Goat Biryani", category="Biryani's", price=15.00),
+            MenuItem(id="hyderabad_chicken_dum_biryani", name="Hyderabad Chicken Dum Biryani", category="Biryani's", price=12.00),
+            
+            # Snacks Station
+            MenuItem(id="punugulu", name="Punugulu", category="Snacks", price=8.00),
+            MenuItem(id="mirchi_bajji", name="Mirchi Bajji", category="Snacks", price=8.00),
+            MenuItem(id="veg_puff", name="Veg Puff", category="Snacks", price=3.00),
+            MenuItem(id="egg_puff", name="Egg Puff", category="Snacks", price=4.00),
+            MenuItem(id="chicken_puff", name="Chicken Puff", category="Snacks", price=5.00),
+            MenuItem(id="veg_samosa_2", name="Veg Samosa (2)", category="Snacks", price=5.00),
+            
+            # Chaat Station
+            MenuItem(id="pani_puri", name="Pani Puri", category="Chaat", price=7.00),
+            MenuItem(id="bhel_puri", name="Bhel Puri", category="Chaat", price=7.00),
+            MenuItem(id="dahi_puri", name="Dahi Puri", category="Chaat", price=7.00),
+            MenuItem(id="sev_puri", name="Sev Puri", category="Chaat", price=7.00),
+            
+            # Hot Beverages Station
+            MenuItem(id="arakku_filter_coffee", name="Arakku Filter Coffee", category="Hot Beverages", price=3.00),
+            MenuItem(id="masala_chai", name="Masala Chai", category="Hot Beverages", price=1.00),
+            
+            # Fresh Fruit Juices Station
+            MenuItem(id="abc_detox_juice", name="ABC Detox Juice", category="Fresh Fruit Juices", price=8.00),
+            MenuItem(id="orange_juice", name="Orange Juice", category="Fresh Fruit Juices", price=6.00),
+            MenuItem(id="watermelon_juice", name="Watermelon Juice", category="Fresh Fruit Juices", price=6.00),
+            MenuItem(id="strawberry_banana_shake", name="Strawberry Banana Shake", category="Fresh Fruit Juices", price=8.00),
+            
+            # Cold Beverages Station
+            MenuItem(id="mango_milk_shake", name="Mango Milk Shake", category="Cold Beverages", price=6.00),
+            MenuItem(id="rose_milk", name="Rose Milk", category="Cold Beverages", price=5.00),
+            MenuItem(id="thumbs_up", name="Thumbs up", category="Cold Beverages", price=3.00),
+            MenuItem(id="coke", name="Coke", category="Cold Beverages", price=2.00),
+            MenuItem(id="water_bottle", name="Water Bottle", category="Cold Beverages", price=1.00),
         ]
     
     async def get_menu(self) -> MenuResponse:
