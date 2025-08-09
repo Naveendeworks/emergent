@@ -33,8 +33,8 @@ print(f"🔗 Testing cleaned database at: {API_URL}")
 SAMPLE_ORDER_DATA = {
     "customerName": "Fresh Start Customer",
     "items": [
-        {"name": "Tea", "quantity": 2},
-        {"name": "Coffee", "quantity": 1}
+        {"name": "Masala Chai", "quantity": 2},
+        {"name": "Arakku Filter Coffee", "quantity": 1}
     ],
     "paymentMethod": "cash"
 }
