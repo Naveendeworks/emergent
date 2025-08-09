@@ -42,10 +42,11 @@ class MenuService:
             MenuItem(id="veg_samosa_2", name="Veg Samosa (2)", category="Snacks", price=5.00),
             
             # Chaat Station
-            MenuItem(id="pani_puri", name="Pani Puri", category="Chaat", price=7.00),
+            MenuItem(id="pani_puri", name="Pani Puri", category="Chaat", price=6.00),
             MenuItem(id="bhel_puri", name="Bhel Puri", category="Chaat", price=7.00),
             MenuItem(id="dahi_puri", name="Dahi Puri", category="Chaat", price=7.00),
             MenuItem(id="sev_puri", name="Sev Puri", category="Chaat", price=7.00),
+            MenuItem(id="batani_chaat", name="Batani Chaat", category="Chaat", price=7.00),
             
             # Hot Beverages Station
             MenuItem(id="arakku_filter_coffee", name="Arakku Filter Coffee", category="Hot Beverages", price=3.00),
