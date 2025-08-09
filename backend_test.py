@@ -1284,12 +1284,311 @@ def test_view_orders_status_filtering_edge_cases():
         print_result(False, f"Error testing view orders edge cases: {str(e)}")
         return False
 
+# HIGH PRIORITY TESTS - Menu Updates Verification
+
+def test_menu_item_price_updates():
+    """Test that Pani Puri price is updated to $6.00 (changed from $7.00)"""
+    print_test_header("Menu Item Price Updates - Pani Puri $6.00")
+    
+    try:
+        response = requests.get(f"{API_URL}/menu/")
+        
+        if response.status_code == 200:
+            menu_data = response.json()
+            menu_items = menu_data.get('items', [])
+            
+            # Find Pani Puri item
+            pani_puri = None
+            for item in menu_items:
+                if item['name'] == 'Pani Puri':
+                    pani_puri = item
+                    break
+            
+            if not pani_puri:
+                print_result(False, "Pani Puri not found in menu")
+                return False
+            
+            # Check price is $6.00
+            if pani_puri['price'] != 6.00:
+                print_result(False, f"Pani Puri price incorrect: expected $6.00, got ${pani_puri['price']}")
+                return False
+            
+            print_result(True, f"✅ Pani Puri price correctly updated to ${pani_puri['price']}")
+            
+            # Verify it's in Chaat category
+            if pani_puri['category'] != 'Chaat':
+                print_result(False, f"Pani Puri category incorrect: expected 'Chaat', got '{pani_puri['category']}'")
+                return False
+            
+            print_result(True, f"✅ Pani Puri correctly categorized as '{pani_puri['category']}'")
+            return True
+        else:
+            print_result(False, f"Failed to get menu: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing menu price updates: {str(e)}")
+        return False
+
+def test_new_menu_item_batani_chaat():
+    """Test that Batani Chaat is available for $7.00 in the Chaat category"""
+    print_test_header("New Menu Item - Batani Chaat $7.00")
+    
+    try:
+        response = requests.get(f"{API_URL}/menu/")
+        
+        if response.status_code == 200:
+            menu_data = response.json()
+            menu_items = menu_data.get('items', [])
+            
+            # Find Batani Chaat item
+            batani_chaat = None
+            for item in menu_items:
+                if item['name'] == 'Batani Chaat':
+                    batani_chaat = item
+                    break
+            
+            if not batani_chaat:
+                print_result(False, "Batani Chaat not found in menu")
+                return False
+            
+            # Check price is $7.00
+            if batani_chaat['price'] != 7.00:
+                print_result(False, f"Batani Chaat price incorrect: expected $7.00, got ${batani_chaat['price']}")
+                return False
+            
+            print_result(True, f"✅ Batani Chaat price correctly set to ${batani_chaat['price']}")
+            
+            # Verify it's in Chaat category
+            if batani_chaat['category'] != 'Chaat':
+                print_result(False, f"Batani Chaat category incorrect: expected 'Chaat', got '{batani_chaat['category']}'")
+                return False
+            
+            print_result(True, f"✅ Batani Chaat correctly categorized as '{batani_chaat['category']}'")
+            return True
+        else:
+            print_result(False, f"Failed to get menu: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing new menu item: {str(e)}")
+        return False
+
+def test_chaat_category_five_items():
+    """Test that Chaat category now contains exactly 5 items"""
+    print_test_header("Chaat Category - 5 Items Verification")
+    
+    try:
+        response = requests.get(f"{API_URL}/menu/")
+        
+        if response.status_code == 200:
+            menu_data = response.json()
+            menu_items = menu_data.get('items', [])
+            
+            # Find all Chaat items
+            chaat_items = [item for item in menu_items if item['category'] == 'Chaat']
+            
+            if len(chaat_items) != 5:
+                print_result(False, f"Chaat category should have 5 items, found {len(chaat_items)}")
+                return False
+            
+            # Expected Chaat items
+            expected_items = ['Pani Puri', 'Bhel Puri', 'Dahi Puri', 'Sev Puri', 'Batani Chaat']
+            found_items = [item['name'] for item in chaat_items]
+            
+            # Check all expected items are present
+            for expected_item in expected_items:
+                if expected_item not in found_items:
+                    print_result(False, f"Missing expected Chaat item: {expected_item}")
+                    return False
+            
+            print_result(True, f"✅ Chaat category contains all 5 expected items: {', '.join(found_items)}")
+            
+            # Verify pricing for each item
+            pricing_correct = True
+            for item in chaat_items:
+                if item['name'] == 'Pani Puri' and item['price'] != 6.00:
+                    print_result(False, f"Pani Puri price incorrect: ${item['price']}")
+                    pricing_correct = False
+                elif item['name'] in ['Bhel Puri', 'Dahi Puri', 'Sev Puri', 'Batani Chaat'] and item['price'] != 7.00:
+                    print_result(False, f"{item['name']} price incorrect: ${item['price']}")
+                    pricing_correct = False
+            
+            if pricing_correct:
+                print_result(True, "✅ All Chaat items have correct pricing")
+                return True
+            else:
+                return False
+        else:
+            print_result(False, f"Failed to get menu: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing Chaat category: {str(e)}")
+        return False
+
+def test_order_creation_with_updated_items():
+    """Test creating an order with updated menu items to ensure pricing calculations work correctly"""
+    print_test_header("Order Creation with Updated Menu Items")
+    
+    if not auth_token:
+        print_result(False, "No auth token available")
+        return False
+    
+    headers = {"Authorization": f"Bearer {auth_token}"}
+    
+    try:
+        # Create order with both Pani Puri ($6.00) and Batani Chaat ($7.00)
+        test_order_data = {
+            "customerName": "Menu Update Test Customer",
+            "items": [
+                {"name": "Pani Puri", "quantity": 2},  # 2 x $6.00 = $12.00
+                {"name": "Batani Chaat", "quantity": 1}  # 1 x $7.00 = $7.00
+            ],
+            "paymentMethod": "cash"
+        }
+        
+        create_response = requests.post(f"{API_URL}/orders/", json=test_order_data, headers=headers)
+        
+        if create_response.status_code == 201:
+            order = create_response.json()
+            
+            # Verify order total calculation: $12.00 + $7.00 = $19.00
+            expected_total = 19.00
+            if abs(order['totalAmount'] - expected_total) > 0.01:
+                print_result(False, f"Order total incorrect: expected ${expected_total}, got ${order['totalAmount']}")
+                return False
+            
+            print_result(True, f"✅ Order total correctly calculated: ${order['totalAmount']}")
+            
+            # Verify individual item pricing
+            items = order.get('items', [])
+            pani_puri_item = None
+            batani_chaat_item = None
+            
+            for item in items:
+                if item['name'] == 'Pani Puri':
+                    pani_puri_item = item
+                elif item['name'] == 'Batani Chaat':
+                    batani_chaat_item = item
+            
+            if not pani_puri_item:
+                print_result(False, "Pani Puri item not found in order")
+                return False
+            
+            if not batani_chaat_item:
+                print_result(False, "Batani Chaat item not found in order")
+                return False
+            
+            # Check Pani Puri pricing: 2 x $6.00 = $12.00
+            if pani_puri_item['price'] != 6.00:
+                print_result(False, f"Pani Puri unit price incorrect: expected $6.00, got ${pani_puri_item['price']}")
+                return False
+            
+            if abs(pani_puri_item['subtotal'] - 12.00) > 0.01:
+                print_result(False, f"Pani Puri subtotal incorrect: expected $12.00, got ${pani_puri_item['subtotal']}")
+                return False
+            
+            print_result(True, f"✅ Pani Puri pricing correct: ${pani_puri_item['price']} x {pani_puri_item['quantity']} = ${pani_puri_item['subtotal']}")
+            
+            # Check Batani Chaat pricing: 1 x $7.00 = $7.00
+            if batani_chaat_item['price'] != 7.00:
+                print_result(False, f"Batani Chaat unit price incorrect: expected $7.00, got ${batani_chaat_item['price']}")
+                return False
+            
+            if abs(batani_chaat_item['subtotal'] - 7.00) > 0.01:
+                print_result(False, f"Batani Chaat subtotal incorrect: expected $7.00, got ${batani_chaat_item['subtotal']}")
+                return False
+            
+            print_result(True, f"✅ Batani Chaat pricing correct: ${batani_chaat_item['price']} x {batani_chaat_item['quantity']} = ${batani_chaat_item['subtotal']}")
+            
+            # Store order ID for potential cleanup
+            global created_order_id
+            created_order_id = order['id']
+            
+            return True
+        else:
+            print_result(False, f"Failed to create order: {create_response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing order creation with updated items: {str(e)}")
+        return False
+
+def test_menu_endpoint_updated_pricing():
+    """Test that /api/menu/ returns the updated menu with correct pricing"""
+    print_test_header("Menu Endpoint - Updated Pricing Verification")
+    
+    try:
+        response = requests.get(f"{API_URL}/menu/")
+        
+        if response.status_code == 200:
+            menu_data = response.json()
+            
+            # Verify response structure
+            if 'items' not in menu_data or 'categories' not in menu_data:
+                print_result(False, "Menu response missing required fields")
+                return False
+            
+            menu_items = menu_data['items']
+            categories = menu_data['categories']
+            
+            # Verify Chaat category is present
+            if 'Chaat' not in categories:
+                print_result(False, "Chaat category not found in categories list")
+                return False
+            
+            print_result(True, f"✅ Menu contains {len(categories)} categories including 'Chaat'")
+            
+            # Verify total item count includes new item
+            total_items = len(menu_items)
+            if total_items < 30:  # Should have at least 30+ items with the new addition
+                print_result(False, f"Menu seems to have too few items: {total_items}")
+                return False
+            
+            print_result(True, f"✅ Menu contains {total_items} total items")
+            
+            # Verify specific pricing updates
+            pricing_tests = [
+                ('Pani Puri', 6.00, 'Chaat'),
+                ('Batani Chaat', 7.00, 'Chaat'),
+                ('Bhel Puri', 7.00, 'Chaat'),
+                ('Dahi Puri', 7.00, 'Chaat'),
+                ('Sev Puri', 7.00, 'Chaat')
+            ]
+            
+            for item_name, expected_price, expected_category in pricing_tests:
+                item = next((item for item in menu_items if item['name'] == item_name), None)
+                
+                if not item:
+                    print_result(False, f"{item_name} not found in menu")
+                    return False
+                
+                if item['price'] != expected_price:
+                    print_result(False, f"{item_name} price incorrect: expected ${expected_price}, got ${item['price']}")
+                    return False
+                
+                if item['category'] != expected_category:
+                    print_result(False, f"{item_name} category incorrect: expected '{expected_category}', got '{item['category']}'")
+                    return False
+                
+                print_result(True, f"✅ {item_name}: ${item['price']} in '{item['category']}' category")
+            
+            return True
+        else:
+            print_result(False, f"Failed to get menu: {response.status_code}")
+            return False
+            
+    except Exception as e:
+        print_result(False, f"Error testing menu endpoint: {str(e)}")
+        return False
+
 def run_enhanced_mem_famous_tests():
     """Run all enhanced Mem Famous Stall 2025 tests"""
     print(f"🚀 Starting Enhanced Mem Famous Stall 2025 System Tests")
     print(f"📅 Test run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"🏪 Testing enhanced system with category-based view orders, price analysis, and Excel export functionality")
-    print(f"🎯 SPECIAL FOCUS: View Orders Bug Fix - Testing completed orders exclusion")
+    print(f"🎯 SPECIAL FOCUS: Menu Updates - Testing Pani Puri price change and Batani Chaat addition")
     
     # Get authentication token first
     if not get_auth_token():
