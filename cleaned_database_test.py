@@ -341,7 +341,7 @@ def test_sequential_order_numbers_restart():
         
         second_order_data = {
             "customerName": "Second Order Customer",
-            "items": [{"name": "Coffee", "quantity": 1}],
+            "items": [{"name": "Arakku Filter Coffee", "quantity": 1}],
             "paymentMethod": "cashapp"
         }
         
