@@ -195,12 +195,12 @@ def test_menu_items_available():
             
             # Check for expected items with correct pricing
             expected_items = {
-                "Tea": 2.00,
-                "Coffee": 3.00,
-                "Chicken Biryani": 12.99,
-                "Goat Biryani": 12.99,
-                "Dosa": 10.99,
-                "Idly": 9.99
+                "Masala Chai": 1.00,
+                "Arakku Filter Coffee": 3.00,
+                "Hyderabad Chicken Dum Biryani": 12.00,
+                "Thalapakatti Goat Biryani": 15.00,
+                "Ghee Massala Dosa": 12.00,
+                "Idly (3)": 7.00
             }
             
             found_items = {}
