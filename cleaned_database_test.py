@@ -500,14 +500,14 @@ def test_pricing_calculations():
         test_order_data = {
             "customerName": "Pricing Test Customer",
             "items": [
-                {"name": "Tea", "quantity": 3},      # $2.00 x 3 = $6.00
-                {"name": "Coffee", "quantity": 2},   # $3.00 x 2 = $6.00
-                {"name": "Chicken Biryani", "quantity": 1}  # $12.99 x 1 = $12.99
+                {"name": "Masala Chai", "quantity": 3},      # $1.00 x 3 = $3.00
+                {"name": "Arakku Filter Coffee", "quantity": 2},   # $3.00 x 2 = $6.00
+                {"name": "Hyderabad Chicken Dum Biryani", "quantity": 1}  # $12.00 x 1 = $12.00
             ],
             "paymentMethod": "cash"
         }
         
-        expected_total = (2.00 * 3) + (3.00 * 2) + (12.99 * 1)  # $6.00 + $6.00 + $12.99 = $24.99
+        expected_total = (1.00 * 3) + (3.00 * 2) + (12.00 * 1)  # $3.00 + $6.00 + $12.00 = $21.00
         
         response = requests.post(f"{API_URL}/orders/", json=test_order_data, headers=headers)
         
