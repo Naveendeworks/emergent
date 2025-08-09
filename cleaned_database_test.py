@@ -279,7 +279,7 @@ def test_order_creation_fresh_start():
             print_result(True, "Order has all required fields")
             
             # Verify pricing calculations
-            expected_total = (2.00 * 2) + (3.00 * 1)  # Tea $2.00 x 2 + Coffee $3.00 x 1 = $7.00
+            expected_total = (1.00 * 2) + (3.00 * 1)  # Masala Chai $1.00 x 2 + Arakku Filter Coffee $3.00 x 1 = $5.00
             actual_total = order['totalAmount']
             
             if abs(actual_total - expected_total) > 0.01:
