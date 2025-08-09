@@ -250,7 +250,6 @@ const CreateOrderModal = ({ open, onOpenChange, onOrderCreated }) => {
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="font-medium">{item.name}</span>
-                          <p className="text-xs text-gray-600">Chef: {item.chef}</p>
                           <p className="text-xs text-green-600 font-medium">
                             ${item.price?.toFixed(2) || '0.00'} each
                           </p>
