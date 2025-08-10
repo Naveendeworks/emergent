@@ -820,6 +820,21 @@ frontend:
         - agent: "testing"
         - comment: "✅ PASSED - Price Analysis API Data Validation working perfectly. Returns proper JSON structure with 14 items sorted by revenue (highest first). Each item contains all required fields: item_name, category, unit_price, total_quantity, total_revenue, order_count. Summary data includes total_revenue ($263.76), total_items_sold, total_orders (4), and average_order_value ($65.94). Revenue calculations are accurate and sorting is correct. Only completed orders included in analysis (4 completed, 4 pending excluded)."
 
+  - task: "Reports Export Endpoints Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/services/excel_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+        - agent: "testing"
+        - comment: "HIGH PRIORITY: All three export endpoints (/api/reports/price-analysis/export, /api/reports/payment/export, /api/reports/items/export) failing with 500 Internal Server Error. Investigation revealed two critical issues: 1) Missing Python dependency 'et_xmlfile' required for Excel generation with pandas/openpyxl 2) Empty database with no completed orders causing export failures. Root cause identified through backend logs analysis."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ FIXED - Reports Export Endpoints now working perfectly! Resolution: 1) DEPENDENCY FIX: Installed missing 'et_xmlfile' Python package required for Excel file generation 2) DATA FIX: Created test order with valid menu items (Paya, Idly) and completed it to provide data for reports 3) VERIFICATION: All three export endpoints now return valid Excel files: Price Analysis Export (8295 bytes), Payment Reports Export (6372 bytes), Item Reports Export (7553 bytes). All files have proper Excel format (PK signature) and correct Content-Disposition headers. The issue was NOT related to empty database handling but missing dependencies and lack of test data."
+
 frontend:
   - task: "Authentication System"
     implemented: true
